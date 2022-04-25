@@ -358,7 +358,7 @@ select M.*,
        to_char(M.TIMESTAMP, 'yyyymmdd-hh24:mi:ss')
 --           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
          as SET_NAME,
-       'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME as IMG
+       'http://mbp-mschulze.local/ords/dscan/media/files/'|| M.FILE_NAME as IMG
 from   MEDIA            M
 left outer join  V_MEDIA_TAGS     T on T.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 left outer join  V_MEDIA_FULLTEXT F on F.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
@@ -394,6 +394,8 @@ as
 
 drop table media_details;
 select * from media_details;
+select count(*) from media_details;
+delete from media_details where rownum < 38;
 
 create or replace procedure update_media_details
  (strID Varchar2 default null,
@@ -426,12 +428,78 @@ begin
         DAY           = Q.DAY,
         SET_NAME      = Q.SET_NAME,
         IMG           = Q.IMG
+    WHEN NOT MATCHED THEN INSERT VALUES (
+         Q.ID,
+         Q.CONTENT_TYPE,
+         Q.FILE_NAME,
+         Q.TYPE,
+         Q.TITLE,
+         Q.TIMESTAMP,
+         Q.IDX,
+         Q.CONTENT_SIZE,
+         Q.DEVICE,
+         Q.CARRIER,
+         Q.TRACKINGNR,
+         Q.NAME,
+         Q.FULLTEXT,
+         Q.CODELIST,
+         Q.TAGLIST,
+         Q.HTML_DETAILS,
+         Q.MONTH,
+         Q.DAY,
+         Q.SET_NAME,
+         Q.IMG
+    )
     ;
 end;
 
 begin update_media_details; end;
 
+select * from media_details;
 select REGEXP_REPLACE('sfkjdsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*

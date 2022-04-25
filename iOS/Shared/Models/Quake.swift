@@ -39,7 +39,7 @@ class Quake: NSManagedObject {
               let newMagType   = dictionary["magType"]   as? String,
               let newNet       = dictionary["net"]       as? String
         else {
-            throw QuakeError.missingData
+            throw DscanError.missingData
         }
         
         code           = newCode
@@ -187,7 +187,7 @@ struct QuakeProperties: Decodable {
     let net: String        //
 
     init(from decoder: Decoder) throws {
-        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let values       = try decoder.container(keyedBy: CodingKeys.self)
         let rawMagnitude = try? values.decode(Float.self, forKey: .magnitude)
         let rawPlace     = try? values.decode(String.self, forKey: .place)
         let rawTime      = try? values.decode(Double.self, forKey: .time)
@@ -213,7 +213,7 @@ struct QuakeProperties: Decodable {
             let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "parsing")
             logger.debug("Ignored: \(values)")
 
-            throw QuakeError.missingData
+            throw DscanError.missingData
         }
         
         self.magnitude      = magntiude

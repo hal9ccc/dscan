@@ -116,7 +116,7 @@ class QuakesProvider {
               httpResponse.statusCode == 200
         else {
             logger.debug("Failed to received valid response and/or data.")
-            throw QuakeError.missingData
+            throw DscanError.missingData
         }
 
         do {
@@ -132,7 +132,7 @@ class QuakesProvider {
             try await importQuakes(from: quakePropertiesList)
             logger.debug("Finished importing data.")
         } catch {
-            throw QuakeError.wrongDataFormat(error: error)
+            throw DscanError.wrongDataFormat(error: error)
         }
     }
 
@@ -156,7 +156,7 @@ class QuakesProvider {
                 return
             }
             self.logger.debug("Failed to execute batch insert request.")
-            throw QuakeError.batchInsertError
+            throw DscanError.batchInsertError
         }
 
         logger.debug("Successfully inserted data.")
@@ -208,7 +208,7 @@ class QuakesProvider {
                   let success = batchDeleteResult.result as? Bool, success
             else {
                 self.logger.debug("Failed to execute batch delete request.")
-                throw QuakeError.batchDeleteError
+                throw DscanError.batchDeleteError
             }
         }
 
@@ -240,7 +240,7 @@ class QuakesProvider {
             }
 
             self.logger.debug("No persistent history transactions found.")
-            throw QuakeError.persistentHistoryChangeError
+            throw DscanError.persistentHistoryChangeError
         }
 
         logger.debug("Finished merging history changes.")
