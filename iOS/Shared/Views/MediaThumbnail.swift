@@ -14,10 +14,10 @@ struct MediaThumbnail: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: 4)
-//            .fill(.black)
+            .fill(.thinMaterial)
             .frame(width: 100, height: 100)
             .overlay {
-                LazyImage(source: media.img)
+                LazyImage(source: media.img, resizingMode: .aspectFit)
             }
     }
 }

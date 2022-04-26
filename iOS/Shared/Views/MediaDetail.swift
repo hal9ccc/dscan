@@ -15,21 +15,23 @@ struct MediaDetail: View {
     var media: Media
     
     var body: some View {
-        VStack {
-            LazyImage(source: media.img, resizingMode: .center)
-                .frame(height: 500)
+        ScrollView {
+            VStack {
+                LazyImage(source: media.img, resizingMode: .aspectFit)
+                    .frame(height: 500)
 
-            Text(media.code)
-                .font(.title3)
-                .bold()
+                Text(media.code)
+                    .font(.title3)
+                    .bold()
 
-            Text("\(media.carrier)")
-                .foregroundStyle(Color.primary)
+                Text("\(media.carrier)")
+                    .foregroundStyle(Color.primary)
 
-            Text("\(media.time.formatted())")
-                .foregroundStyle(Color.secondary)
-            
-            Text(media.description)
+                Text("\(media.time.formatted())")
+                    .foregroundStyle(Color.secondary)
+                
+                Text(media.description)
+            }
         }
         .navigationTitle(title)
     }
