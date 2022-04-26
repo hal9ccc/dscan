@@ -42,8 +42,9 @@ struct QuakeView: View {
     var body: some View {
         
         NavigationView {
-            
+
             ZStack {
+                
                 List(selection: $quakeSelection) {
                 
                     ForEach(quakes) { section in
@@ -56,6 +57,7 @@ struct QuakeView: View {
                                     NavigationLink(destination: QuakeDetail(quake: quake)) {
                                         QuakeRow(quake: quake)
                                     }
+//                                    .listRowBackground(Color.blue)
                                 }
                                 .onDelete { indexSet in
                                     withAnimation {
@@ -89,6 +91,14 @@ struct QuakeView: View {
 
             }
         }
+        .background(content: {
+            AngularGradient (
+                gradient: Gradient (
+                    colors: [.red, .yellow, .green, .blue, .purple, .red]
+                ),
+                center: .center
+            )
+        })
         .alert(isPresented: $hasError, error: error) { }
     }
     

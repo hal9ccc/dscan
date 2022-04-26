@@ -35,6 +35,9 @@ struct MediaView: View {
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
     
+    @State private var showScannerSheet = false
+    @State private var texts:[ScanData] = []
+    
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
@@ -44,7 +47,7 @@ struct MediaView: View {
 
         NavigationView {
             
-            ZStack {
+            VStack {
                 List(selection: $mediaSelection) {
                     
                     ForEach(media) { section in
@@ -87,6 +90,9 @@ struct MediaView: View {
                     .font(.footnote)
 
             }
+            .sheet(isPresented: $showScannerSheet, content: {
+                self.makeScannerView()
+            })
                 
             EmptyView()
         }
@@ -123,6 +129,18 @@ struct MediaView: View {
                 NSPredicate (format: "carrier contains[cd] %@", newValue)
         ])
       }
+    }
+
+    
+    private func makeScannerView()-> ScannerView {
+        ScannerView(completion: {
+            textPerPage in
+            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
+                let newScanData = ScanData(content: outputText)
+                self.texts.append(newScanData)
+            }
+            self.showScannerSheet = false
+        })
     }
     
                              
@@ -237,6 +255,14 @@ struct MediaView: View {
                     }
                 }
                 .disabled(isLoading || mediaSelection.isEmpty)
+            }
+            
+            if editMode != .active {
+                Button(action: {
+                    self.showScannerSheet = true
+                }, label: {
+                    Image(systemName: "doc.text.viewfinder")
+                })
             }
         }
     }

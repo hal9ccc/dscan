@@ -16,12 +16,13 @@ struct MediaRow: View {
             MediaThumbnail(media: media)
             VStack(alignment: .leading) {
                 Text(media.code)
-                    .font(.title3)
-                Text("\(media.time.formatted(.relative(presentation: .named)))")
+                    .font(.subheadline)
+//                Text("\(media.time.formatted(.relative(presentation: .named)))")
+                Text("\(media.time.formatted())")
                     .foregroundStyle(.secondary)
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 2)
     }
 }
 

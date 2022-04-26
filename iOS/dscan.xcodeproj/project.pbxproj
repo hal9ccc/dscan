@@ -21,8 +21,6 @@
 		4E24DA272815EABD00A39C7D /* MediaRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA252815EABD00A39C7D /* MediaRow.swift */; };
 		4E24DA292815EC1600A39C7D /* MediaThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */; };
 		4E24DA2A2815EC1600A39C7D /* MediaThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */; };
-		4E24DA2C2815EEC500A39C7D /* NetworkImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA2B2815EEC400A39C7D /* NetworkImage.swift */; };
-		4E24DA2D2815EEC500A39C7D /* NetworkImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA2B2815EEC400A39C7D /* NetworkImage.swift */; };
 		4E24DA2F2815EF5D00A39C7D /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */; };
 		4E24DA302815EF5D00A39C7D /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */; };
 		4E24DA322815F16800A39C7D /* MediaDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA312815F16800A39C7D /* MediaDetail.swift */; };
@@ -99,6 +97,12 @@
 		4E86004D281806E200F126D7 /* willibetz.gif in Resources */ = {isa = PBXBuildFile; fileRef = 4E860008281806E100F126D7 /* willibetz.gif */; };
 		4E86004E281806E200F126D7 /* ups.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E860009281806E100F126D7 /* ups.jpg */; };
 		4E86004F281806E200F126D7 /* ups.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E860009281806E100F126D7 /* ups.jpg */; };
+		4E860053281820D200F126D7 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E860052281820D200F126D7 /* ScanView.swift */; };
+		4E860054281820D200F126D7 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E860052281820D200F126D7 /* ScanView.swift */; };
+		4E8600562818213200F126D7 /* ScanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanData.swift */; };
+		4E8600572818213200F126D7 /* ScanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanData.swift */; };
+		4E8600592818218300F126D7 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600582818218300F126D7 /* ScannerView.swift */; };
+		4E86005A2818218300F126D7 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600582818218300F126D7 /* ScannerView.swift */; };
 		4E86FFD52816811000F126D7 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFD42816811000F126D7 /* MediaView.swift */; };
 		4E86FFD62816811000F126D7 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFD42816811000F126D7 /* MediaView.swift */; };
 		4E86FFD82816815700F126D7 /* QuakeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFD72816815700F126D7 /* QuakeView.swift */; };
@@ -150,7 +154,6 @@
 		4E24DA222815D57000A39C7D /* MediaSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSort.swift; sourceTree = "<group>"; };
 		4E24DA252815EABD00A39C7D /* MediaRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRow.swift; sourceTree = "<group>"; };
 		4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaThumbnail.swift; sourceTree = "<group>"; };
-		4E24DA2B2815EEC400A39C7D /* NetworkImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkImage.swift; sourceTree = "<group>"; };
 		4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4E24DA312815F16800A39C7D /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
 		4E3BE65C280552860049DD03 /* QuakeSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeSort.swift; sourceTree = "<group>"; };
@@ -164,6 +167,9 @@
 		4E860007281806E100F126D7 /* glx1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = glx1.jpg; sourceTree = "<group>"; };
 		4E860008281806E100F126D7 /* willibetz.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = willibetz.gif; sourceTree = "<group>"; };
 		4E860009281806E100F126D7 /* ups.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ups.jpg; sourceTree = "<group>"; };
+		4E860052281820D200F126D7 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
+		4E8600552818213200F126D7 /* ScanData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanData.swift; sourceTree = "<group>"; };
+		4E8600582818218300F126D7 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
 		4E86FFD42816811000F126D7 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		4E86FFD72816815700F126D7 /* QuakeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeView.swift; sourceTree = "<group>"; };
 		4E86FFDA281686A000F126D7 /* Test.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Test.swift; sourceTree = "<group>"; };
@@ -398,6 +404,7 @@
 				4E24DA0D2814AAB300A39C7D /* Media.swift */,
 				4E24DA222815D57000A39C7D /* MediaSort.swift */,
 				4E24DA1C2814BFFA00A39C7D /* MediaProvider.swift */,
+				4E8600552818213200F126D7 /* ScanData.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -414,10 +421,11 @@
 				4E24DA252815EABD00A39C7D /* MediaRow.swift */,
 				4E86FFD42816811000F126D7 /* MediaView.swift */,
 				4E24DA312815F16800A39C7D /* MediaDetail.swift */,
-				4E24DA2B2815EEC400A39C7D /* NetworkImage.swift */,
 				4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */,
 				4E86FFDD2816926900F126D7 /* MediaSortSelection.swift */,
 				4E86FFDA281686A000F126D7 /* Test.swift */,
+				4E860052281820D200F126D7 /* ScanView.swift */,
+				4E8600582818218300F126D7 /* ScannerView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -611,13 +619,16 @@
 				AD2FC4CC2654EF7C00E135D2 /* DscanError.swift in Sources */,
 				AD57B0F726561347005183D0 /* RefreshButton.swift in Sources */,
 				4E24DA0F2814AAB300A39C7D /* Media.swift in Sources */,
+				4E860054281820D200F126D7 /* ScanView.swift in Sources */,
 				4E24DA242815D57000A39C7D /* MediaSort.swift in Sources */,
 				4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */,
+				4E86005A2818218300F126D7 /* ScannerView.swift in Sources */,
 				AD57B0F326561178005183D0 /* ToolbarStatus.swift in Sources */,
 				4E86FFDF2816926900F126D7 /* MediaSortSelection.swift in Sources */,
 				4E24DA302815EF5D00A39C7D /* View+Extensions.swift in Sources */,
 				4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */,
 				4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */,
+				4E8600572818213200F126D7 /* ScanData.swift in Sources */,
 				4E86FFD92816815700F126D7 /* QuakeView.swift in Sources */,
 				AD2FC4CA2654EF7C00E135D2 /* QuakesProvider.swift in Sources */,
 				AD2FC4CE2654EF8200E135D2 /* QuakeRow.swift in Sources */,
@@ -629,7 +640,6 @@
 				4E86FFDC281686A000F126D7 /* Test.swift in Sources */,
 				AD57B10326561FE1005183D0 /* ContentView.swift in Sources */,
 				4E24DA21281522BE00A39C7D /* SectionHeader.swift in Sources */,
-				4E24DA2D2815EEC500A39C7D /* NetworkImage.swift in Sources */,
 				AD2FC4CF2654EF8200E135D2 /* QuakeDetail.swift in Sources */,
 				4E24DA172814BB4600A39C7D /* Earthquakes.xcdatamodeld in Sources */,
 				AD2FC4C82654EF0800E135D2 /* EarthquakesApp.swift in Sources */,
@@ -646,12 +656,14 @@
 				4E86FFD82816815700F126D7 /* QuakeView.swift in Sources */,
 				AD57B0F626561347005183D0 /* RefreshButton.swift in Sources */,
 				AD57B0F226561178005183D0 /* ToolbarStatus.swift in Sources */,
+				4E860053281820D200F126D7 /* ScanView.swift in Sources */,
 				AD57B0FC26561547005183D0 /* EditButton.swift in Sources */,
+				4E8600562818213200F126D7 /* ScanData.swift in Sources */,
+				4E8600592818218300F126D7 /* ScannerView.swift in Sources */,
 				4E86FFDB281686A000F126D7 /* Test.swift in Sources */,
 				ADDDB17F2625235600241A73 /* QuakeMagnitude.swift in Sources */,
 				AD43F1E626158A640068AABC /* EarthquakesApp.swift in Sources */,
 				4E3BE65D280552860049DD03 /* QuakeSort.swift in Sources */,
-				4E24DA2C2815EEC500A39C7D /* NetworkImage.swift in Sources */,
 				AD57B0F926561484005183D0 /* DeleteButton.swift in Sources */,
 				4E24DA262815EABD00A39C7D /* MediaRow.swift in Sources */,
 				4E24DA2F2815EF5D00A39C7D /* View+Extensions.swift in Sources */,
@@ -879,6 +891,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "dscan-iOS/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) uses the camera to scan documents";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -916,6 +929,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "dscan-iOS/Info.plist";
+				INFOPLIST_KEY_NSCameraUsageDescription = "$(PRODUCT_NAME) uses the camera to scan documents";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -29,6 +29,13 @@ struct ContentView: View {
                     Label("Quakes", systemImage: "list.dash")
                 }
 
+            ScanView()
+//                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+
+
         }
 
     }

@@ -9,6 +9,14 @@
         <attribute name="place" optional="YES" attributeType="String"/>
         <attribute name="time" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="type" optional="YES" attributeType="String"/>
+        <fetchIndex name="byTypeMagnitudeIndex">
+            <fetchIndexElement property="type" type="Binary" order="ascending"/>
+            <fetchIndexElement property="magnitude" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byTypeTimeIndex">
+            <fetchIndexElement property="type" type="Binary" order="ascending"/>
+            <fetchIndexElement property="time" type="Binary" order="ascending"/>
+        </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="code"/>
@@ -16,6 +24,6 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Quake" positionX="-63" positionY="-18" width="128" height="163"/>
+        <element name="Quake" positionX="-63" positionY="-18" width="128" height="149"/>
     </elements>
 </model>

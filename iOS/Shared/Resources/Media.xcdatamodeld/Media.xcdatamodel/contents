@@ -2,23 +2,43 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="20086" systemVersion="21E258" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Media" representedClassName=".Media" syncable="YES">
         <attribute name="carrier" optional="YES" attributeType="String"/>
-        <attribute name="code" optional="YES" attributeType="String"/>
+        <attribute name="code" optional="YES" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="device" optional="YES" attributeType="String"/>
         <attribute name="filename" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="idx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="img" optional="YES" attributeType="String"/>
-        <attribute name="person" optional="YES" attributeType="String"/>
+        <attribute name="person" optional="YES" attributeType="String" spotlightIndexingEnabled="YES"/>
         <attribute name="set" optional="YES" attributeType="String"/>
         <attribute name="time" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <fetchIndex name="bySetIndex">
+            <fetchIndexElement property="set" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byCarrierIndex">
+            <fetchIndexElement property="carrier" type="Binary" order="ascending"/>
+        </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="id"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
+    <entity name="Person" representedClassName="Person" syncable="YES" codeGenerationType="class">
+        <attribute name="email" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <fetchIndex name="byNameIndex">
+            <fetchIndexElement property="name" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="name"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
     <elements>
         <element name="Media" positionX="-63" positionY="-18" width="128" height="194"/>
+        <element name="Person" positionX="-63" positionY="63" width="128" height="74"/>
     </elements>
 </model>
