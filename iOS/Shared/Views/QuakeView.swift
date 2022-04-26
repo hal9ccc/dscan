@@ -23,6 +23,7 @@ struct QuakeView: View {
     @State private var quakeSearchTerm = ""
     
     @State private var isLoading = false
+    @State private var lastSortChange: Date = Date()
 
     @AppStorage("lastUpdatedQuakes")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
@@ -42,45 +43,51 @@ struct QuakeView: View {
         
         NavigationView {
             
-            List(selection: $quakeSelection) {
+            ZStack {
+                List(selection: $quakeSelection) {
                 
-                ForEach(quakes) { section in
-                    
-                    Section(
-                        header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
-                            //header: Text("\(section.id) [\(section.count)]")) {
-                            
-                            ForEach(section, id: \.code) { quake in
-                                NavigationLink(destination: QuakeDetail(quake: quake)) {
-                                    QuakeRow(quake: quake)
+                    ForEach(quakes) { section in
+                        
+                        Section(
+                            header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
+                                //header: Text("\(section.id) [\(section.count)]")) {
+                                
+                                ForEach(section, id: \.code) { quake in
+                                    NavigationLink(destination: QuakeDetail(quake: quake)) {
+                                        QuakeRow(quake: quake)
+                                    }
+                                }
+                                .onDelete { indexSet in
+                                    withAnimation {
+                                        deleteQuakesByOffsets (
+                                            from: section,
+                                            at:   indexSet
+                                        )
+                                    }
                                 }
                             }
-                            .onDelete { indexSet in
-                                withAnimation {
-                                    deleteQuakesByOffsets (
-                                        from: section,
-                                        at:   indexSet
-                                    )
-                                }
-                            }
-                        }
-                        .headerProminence(.increased)
+                            .headerProminence(.increased)
+                    }
                 }
+                .listStyle(SidebarListStyle())
+                .searchable(text: quakeSearchQuery)
+                .navigationTitle(title)
+                .toolbar(content: toolbarContent)
+    #if os(iOS)
+                .environment(\.editMode, $editMode)
+                .refreshable {
+                    await fetchQuakes()
+                }
+    #else
+                .frame(minWidth: 320)
+    #endif
+                
+                // so that the view refreshes when the sort is changed
+                Text("\(lastSortChange)")
+                    .hidden()
+                    .font(.footnote)
+
             }
-            .listStyle(SidebarListStyle())
-            .searchable(text: quakeSearchQuery)
-            .navigationTitle(title)
-            .toolbar(content: toolbarContent)
-#if os(iOS)
-            .environment(\.editMode, $editMode)
-            .refreshable {
-                await fetchQuakes()
-            }
-#else
-            .frame(minWidth: 320)
-#endif
-            
-            EmptyView()
         }
         .alert(isPresented: $hasError, error: error) { }
     }
@@ -170,10 +177,12 @@ struct QuakeView: View {
         ToolbarItem(placement: .primaryAction) {
             QuakeSortSelection (selectedSortItem: $selectedQuakeSort, sorts: QuakeSort.sorts)
             onChange(of: selectedQuakeSort) { _ in
-                let config = quakes
-                config.sortDescriptors   = selectedQuakeSort.descriptors
-                config.sectionIdentifier = selectedQuakeSort.section
-            }
+                // that let is there for a reason!
+                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
+                let request = quakes
+                request.sectionIdentifier = selectedQuakeSort.section
+                request.sortDescriptors = selectedQuakeSort.descriptors
+                lastSortChange = Date()            }
         }
 
         ToolbarItem(placement: .navigationBarLeading) {
