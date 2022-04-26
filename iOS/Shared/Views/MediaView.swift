@@ -33,7 +33,8 @@ struct MediaView: View {
     @State private var selectedMediaSort: MediaSort = MediaSort.default
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
-
+    @State private var lastSortChange: Date = Date()
+    
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
@@ -42,45 +43,51 @@ struct MediaView: View {
     var body: some View {
 
         NavigationView {
-           
-            List(selection: $mediaSelection) {
-                
-                ForEach(media) { section in
-                    
-                    Section(
-                        header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
-                            //header: Text("\(section.id) [\(section.count)]")) {
-                            
-                            ForEach(section, id: \.id) { media in
-                                NavigationLink(destination: MediaDetail(media: media)) {
-                                    MediaRow(media: media)
-                                }
-                            }
-                            .onDelete { indexSet in
-                                withAnimation {
-                                    deleteMediaByOffsets (
-                                        from: section,
-                                        at:   indexSet
-                                    )
-                                }
-                            }
-                        }
-                        .headerProminence(.increased)
-                }
-            }
-            .listStyle(SidebarListStyle())
-            .searchable(text: mediaSearchQuery)
-            .navigationTitle(title)
-            .toolbar(content: toolbarContent)
-    #if os(iOS)
-            .environment(\.editMode, $editMode)
-            .refreshable {
-                await fetchMedia()
-            }
-    #else
-            .frame(minWidth: 320)
-    #endif
             
+            ZStack {
+                List(selection: $mediaSelection) {
+                    
+                    ForEach(media) { section in
+                        
+                        Section(
+                            header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
+                                //header: Text("\(section.id) [\(section.count)]")) {
+                                
+                                ForEach(section, id: \.id) { media in
+                                    NavigationLink(destination: MediaDetail(media: media)) {
+                                        MediaRow(media: media)
+                                    }
+                                }
+                                .onDelete { indexSet in
+                                    withAnimation {
+                                        deleteMediaByOffsets (
+                                            from: section,
+                                            at:   indexSet
+                                        )
+                                    }
+                                }
+                            }
+                            .headerProminence(.increased)
+                    }
+                } // List
+                .listStyle(SidebarListStyle())
+                .searchable(text: mediaSearchQuery)
+                .navigationTitle(title)
+                .toolbar(content: toolbarContent)
+        #if os(iOS)
+                .environment(\.editMode, $editMode)
+                .refreshable { await fetchMedia() }
+        #else
+                .frame(minWidth: 320)
+        #endif
+
+                // so that the view refreshes when the sort is changed
+                Text("\(lastSortChange)")
+                    .hidden()
+                    .font(.footnote)
+
+            }
+                
             EmptyView()
         }
     }
@@ -108,11 +115,6 @@ struct MediaView: View {
           return
         }
 
-//        media.nsPredicate = NSPredicate (
-//            format: "code contains[cd] %@",
-//            newValue
-//        )
-          
         media.nsPredicate = NSCompoundPredicate(
             orPredicateWithSubpredicates: [
                 NSPredicate (format: "code contains[cd] %@", newValue),
@@ -174,9 +176,12 @@ struct MediaView: View {
         ToolbarItem(placement: .primaryAction) {
             MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSort.sorts)
             onChange(of: selectedMediaSort) { _ in
-                let config = media
-                config.sortDescriptors   = selectedMediaSort.descriptors
-                config.sectionIdentifier = selectedMediaSort.section
+                // that let is there for a reason!
+                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
+                let request = media
+                request.sectionIdentifier = selectedMediaSort.section
+                request.sortDescriptors = selectedMediaSort.descriptors
+                lastSortChange = Date()
             }
         }
 
@@ -241,10 +246,13 @@ struct MediaView: View {
 
         ToolbarItemGroup(placement: .status) {
             SortSelectionView (selectedSortItem: $selectedSort, sorts: MediaSort.sorts)
+
             onChange(of: selectedSort) { _ in
-                let config = media
-                config.sortDescriptors = selectedSort.descriptors
-                config.sectionIdentifier = selectedSort.section
+                //let config = media
+                print (selectedSort.descriptors)
+                print (selectedSort.section)
+                media.sortDescriptors = selectedSort.descriptors
+                media.sectionIdentifier = selectedSort.section
             }
 
             ToolbarStatus(

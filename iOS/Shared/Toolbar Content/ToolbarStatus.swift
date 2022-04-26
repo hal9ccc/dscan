@@ -20,16 +20,16 @@ struct ToolbarStatus: View {
 
     var body: some View {
         VStack {
-            if lastUpdated == Date.distantFuture.timeIntervalSince1970 {
-                Spacer()
-            }
-            else if isLoading {
+            if isLoading {
                 Text("Updating...")
+            }
+            else if lastUpdated == Date.distantFuture.timeIntervalSince1970 {
+                Spacer()
             }
             else {
                 Text("Updated \(lastUpdate_str)")
             }
-            Text("\(itemCount) quakes in \(sectionCount) sections")
+            Text("\(itemCount) documents in \(sectionCount) sections")
                 .foregroundStyle(Color.secondary)
 
         }

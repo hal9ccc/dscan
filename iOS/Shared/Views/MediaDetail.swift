@@ -31,6 +31,11 @@ struct MediaDetail: View {
             
             Text(media.description)
         }
+        .navigationTitle(title)
+    }
+    
+    var title: String {
+        "\(media.carrier) #\(media.code)"
     }
 }
 
