@@ -9,13 +9,15 @@
 
 import Foundation
 import SwiftUI
+import NukeUI
 
 struct MediaDetail: View {
     var media: Media
     
     var body: some View {
         VStack {
-            MediaThumbnail(media: media)
+            LazyImage(source: media.img, resizingMode: .center)
+                .frame(height: 500)
 
             Text(media.code)
                 .font(.title3)

@@ -104,18 +104,26 @@ struct MediaView: View {
         mediaSearchTerm = newValue
         
         guard !newValue.isEmpty else {
-//          media.nsPredicate = nil
+          media.nsPredicate = nil
           return
         }
 
-        media.nsPredicate = NSPredicate (
-            format: "code contains[cd] %@",
-            newValue
-        )
+//        media.nsPredicate = NSPredicate (
+//            format: "code contains[cd] %@",
+//            newValue
+//        )
+          
+        media.nsPredicate = NSCompoundPredicate(
+            orPredicateWithSubpredicates: [
+                NSPredicate (format: "code contains[cd] %@", newValue),
+                NSPredicate (format: "person contains[cd] %@", newValue),
+                NSPredicate (format: "device contains[cd] %@", newValue),
+                NSPredicate (format: "carrier contains[cd] %@", newValue)
+        ])
       }
     }
     
-   
+                             
     private func deleteMediaByOffsets(from section: SectionedFetchResults<String, Media>.Element, at offsets: IndexSet) {
         let objectIDs = offsets.map { section[$0].objectID }
         mediaProvider.deleteMedia(identifiedBy: objectIDs)

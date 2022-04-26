@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -39,6 +39,7 @@
 		4E86FFDF2816926900F126D7 /* MediaSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFDD2816926900F126D7 /* MediaSortSelection.swift */; };
 		4E86FFE128169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
 		4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
+		4E86FFE62817527E00F126D7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E86FFE52817527E00F126D7 /* NukeUI */; };
 		4ED738E4281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
 		4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
 		AD2FC4C82654EF0800E135D2 /* EarthquakesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD43F1E526158A640068AABC /* EarthquakesApp.swift */; };
@@ -124,6 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E86FFE62817527E00F126D7 /* NukeUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +307,9 @@
 			dependencies = (
 			);
 			name = "dscan-iOS";
+			packageProductDependencies = (
+				4E86FFE52817527E00F126D7 /* NukeUI */,
+			);
 			productName = Earthquakes;
 			productReference = AD43F1E226158A640068AABC /* dscan.app */;
 			productType = "com.apple.product-type.application";
@@ -337,6 +342,9 @@
 				Base,
 			);
 			mainGroup = AD43F1D926158A630068AABC;
+			packageReferences = (
+				4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */,
+			);
 			productRefGroup = AD43F1E326158A640068AABC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -735,6 +743,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/NukeUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4E86FFE52817527E00F126D7 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */;
+			productName = NukeUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		4E24DA142814BB4600A39C7D /* Earthquakes.xcdatamodeld */ = {

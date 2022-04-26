@@ -7,23 +7,17 @@
 //
 
 import SwiftUI
+import NukeUI
 
 struct MediaThumbnail: View {
     var media: Media
     
     var body: some View {
         RoundedRectangle(cornerRadius: 4)
-            .fill(.black)
-            .frame(width: 80, height: 60)
+//            .fill(.black)
+            .frame(width: 100, height: 100)
             .overlay {
-                AsyncImage(url: URL(string: media.img))
-                    .scaledToFill()
-                //NetworkImage (url: URL(string: media.img), mode:"fill" )
-            }
-            .overlay {
-                Text("\(media.idx)")
-                    .font(.footnote)
-                    .bold()
+                LazyImage(source: media.img)
             }
     }
 }
