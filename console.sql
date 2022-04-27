@@ -341,7 +341,7 @@ select M.*,
        sys.dbms_lob.getlength(M."CONTENT") "CONTENT_SIZE",
        nvl(T.Carrier,       ' - unbekannt -') as Carrier,
        nvl(T.TrackingNr,    ' - unbekannt -') as TrackingNr,
-       nvl(T.Name,          ' - unbekannt -') as Name,
+       nvl(T.Name,          ' - unbekannt -') as Person,
        nvl(F.Fulltext,      ' - leer -'     ) as FullText,
        nvl(C.Codelist,      ' - keine -'    ) as CodeList,
        nvl(T.TagList,       ''              ) as TagList,
@@ -379,7 +379,7 @@ as
           DEVICE,
           CARRIER,
           TRACKINGNR,
-          NAME,
+          PERSON,
           FULLTEXT,
           CODELIST,
           TAGLIST,
@@ -419,7 +419,7 @@ begin
         DEVICE        = Q.DEVICE,
         CARRIER       = Q.CARRIER,
         TRACKINGNR    = Q.TRACKINGNR,
-        NAME          = Q.NAME,
+        PERSON        = Q.PERSON,
         FULLTEXT      = Q.FULLTEXT,
         CODELIST      = Q.CODELIST,
         TAGLIST       = Q.TAGLIST,
@@ -440,7 +440,7 @@ begin
          Q.DEVICE,
          Q.CARRIER,
          Q.TRACKINGNR,
-         Q.NAME,
+         Q.PERSON,
          Q.FULLTEXT,
          Q.CODELIST,
          Q.TAGLIST,
@@ -453,7 +453,8 @@ begin
     ;
 end;
 
-begin update_media_details; end;
+begin
+  update  set  =  where;ate_media_details; end;
 
 select * from media_details;
 select REGEXP_REPLACE('sfkjdsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;

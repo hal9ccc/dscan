@@ -195,7 +195,7 @@ struct MediaProperties: Decodable {
         case filename    = "file_name"
         case carrier
         case code        = "trackingnr"
-        case person      = "personName"
+        case person      = "person"
         case img
     }
     

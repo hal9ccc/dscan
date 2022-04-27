@@ -47,7 +47,7 @@ struct MediaView: View {
 
         NavigationView {
             
-            VStack {
+            ZStack {
                 List(selection: $mediaSelection) {
                     
                     ForEach(media) { section in
@@ -87,7 +87,6 @@ struct MediaView: View {
                 // so that the view refreshes when the sort is changed
                 Text("\(lastSortChange)")
                     .hidden()
-                    .font(.footnote)
 
             }
             .sheet(isPresented: $showScannerSheet, content: {

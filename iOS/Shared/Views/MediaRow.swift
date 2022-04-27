@@ -12,17 +12,57 @@ struct MediaRow: View {
     var media: Media
     
     var body: some View {
-        HStack {
-            MediaThumbnail(media: media)
-            VStack(alignment: .leading) {
-                Text(media.code)
+        VStack  () {
+            if media.code > "" && media.code != " - unbekannt -" {
+                Label("\(media.code)", systemImage: "qrcode")
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.subheadline)
-//                Text("\(media.time.formatted(.relative(presentation: .named)))")
-                Text("\(media.time.formatted())")
-                    .foregroundStyle(.secondary)
+//                    .padding(2)
+//                    .background(.thinMaterial)
+                    .foregroundStyle(.primary)
+
+//                Divider()
+//                    .frame(height: 1)
+//                    .padding(0)
+//                    .padding(.horizontal, 30)
+//                    .background(Color.red)
             }
+                
+            HStack (alignment: .top) {
+                MediaThumbnail(media: media)
+                
+                VStack (alignment: .leading) {
+                    Label("\(media.time.formatted())", systemImage: "clock")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 2)
+
+                    if media.person > "" && media.person != " - unbekannt -" {
+                        Label("\(media.person)", systemImage: "person.circle")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 2)
+                    }
+
+
+                    if media.carrier > "" && media.carrier != " - unbekannt -" {
+                        Label("\(media.carrier)", systemImage: "shippingbox")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 2)
+                    }
+                        
+
+                }
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+            .frame(maxWidth: .infinity)
+            .padding (.horizontal, 0)
+
         }
-        .padding(.vertical, 2)
+        .frame(height: 150)
+        .padding(0)
+
     }
 }
 
