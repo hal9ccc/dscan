@@ -14,16 +14,18 @@ import OSLog
 /// Managed object subclass for the Media entity.
 class Media: NSManagedObject {
 
-    @NSManaged var id:              String
+    @NSManaged var id:              String // UNIQUE
     @NSManaged var set:             String
     @NSManaged var idx:             Int16
     @NSManaged var time:            Date
     @NSManaged var title:           String
     @NSManaged var device:          String
     @NSManaged var filename:        String
-    @NSManaged var carrier:         String
     @NSManaged var code:            String
     @NSManaged var person:          String
+    @NSManaged var company:         String
+    @NSManaged var carrier:         String
+    @NSManaged var location:        String
     @NSManaged var img:             String
 
     
@@ -39,9 +41,11 @@ class Media: NSManagedObject {
             let new_title       = dictionary["title"]      as? String,
             let new_device      = dictionary["device"]     as? String,
             let new_filename    = dictionary["filename"]   as? String,
-            let new_carrier     = dictionary["carrier"]    as? String,
-            let new_trackingNr  = dictionary["code"]       as? String,
+            let new_code        = dictionary["code"]       as? String,
             let new_person      = dictionary["person"]     as? String,
+            let new_company     = dictionary["company"]    as? String,
+            let new_carrier     = dictionary["carrier"]    as? String,
+            let new_location    = dictionary["location"]   as? String,
             let new_img         = dictionary["img"]        as? String
 
         else {
@@ -56,9 +60,11 @@ class Media: NSManagedObject {
         title          = new_title
         device         = new_device
         filename       = new_filename
-        carrier        = new_carrier
-        code           = new_trackingNr
+        code           = new_code
         person         = new_person
+        carrier        = new_carrier
+        company        = new_company
+        location       = new_location
         img            = new_img
 
         print ("#\(id) \(set).\(idx): '\(code)' carrier:\(carrier) person:\(person)")
@@ -73,13 +79,15 @@ extension Media {
         return  "id = \(id.description       ), "
         +      "set = \(set.description      ), "
         +      "idx = \(idx.description      ), "
-        +     "code = \(code.description     ), "
         +     "time = \(time.description     ), "
         +    "title = \(title.description    ), "
         +   "device = \(device.description   ), "
         + "filename = \(filename.description ), "
-        +  "carrier = \(carrier.description  ), "
+        +     "code = \(code.description     ), "
         +   "person = \(person.description   ), "
+        +  "company = \(company.description  ), "
+        +  "carrier = \(carrier.description  ), "
+        + "location = \(location.description ), "
         +      "img = \(img.description      )"
     }
     
@@ -193,25 +201,72 @@ struct MediaProperties: Decodable {
         case title
         case device
         case filename    = "file_name"
-        case carrier
         case code        = "trackingnr"
-        case person      = "person"
+        case person
+        case company
+        case location
+        case carrier
         case img
+        case recognizedCodesJson
+        case recognizedTextJson
+        case imageData
     }
     
-    let id:              String
-    let set:             String
-    let idx:             Int
-    let time:            Date
-    let title:           String
-    let device:          String
-    let filename:        String
-    let carrier:         String
-    let code:            String
-    let person:          String
-    let img:             String
-    
-    
+    let id:                     String
+    let set:                    String
+    let idx:                    Int
+    let time:                   Date
+    let title:                  String
+    let device:                 String
+    let filename:               String
+    let code:                   String
+    let person:                 String
+    let company:                String
+    let carrier:                String
+    let location:               String
+    let img:                    String
+    let recognizedCodesJson:    String
+    let recognizedTextJson:     String
+    let imageData:              Data
+
+    init (
+        id:                     String,
+        set:                    String,
+        idx:                    Int,
+        time:                   Date,
+        title:                  String,
+        device:                 String,
+        filename:               String,
+        code:                   String,
+        person:                 String,
+        company:                String,
+        carrier:                String,
+        location:               String,
+        img:                    String,
+        recognizedCodesJson:    String,
+        recognizedTextJson:     String,
+        imageData:              Data
+    ) {
+        self.id                     = id
+        self.set                    = set
+        self.idx                    = idx
+        self.time                   = time
+        self.title                  = title
+        self.device                 = device
+        self.filename               = filename
+        self.code                   = code
+        self.person                 = person
+        self.company                = company
+        self.carrier                = carrier
+        self.location               = location
+        self.img                    = img
+        self.recognizedCodesJson    = recognizedCodesJson
+        self.recognizedTextJson     = recognizedTextJson
+        self.imageData              = imageData
+    }
+
+
+
     init(from decoder: Decoder) throws {
 
         let formatter = DateFormatter()
@@ -222,44 +277,53 @@ struct MediaProperties: Decodable {
         let raw_id         = try? values.decode (Int.self,      forKey: .id         )
         let raw_set        = try? values.decode (String.self,   forKey: .set        )
         let raw_idx        = try? values.decode (Int.self,      forKey: .idx        )
-        let raw_code       = try? values.decode (String.self,   forKey: .code       )
-        //let raw_time       = try? values.decode (Date.self,     forKey: .time       )
         let raw_title      = try? values.decode (String.self,   forKey: .title      )
         let raw_device     = try? values.decode (String.self,   forKey: .device     )
         let raw_filename   = try? values.decode (String.self,   forKey: .filename   )
-        let raw_carrier    = try? values.decode (String.self,   forKey: .carrier    )
+        let raw_code       = try? values.decode (String.self,   forKey: .code       )
         let raw_person     = try? values.decode (String.self,   forKey: .person     )
+        let raw_company    = try? values.decode (String.self,   forKey: .company    )
+        let raw_carrier    = try? values.decode (String.self,   forKey: .carrier    )
+        let raw_location   = try? values.decode (String.self,   forKey: .location   )
         let raw_img        = try? values.decode (String.self,   forKey: .img        )
+        let raw_RCJ        = try? values.decode (String.self,   forKey: .recognizedCodesJson  )
+        let raw_RTJ        = try? values.decode (String.self,   forKey: .recognizedTextJson   )
+        let raw_ID         = try? values.decode (Data.self,     forKey: .imageData            )
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
 
-        let carrier       = raw_carrier
-        let person        = raw_person
-        let img           = raw_img
+        let person              = raw_person
+        let company             = raw_company
+        let carrier             = raw_carrier
+        let location            = raw_location
+        let img                 = raw_img
+        let recoginzedCodesJson = raw_RCJ
+        let recoginzedTextJson  = raw_RTJ
+        let imageData           = raw_ID
 
         // Ignore instances with missing data.
         guard
-            let id            = raw_id,
-            let set           = raw_set,
-            let idx           = raw_idx,
-            let code          = raw_code,
-            let time          = raw_time,
-            let title         = raw_title,
-            let device        = raw_device,
-            let filename      = raw_filename
+            let id              = raw_id,
+            let set             = raw_set,
+            let idx             = raw_idx,
+            let code            = raw_code,
+            let time            = raw_time,
+            let title           = raw_title,
+            let device          = raw_device,
+            let filename        = raw_filename
                 
         else {
-            let values =  "id = \(raw_id?.description         ?? "nil"), "
-              +          "set = \(raw_set?.description        ?? "nil"), "
-              +          "idx = \(raw_idx?.description        ?? "nil"), "
-              +         "code = \(raw_code?.description       ?? "nil"), "
-              +         "time = \(raw_time?.description       ?? "nil"), "
-              +        "title = \(raw_title?.description      ?? "nil"), "
-              +       "device = \(raw_device?.description     ?? "nil"), "
-              +     "filename = \(raw_filename?.description   ?? "nil"), "
-              +      "carrier = \(raw_carrier?.description    ?? "nil"), "
-              +       "person = \(raw_person?.description     ?? "nil"), "
-              +          "img = \(raw_img?.description        ?? "nil")"
+            let values =    "id = \(raw_id?.description         ?? "nil"), "
+              +            "set = \(raw_set?.description        ?? "nil"), "
+              +            "idx = \(raw_idx?.description        ?? "nil"), "
+              +           "code = \(raw_code?.description       ?? "nil"), "
+              +           "time = \(raw_time?.description       ?? "nil"), "
+              +          "title = \(raw_title?.description      ?? "nil"), "
+              +         "device = \(raw_device?.description     ?? "nil"), "
+              +       "filename = \(raw_filename?.description   ?? "nil"), "
+              +        "carrier = \(raw_carrier?.description    ?? "nil"), "
+              +         "person = \(raw_person?.description     ?? "nil"), "
+              +            "img = \(raw_img?.description        ?? "nil")"
             
             let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "parsing")
             logger.debug("Ignored: \(values)")
@@ -267,43 +331,45 @@ struct MediaProperties: Decodable {
             throw DscanError.missingData
         }
         
-        self.id             = id.formatted()
-        self.set            = set
-        self.idx            = idx
-        self.code           = code
-        self.time           = time
-        self.title          = title
-        self.device         = device
-        self.filename       = filename
-        self.carrier        = carrier ?? ""
-        self.person         = person  ?? ""
-        self.img            = img     ?? ""
-        
+        self.id                     = id.formatted()
+        self.set                    = set
+        self.idx                    = idx
+        self.code                   = code
+        self.time                   = time
+        self.title                  = title
+        self.device                 = device
+        self.filename               = filename
+        self.person                 = person   ?? ""
+        self.company                = company  ?? ""
+        self.carrier                = carrier  ?? ""
+        self.location               = location ?? ""
+        self.img                    = img      ?? ""
+        self.recognizedCodesJson    = recoginzedCodesJson ?? ""
+        self.recognizedTextJson     = recoginzedTextJson  ?? ""
+        self.imageData              = imageData ?? Data()
     }
     
     // The keys must have the same name as the attributes of the Media entity.
     var dictionaryValue: [String: Any] {
-        [
-           // "magnitude":    magnitude,
-           // "place":        place,
-           // "time":         Date(timeIntervalSince1970: TimeInterval(time) / 1000),
-           // "code":         code,
-           // "type":         type,
-           // "magType":      magType,
-           // "net":          net
-            
-            "id":             id,
-            "set":            set,
-            "idx":            idx,
-            "code":           code,
-            "time":           time,
-            "title":          title,
-            "device":         device,
-            "filename":       filename,
-            "carrier":        carrier,
-            "person":         person,
-            "img":            img
-            
-        ]
+       ["id":                   id,
+        "set":                  set,
+        "idx":                  idx,
+        "time":                 time,
+        "title":                title,
+        "device":               device,
+        "filename":             filename,
+        "code":                 code,
+        "person":               person,
+        "company":              company,
+        "carrier":              carrier,
+        "location":             location,
+        "img":                  img,
+        "recognizedCodesJson":  recognizedCodesJson,
+        "recognizedTextJson":   recognizedTextJson,
+        "imageData":            imageData
+       ]
     }
+    
+    
+    
 }

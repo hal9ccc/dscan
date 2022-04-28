@@ -12,8 +12,6 @@ struct EarthquakesApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-//                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
-//                .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
         }
     }
 }

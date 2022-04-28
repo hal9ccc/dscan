@@ -12,6 +12,8 @@ import OSLog
 struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
+    @StateObject var scanData = ScanData()
+    
 
     var body: some View {
 
@@ -20,15 +22,31 @@ struct ContentView: View {
             MediaView()
                 .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
                 .tabItem {
-                    Label("Media", systemImage: "doc.on.doc")
+                    Label("Documents", systemImage: "doc.on.doc")
                 }
 
-            QuakeView()
-                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
-                .tabItem {
-                    Label("Quakes", systemImage: "list.dash")
-                }
+            ScannerView(completion: {
+                scanData in
+                print("got \(scanData?.count ?? 0) scans")
+                
+    //            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
+    //                let newScanData = ScanDataOrig(content: outputText)
+    //                self.texts.append(newScanData)
+    //            }
+//                print (mediaProperties)
+//                self.showScannerSheet = false
+            })
+            .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+            .tabItem {
+                Label("scan", systemImage: "doc.text.viewfinder")
+            }
 
+//            QuakeView()
+//                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+//                .tabItem {
+//                    Label("Quakes", systemImage: "globe")
+//                }
+//
             ScanView()
 //                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
                 .tabItem {
@@ -37,6 +55,7 @@ struct ContentView: View {
 
 
         }
+        .environmentObject(scanData)
 
     }
 }

@@ -35,7 +35,7 @@ struct MediaSort: Hashable, Identifiable {
         ),
         MediaSort(
             id:         2,
-            name:       "by Carrier",
+            name:       "by Carrier, newest first",
             descriptors:[
                 SortDescriptor (\Media.carrier),
                 SortDescriptor (\Media.set, order: .reverse),
@@ -45,7 +45,7 @@ struct MediaSort: Hashable, Identifiable {
         ),
         MediaSort(
             id:         3,
-            name:       "by Carrier, newest first",
+            name:       "by Carrier",
             descriptors:[
                 SortDescriptor (\Media.carrier),
                 SortDescriptor (\Media.set),

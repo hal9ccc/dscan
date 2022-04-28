@@ -11,6 +11,8 @@ import SwiftUI
     
 struct MediaView: View {
     
+    @EnvironmentObject var scanData: ScanData
+    
     var mediaProvider:  MediaProvider  = .shared
 
     @SectionedFetchRequest (
@@ -36,7 +38,7 @@ struct MediaView: View {
     @State private var lastSortChange: Date = Date()
     
     @State private var showScannerSheet = false
-    @State private var texts:[ScanData] = []
+    @State private var texts:[ScanDataOrig] = []
     
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
@@ -48,6 +50,13 @@ struct MediaView: View {
         NavigationView {
             
             ZStack {
+                LinearGradient(
+                    colors: [.orange, .red],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+                
                 List(selection: $mediaSelection) {
                     
                     ForEach(media) { section in
@@ -131,15 +140,17 @@ struct MediaView: View {
     }
 
     
-    private func makeScannerView()-> ScannerView {
+    private func makeScannerView()-> some View {
         ScannerView(completion: {
-            textPerPage in
-            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
-                let newScanData = ScanData(content: outputText)
-                self.texts.append(newScanData)
-            }
+            mediaProperties in
+//            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
+//                let newScanData = ScanDataOrig(content: outputText)
+//                self.texts.append(newScanData)
+//            }
+//            print (mediaProperties)
             self.showScannerSheet = false
         })
+        .environmentObject(scanData)
     }
     
                              
@@ -214,7 +225,7 @@ struct MediaView: View {
             }
         }
 
-        ToolbarItem(placement: .navigationBarTrailing) {
+        ToolbarItem(placement: .navigationBarLeading) {
             EditButton(editMode: $editMode) {
                 mediaSelection.removeAll()
                 editMode = .inactive
@@ -256,13 +267,13 @@ struct MediaView: View {
                 .disabled(isLoading || mediaSelection.isEmpty)
             }
             
-            if editMode != .active {
-                Button(action: {
-                    self.showScannerSheet = true
-                }, label: {
-                    Image(systemName: "doc.text.viewfinder")
-                })
-            }
+//            if editMode != .active {
+//                Button(action: {
+//                    self.showScannerSheet = true
+//                }, label: {
+//                    Image(systemName: "doc.text.viewfinder")
+//                })
+//            }
         }
     }
     #else

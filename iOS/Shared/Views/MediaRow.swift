@@ -37,15 +37,22 @@ struct MediaRow: View {
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
 
-                    if media.person > "" && media.person != " - unbekannt -" {
+                    if media.person > "" {
                         Label("\(media.person)", systemImage: "person.circle")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .padding(.horizontal, 2)
                     }
 
+                    if media.company > "" {
+                        Label("\(media.company)", systemImage: "person.2.crop.square.stack")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.horizontal, 2)
+                    }
 
-                    if media.carrier > "" && media.carrier != " - unbekannt -" {
+
+                    if media.carrier > "" {
                         Label("\(media.carrier)", systemImage: "shippingbox")
                             .font(.caption)
                             .foregroundStyle(.secondary)

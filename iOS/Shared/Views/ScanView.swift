@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ScanView: View {
     @State private var showScannerSheet = true
-    @State private var texts:[ScanData] = []
+    @State private var texts:[ScanDataOrig] = []
     var body: some View {
         NavigationView{
             VStack{
@@ -43,12 +43,8 @@ struct ScanView: View {
         }
     }
     private func makeScannerView()-> ScannerView {
-        ScannerView(completion: {
-            textPerPage in
-            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
-                let newScanData = ScanData(content: outputText)
-                self.texts.append(newScanData)
-            }
+        ScannerView(completion: { scanData in
+            print("got \(scanData?.count ?? 0) scans")
             self.showScannerSheet = false
         })
     }

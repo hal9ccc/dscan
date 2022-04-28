@@ -7,13 +7,16 @@
 //
 
 import SwiftUI
+import UIKit
 import Vision
 import VisionKit
 
 struct ScannerView: UIViewControllerRepresentable {
-    private let completionHandler: ([String]?) -> Void
+    @EnvironmentObject var scanData: ScanData
+
+    private let completionHandler: ([MediaProperties]?) -> Void
      
-    init(completion: @escaping ([String]?) -> Void) {
+    init(completion: @escaping ([MediaProperties]?) -> Void) {
         self.completionHandler = completion
     }
      
@@ -32,58 +35,74 @@ struct ScannerView: UIViewControllerRepresentable {
     }
      
     final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
-        private let completionHandler: ([String]?) -> Void
+        var mediaProvider:  MediaProvider  = .shared
+        
+        var scanData: ScanData = ScanData()
+
+        private let completionHandler: ([MediaProperties]?) -> Void
+        
+//        private var metadata: MMMetadata = MMMetadata()
+//        private var textRecognitionRequest = VNRecognizeTextRequest()
+//        private var barcodeRecognitionRequest = VNDetectBarcodesRequest()
+
          
-        init(completion: @escaping ([String]?) -> Void) {
+        init(completion: @escaping ([MediaProperties]?) -> Void) {
             self.completionHandler = completion
         }
          
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-            print("Document camera view controller did finish with ", scan)
-            let recognizer = TextRecognizer(cameraScan: scan)
-            recognizer.recognizeText(withCompletionHandler: completionHandler)
+            print("got \(scan.pageCount) pages")
+
+            // create new ScanData before populating with info
+            scanData = ScanData()
+            
+            let d = Date()
+            let df = DateFormatter()
+            df.dateFormat = "y-MM-dd HH:mm:ss.SSSS"
+//            let ts = df.string(from: d)
+//            df.dateFormat = "yMMdd_HH:mm:ss.SSSS"
+            
+            for pageNumber in 0 ..< scan.pageCount {
+                let m = MediaProperties (
+                  id:                     "",
+                  set:                    "\(df.string(from: d))",
+                  idx:                    pageNumber,
+                  time:                   d,
+                  title:                  scan.title,
+                  device:                 UIDevice.current.name,
+                  filename:               "\(df.string(from: d))_\(pageNumber + 1)",
+                  code:                   "",
+                  person:                 "",
+                  company:                "",
+                  carrier:                "",
+                  location:               "",
+                  img:                    "",
+                  recognizedCodesJson:    "",
+                  recognizedTextJson:     "",
+                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 1) ?? Data()
+                )
+                
+                scanData.mediaPropertiesList.append(m)
+                print(m)
+                //self.processImage(image: image, filename: filename, title: scan.title, index: pageNumber, timestamp: ts)
+            }
+            
+            //print("Received \(mediaPropertiesList.count) records.")
+
+            // Import the JSON into Core Data.
+            //print("Start importing data to the store...")
+            //await mediaProvider.importMedia(from: mediaPropertiesList)
         }
          
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {
             completionHandler(nil)
         }
-         
+
         func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFailWithError error: Error) {
             print("Document camera view controller did finish with error ", error)
             completionHandler(nil)
         }
+
     }
 }
 
-
-final class TextRecognizer{
-    let cameraScan: VNDocumentCameraScan
-    init(cameraScan:VNDocumentCameraScan) {
-        self.cameraScan = cameraScan
-    }
-    private let queue = DispatchQueue(label: "scan-codes",qos: .default,attributes: [],autoreleaseFrequency: .workItem)
-    func recognizeText(withCompletionHandler completionHandler:@escaping ([String])-> Void) {
-        queue.async {
-            let images = (0..<self.cameraScan.pageCount).compactMap({
-                self.cameraScan.imageOfPage(at: $0).cgImage
-            })
-            let imagesAndRequests = images.map({(image: $0, request:VNRecognizeTextRequest())})
-            
-            let textPerPage = imagesAndRequests.map{image,request->String in
-                let handler = VNImageRequestHandler(cgImage: image, options: [:])
-                do{
-                    try handler.perform([request])
-                    guard let observations = request.results as? [VNRecognizedTextObservation] else{return ""}
-                    return observations.compactMap({$0.topCandidates(1).first?.string}).joined(separator: "\n")
-                }
-                catch{
-                    print(error)
-                    return ""
-                }
-            }
-            DispatchQueue.main.async {
-                completionHandler(textPerPage)
-            }
-        }
-    }
-}

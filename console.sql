@@ -339,12 +339,16 @@ END;
 create or replace view V_MEDIA as
 select M.*,
        sys.dbms_lob.getlength(M."CONTENT") "CONTENT_SIZE",
-       nvl(T.Carrier,       ' - unbekannt -') as Carrier,
-       nvl(T.TrackingNr,    ' - unbekannt -') as TrackingNr,
-       nvl(T.Name,          ' - unbekannt -') as Person,
-       nvl(F.Fulltext,      ' - leer -'     ) as FullText,
-       nvl(C.Codelist,      ' - keine -'    ) as CodeList,
-       nvl(T.TagList,       ''              ) as TagList,
+       nvl(T.Code,          '')   as Code,
+       nvl(T.Carrier,       '')   as Carrier,
+       nvl(T.TrackingNr,    '')   as TrackingNr,
+       nvl(T.Name,          '')   as Name,
+       nvl(T.Person,        '')   as Person,
+       nvl(T.Company,       '')   as Company,
+       nvl(T.Location,      '')   as Location,
+       nvl(F.Fulltext,      '')   as FullText,
+       nvl(C.Codelist,      '')   as CodeList,
+       nvl(T.TagList,       '')   as TagList,
       substr(''    || '<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
       '🗓' || ' ' || to_char(M.TIMESTAMP, 'dd.mm.yyyy hh24:mi:ss') || ' - ' || M.idx || '<br>' ||
       '📷' || ' ' || M.device || '<br>' ||
@@ -377,9 +381,13 @@ as
           IDX,
           CONTENT_SIZE,
           DEVICE,
+          CODE,
           CARRIER,
           TRACKINGNR,
+          NAME,
           PERSON,
+          COMPANY,
+          LOCATION,
           FULLTEXT,
           CODELIST,
           TAGLIST,
@@ -416,10 +424,14 @@ begin
         TIMESTAMP     = Q.TIMESTAMP,
         IDX           = Q.IDX,
         CONTENT_SIZE  = Q.CONTENT_SIZE,
-        DEVICE        = Q.DEVICE,
+        CODE          = Q.CODE,
         CARRIER       = Q.CARRIER,
         TRACKINGNR    = Q.TRACKINGNR,
+        NAME          = Q.NAME,
         PERSON        = Q.PERSON,
+        COMPANY       = Q.COMPANY,
+        LOCATION      = Q.LOCATION,
+        DEVICE        = Q.DEVICE,
         FULLTEXT      = Q.FULLTEXT,
         CODELIST      = Q.CODELIST,
         TAGLIST       = Q.TAGLIST,
@@ -429,32 +441,39 @@ begin
         SET_NAME      = Q.SET_NAME,
         IMG           = Q.IMG
     WHEN NOT MATCHED THEN INSERT VALUES (
-         Q.ID,
-         Q.CONTENT_TYPE,
-         Q.FILE_NAME,
-         Q.TYPE,
-         Q.TITLE,
-         Q.TIMESTAMP,
-         Q.IDX,
-         Q.CONTENT_SIZE,
-         Q.DEVICE,
-         Q.CARRIER,
-         Q.TRACKINGNR,
-         Q.PERSON,
-         Q.FULLTEXT,
-         Q.CODELIST,
-         Q.TAGLIST,
-         Q.HTML_DETAILS,
-         Q.MONTH,
-         Q.DAY,
-         Q.SET_NAME,
-         Q.IMG
+        Q.ID,
+        Q.CONTENT_TYPE,
+        Q.FILE_NAME,
+        Q.TYPE,
+        Q.TITLE,
+        Q.TIMESTAMP,
+        Q.IDX,
+        Q.CONTENT_SIZE,
+        Q.DEVICE,
+        Q.CODE,
+        Q.CARRIER,
+        Q.TRACKINGNR,
+        Q.NAME,
+        Q.PERSON,
+        Q.COMPANY,
+        Q.LOCATION,
+        Q.FULLTEXT,
+        Q.CODELIST,
+        Q.TAGLIST,
+        Q.HTML_DETAILS,
+        Q.MONTH,
+        Q.DAY,
+        Q.SET_NAME,
+        Q.IMG
     )
     ;
 end;
 
 begin
-  update  set  =  where;ate_media_details; end;
+  update_media_details;
+end;
+
+select * from v_media;
 
 select * from media_details;
 select REGEXP_REPLACE('sfkjdsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;
@@ -702,14 +721,14 @@ as
         '',       -- matchcode2
         '',       -- matchcode3
         MAT.tag_name,
-      --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MAT.re_result_substr) as tag_value,
-        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,
+        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), MAT.re_result_substr) as tag_value,
+      --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,
         MAT.re_pattern1,
         MAT.re_pattern2,
         MAT.re_pattern3
  from   Media_Autotagging MAT
  join   V_MEDIA_RECOGNIZEDTEXT MRT
-   on   REGEXP_LIKE (MRT.Text, MAT.re_pattern1)
+   on   REGEXP_LIKE (MRT.Text, MAT.re_pattern1, 'i')
  where  MAT.type = 'text'
 UNION ALL
  select 'dict',
@@ -718,7 +737,7 @@ UNION ALL
         MRT.text, -- matchcode1
         '',       -- matchcode2
         '',       -- matchcode3
-        'Name',   -- tag_name,
+        'Person', -- tag_name,
         NAD.name, -- tag_value
         NAD.re_pattern1,
         '', --re_pattern2
@@ -761,35 +780,70 @@ order by 2 desc;
 delete media;
 
 
+create or replace view V_DistinctTags
+as
+select   DISTINCT
+         M.ID,
+         M.file_name,
+         T.Tag_name,
+         ltrim(rtrim(T.Tag_value)) as Tag_Value,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Type',       ltrim(rtrim(T.Tag_value)), '')))) as Type,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Code',       ltrim(rtrim(T.Tag_value)), '')))) as Code,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Name',       ltrim(rtrim(T.Tag_value)), '')))) as Name,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Person',     ltrim(rtrim(T.Tag_value)), '')))) as Person,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Carrier',    ltrim(rtrim(T.Tag_value)), '')))) as Carrier,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Company',    ltrim(rtrim(T.Tag_value)), '')))) as Company,
+         rtrim(ltrim(Max(decode(T.tag_name, 'Location',   ltrim(rtrim(T.Tag_value)), '')))) as Location,
+         rtrim(ltrim(Max(decode(T.tag_name, 'TrackingNr', ltrim(rtrim(T.Tag_value)), '')))) as TrackingNr
+from     MEDIA M
+join     V_MEDIA_AUTOTAGGING T on T.FILE_NAME = M.FILE_NAME
+where not exists (
+  select 1
+  from   MEDIA_AUTOTAGGING MAT
+  where  MAT.Tag_Name = T.Tag_Name
+    and  MAT.type = 'ignore'
+    and  REGEXP_LIKE (T.Tag_Value, MAT.re_pattern1, 'i')
+ )
+group by M.ID,
+         M.file_name,
+         T.Tag_name,
+         T.Tag_value
+order by M.ID,
+         M.file_name,
+         T.Tag_name
+;
 
 create or replace view V_MEDIA_TAGS
 as
-with V_DistinctTags as (
-  select  DISTINCT
-          M.ID,
-          M.file_name,
-          LISTAGG(chr(10) || decode(T.type, 'code', '🔒', 'text', '🏷', 'dict', '👤', '📎') || ' ' || T.tag_name || ' ➜ <b>' || T.tag_value || '</b>') as TagList,
-          rtrim(ltrim(Max(decode(T.tag_name, 'Name',       T.tag_value, '')))) as Name,
-          rtrim(ltrim(Max(decode(T.tag_name, 'Carrier',    T.tag_value, '')))) as Carrier,
-          rtrim(ltrim(Max(decode(T.tag_name, 'TrackingNr', T.tag_value, '')))) as TrackingNr
-  from    MEDIA M
-  join    V_MEDIA_AUTOTAGGING T on T.FILE_NAME = M.FILE_NAME
-  group by M.ID,
-           M.file_name
-)
 select    Q.ID,
           Q.file_name,
-          substr(TagList, 2)         as TagList,
-          LISTAGG(Q.Name,       '⸱')  as Name,
+          Substr(LISTAGG(chr(10) || decode(Q.type, 'code', '🔒', 'text', '🏷', 'dict', '👤', '📎') || ' ' || Q.tag_name || ' ➜ <b>' || Q.tag_value || '</b>'),2) as TagList,
+          LISTAGG(Q.Type,       '⸱')  as Type,
+          LISTAGG(Q.Code,       '⸱')  as Code,
           LISTAGG(Q.Carrier,    '⸱')  as Carrier,
+          LISTAGG(Q.Name,       '⸱')  as Name,
+          LISTAGG(Q.Person,     '⸱')  as Person,
+          LISTAGG(Q.Company,    '⸱')  as Company,
+          LISTAGG(Q.Location,   '⸱')  as Location,
           LISTAGG(Q.TrackingNr, '⸱')  as TrackingNr
 from      V_DistinctTags Q
 group by  Q.ID,
-          Q.file_name,
-          Q.TagList
+          Q.file_name
 ;
 
-select * from V_MEDIA_TAGS;
+select * from V_MEDIA_AUTOTAGGING where file_name = '20210312_09:57:30.3710_1.json';
+select * from V_MEDIA_AUTOTAGGING where file_name = '20210312_10:04:19.2890_1.json';
+select * from V_DistinctTags where file_name = '20210312_10:04:19.2890_1.json';
+select * from V_DistinctTags where file_name = '20210312_09:57:30.3710_1.json';
+select * from V_DistinctTags where file_name = '20210312_10:04:19.2890_1.json';
+select * from V_DistinctTags where file_name = '20210312_10:06:11.7780_1.json';
+
+select * from V_MEDIA_TAGS where file_name in ('20210312_10:04:19.2890_1.json', '20210312_09:57:30.3710_1.json');
+
+select * from V_Media where file_name = '20210312_10:06:11.7780_1.jpg';
+select * from Media_DETAILS where file_name = '20210312_10:06:11.7780_1.jpg';
+
+;
 
 
 select 24 - (round (y * 24)) as line,

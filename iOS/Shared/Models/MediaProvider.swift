@@ -138,7 +138,7 @@ class MediaProvider {
     }
 
     /// Uses `NSBatchInsertRequest` (BIR) to import a JSON dictionary into the Core Data store on a private queue.
-    private func importMedia(from propertiesList: [MediaProperties]) async throws {
+    func importMedia(from propertiesList: [MediaProperties]) async throws {
         guard !propertiesList.isEmpty else { return }
 
         let taskContext = newTaskContext()
@@ -176,7 +176,6 @@ class MediaProvider {
             guard index < total else { return true }
             dictionary.addEntries(from: propertyList[index].dictionaryValue)
             index += 1
-            //print(propertyList[index])
             return false
         })
         return batchInsertRequest
