@@ -42,8 +42,8 @@ struct MediaList: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
-    @AppStorage("lastSelectedSection")
-    private var lastSelectedSection = ""
+//    @AppStorage("lastSelectedSection")
+//    private var lastSelectedSection = ""
 
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
@@ -75,7 +75,7 @@ struct MediaList: View {
                 }
             }
             .listStyle(PlainListStyle())
-//            .searchable(text: mediaSearchQuery)
+            .searchable(text: mediaSearchQuery)
             .navigationTitle (title)
             .toolbar (content: toolbarContent)
 
@@ -96,7 +96,7 @@ struct MediaList: View {
             request.sectionIdentifier = selectedSort.section
             request.sortDescriptors = selectedSort.descriptors
             lastSortChange = Date()
-            lastSelectedSection = section
+//            lastSelectedSection = section
             print("MediaList \(selectedSort.name) -> \(section) appeared")
         }
             
