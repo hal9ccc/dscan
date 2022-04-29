@@ -230,16 +230,50 @@ struct MediaList: View {
         }
 
 
-        ToolbarItem(placement: .destructiveAction) {
-            DeleteButton {
-                Task {
-                    await deleteMedia(for: mediaSelection)
-                    selectMode = .inactive
-                }
+        ToolbarItemGroup(placement: .bottomBar) {
+            if (isLoading) {
+                ProgressView()
             }
-            .disabled(isLoading || mediaSelection.isEmpty)
+            else {
+                RefreshButton {
+                    Task {
+                        await fetchMedia()
+                    }
+                }
+                .disabled(isLoading || editMode == .active)
+            }
+
+            Spacer()
+
+            ToolbarStatus(
+                isLoading: isLoading,
+                lastUpdated: lastUpdated,
+                sectionCount: media.count,
+                itemCount: media.joined().count
+            )
+
+            Spacer()
+
+            if editMode == .active {
+                DeleteButton {
+                    Task {
+                        await deleteMedia(for: mediaSelection)
+                        selectMode = .inactive
+                    }
+                }
+                .disabled(isLoading || mediaSelection.isEmpty)
+            }
+            
+//            if editMode != .active {
+//                Button(action: {
+//                    self.showScannerSheet = true
+//                }, label: {
+//                    Image(systemName: "doc.text.viewfinder")
+//                })
+//            }
         }
 
+        
     }
     #else
     @ToolbarContentBuilder
