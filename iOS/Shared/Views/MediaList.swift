@@ -12,8 +12,8 @@ import SwiftUI
 struct MediaList: View {
     @EnvironmentObject var scanData: ScanData
 
-    var selectedSort:       MediaSort       = MediaSort.default
-    var section:            String          = ""
+    var selectedSort:       MediaSort
+    var section:            String
 
     var mediaProvider:      MediaProvider   = .shared
     
@@ -51,7 +51,11 @@ struct MediaList: View {
 
     var body: some View {
 
-        ZStack {
+        print("rendering section \(section)")
+        print(selectedSort.section)
+        print(selectedSort.descriptors)
+        
+        return ZStack {
            
             List(selection: $mediaSelection) {
                 
@@ -71,7 +75,7 @@ struct MediaList: View {
                 }
             }
             .listStyle(PlainListStyle())
-            .searchable(text: mediaSearchQuery)
+//            .searchable(text: mediaSearchQuery)
             .navigationTitle (title)
             .toolbar (content: toolbarContent)
 
@@ -101,18 +105,20 @@ struct MediaList: View {
     
     var title: String {
         #if os(iOS)
+        print ("section is now \(section)")
         if selectMode.isActive || mediaSelection.isEmpty {
-            return section
+            return "\(section != "␀" ? section : " unbekannt ")"
         } else {
             return "\(mediaSelection.count) Selected"
         }
         #else
-        return section
+        return "\(section != "␀" ? section : " unbekannt ")"
         #endif
     }
 
     var mediaSearchQuery: Binding<String> {
-      Binding {
+        
+      let f = Binding {
         mediaSearchTerm
       } set: { newValue in
         mediaSearchTerm = newValue
@@ -132,6 +138,10 @@ struct MediaList: View {
                 NSPredicate (format: "location contains[cd] %@", newValue)
         ])
       }
+        
+        print("binding", f)
+       
+        return f
     }
 
     

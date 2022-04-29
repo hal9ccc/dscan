@@ -721,7 +721,7 @@ as
         '',       -- matchcode2
         '',       -- matchcode3
         MAT.tag_name,
-        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), MAT.re_result_substr) as tag_value,
+        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), '') as tag_value,
       --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,
         MAT.re_pattern1,
         MAT.re_pattern2,
@@ -797,7 +797,8 @@ select   DISTINCT
          rtrim(ltrim(Max(decode(T.tag_name, 'TrackingNr', ltrim(rtrim(T.Tag_value)), '')))) as TrackingNr
 from     MEDIA M
 join     V_MEDIA_AUTOTAGGING T on T.FILE_NAME = M.FILE_NAME
-where not exists (
+where    ltrim(rtrim(T.Tag_value)) is not null
+  and not exists (
   select 1
   from   MEDIA_AUTOTAGGING MAT
   where  MAT.Tag_Name = T.Tag_Name

@@ -62,7 +62,7 @@ struct MediaSectionList: View {
                     ForEach(media) { section in
                         
                         NavigationLink(destination: MediaList(selectedSort: selectedMediaSort, section: section.id)) {
-                            SectionHeader(name: "\(section.id)", pill:"\(section.count)")
+                            SectionHeader(name: "\(section.id != "␀" ? section.id : " unbekannt ")", pill:"\(section.count)")
                         }
                     }
                 } // List

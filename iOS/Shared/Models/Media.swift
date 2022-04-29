@@ -292,6 +292,7 @@ struct MediaProperties: Decodable {
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
 
+        let code                = raw_code
         let person              = raw_person
         let company             = raw_company
         let carrier             = raw_carrier
@@ -306,7 +307,6 @@ struct MediaProperties: Decodable {
             let id              = raw_id,
             let set             = raw_set,
             let idx             = raw_idx,
-            let code            = raw_code,
             let time            = raw_time,
             let title           = raw_title,
             let device          = raw_device,
@@ -334,11 +334,11 @@ struct MediaProperties: Decodable {
         self.id                     = id.formatted()
         self.set                    = set
         self.idx                    = idx
-        self.code                   = code
         self.time                   = time
         self.title                  = title
         self.device                 = device
         self.filename               = filename
+        self.code                   = code     ?? "␀"
         self.person                 = person   ?? "␀"
         self.company                = company  ?? "␀"
         self.carrier                = carrier  ?? "␀"
