@@ -13,7 +13,7 @@ class MediaProvider {
     // MARK: USGS Data
 
     /// Geological data provided by the U.S. Geological Survey (USGS). See ACKNOWLEDGMENTS.txt for additional details.
-    let url = URL(string: "http://mbp-mschulze.local/ords/dscan/media/list")!
+    let url = URL(string: "http://mbp-mschulze.di-netz.de/ords/dscan/media/list")!
 
     // MARK: Logging
 
