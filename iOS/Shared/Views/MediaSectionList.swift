@@ -9,13 +9,11 @@
 import SwiftUI
 
     
-struct MediaView: View {
+struct MediaSectionList: View {
     
     @EnvironmentObject var scanData: ScanData
     
     var mediaProvider:      MediaProvider   = .shared
-    var selectedSection:    String          = ""
-    var expandItems:        Bool            = true
     
     @SectionedFetchRequest (
         sectionIdentifier: MediaSort.default.section,
@@ -34,6 +32,7 @@ struct MediaView: View {
     @State private var error: DscanError?
     @State private var hasError = false
     
+
     @State private var selectedMediaSort: MediaSort = MediaSort.default
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
@@ -42,45 +41,35 @@ struct MediaView: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
+    @AppStorage("lastSelectedSort")
+    private var lastSelectedSort = MediaSort.default.id
+
+    @AppStorage("lastSelectedSection")
+    private var lastSelectedSection = ""
+
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
-
-
+    
+    
     var body: some View {
 
         NavigationView {
             
             ZStack {
-                LinearGradient(
-                    colors: [.orange, .red],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
                 
-                List(selection: $mediaSelection) {
+                List() {
                     
                     ForEach(media) { section in
                         
-                        Section (header:
+                        NavigationLink(destination: MediaList(selectedSort: selectedMediaSort, section: section.id)) {
                             SectionHeader(name: "\(section.id)", pill:"\(section.count)")
-                        ) {
-                            ForEach(section, id: \.id) { media in
-                                NavigationLink(destination: MediaDetail(media: media)) {
-                                    MediaRow(media: media)
-                                }
-                            }
-                            .onDelete { indexSet in
-                                withAnimation { deleteMediaByOffsets (from: section, at: indexSet) }
-                            }
                         }
-                        // .headerProminence(.increased)
                     }
                 } // List
                 .listStyle(SidebarListStyle())
                 .searchable(text: mediaSearchQuery)
-                .navigationTitle(title)
-                .toolbar(content: toolbarContent)
+                .navigationTitle (title)
+                .toolbar (content: toolbarContent)
 
         #if os(iOS)
                 .environment(\.editMode, $editMode)
@@ -98,20 +87,19 @@ struct MediaView: View {
                 self.makeScannerView()
             })
                 
-            EmptyView()
+            MediaList(selectedSort: selectedMediaSort, section: lastSelectedSection)
         }
+        .background (
+            LinearGradient(gradient: Gradient(colors: [.white, .black]), startPoint: .top, endPoint: .bottom)
+        )
+        .onAppear {
+            selectedMediaSort = MediaSort.sorts[lastSelectedSort]
+        }
+
     }
     
     var title: String {
-        #if os(iOS)
-        if selectMode.isActive || mediaSelection.isEmpty {
-            return "Documents"
-        } else {
-            return "\(mediaSelection.count) Selected"
-        }
-        #else
-        return "Documents"
-        #endif
+        return selectedMediaSort.name
     }
 
     var mediaSearchQuery: Binding<String> {
@@ -207,27 +195,9 @@ struct MediaView: View {
                 let request = media
                 request.sectionIdentifier = selectedMediaSort.section
                 request.sortDescriptors = selectedMediaSort.descriptors
+                lastSelectedSort = selectedMediaSort.id
                 lastSortChange = Date()
-            }
-        }
-
-        ToolbarItem(placement: .navigationBarLeading) {
-            if editMode == .active {
-                SelectButton(mode: $selectMode) {
-                    if selectMode.isActive {
-                        mediaSelection = Set(media.joined().map { $0.id })
-                    } else {
-                        mediaSelection = []
-                    }
-                }
-            }
-        }
-
-        ToolbarItem(placement: .navigationBarLeading) {
-            EditButton(editMode: $editMode) {
-                mediaSelection.removeAll()
-                editMode = .inactive
-                selectMode = .inactive
+                print("sort \(selectedMediaSort.name) was selected")
             }
         }
 
@@ -254,24 +224,6 @@ struct MediaView: View {
             )
 
             Spacer()
-
-            if editMode == .active {
-                DeleteButton {
-                    Task {
-                        await deleteMedia(for: mediaSelection)
-                        selectMode = .inactive
-                    }
-                }
-                .disabled(isLoading || mediaSelection.isEmpty)
-            }
-            
-//            if editMode != .active {
-//                Button(action: {
-//                    self.showScannerSheet = true
-//                }, label: {
-//                    Image(systemName: "doc.text.viewfinder")
-//                })
-//            }
         }
     }
     #else
@@ -316,6 +268,8 @@ struct MediaView: View {
                     }
                 }
                 .disabled(isLoading || selection.isEmpty)
+                
+                Spacer()
             }
         }
     }

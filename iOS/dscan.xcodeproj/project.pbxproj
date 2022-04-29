@@ -114,6 +114,10 @@
 		4E86FFE128169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
 		4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
 		4E86FFE62817527E00F126D7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E86FFE52817527E00F126D7 /* NukeUI */; };
+		4EA9F34E281B303900AED467 /* MediaSectionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F34D281B303900AED467 /* MediaSectionList.swift */; };
+		4EA9F34F281B303900AED467 /* MediaSectionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F34D281B303900AED467 /* MediaSectionList.swift */; };
+		4EA9F351281B31A600AED467 /* MediaList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F350281B31A600AED467 /* MediaList.swift */; };
+		4EA9F352281B31A600AED467 /* MediaList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F350281B31A600AED467 /* MediaList.swift */; };
 		4ED738E4281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
 		4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
 		AD2FC4C82654EF0800E135D2 /* EarthquakesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD43F1E526158A640068AABC /* EarthquakesApp.swift */; };
@@ -201,6 +205,8 @@
 		4E86FFFD281806E000F126D7 /* dhl.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dhl.jpg; sourceTree = "<group>"; };
 		4E86FFFE281806E000F126D7 /* srp.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = srp.gif; sourceTree = "<group>"; };
 		4E86FFFF281806E000F126D7 /* logwin.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = logwin.gif; sourceTree = "<group>"; };
+		4EA9F34D281B303900AED467 /* MediaSectionList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaSectionList.swift; sourceTree = "<group>"; };
+		4EA9F350281B31A600AED467 /* MediaList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaList.swift; sourceTree = "<group>"; };
 		4ED738E3281604E300C310B3 /* Media.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Media.xcdatamodel; sourceTree = "<group>"; };
 		54CF5BED3CD9DE525986B01C /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		6EC8C05DC1E92B40CD3EBA87 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
@@ -418,6 +424,8 @@
 				ADDDB1822625249600241A73 /* QuakeDetail.swift */,
 				ADDDB17E2625235600241A73 /* QuakeMagnitude.swift */,
 				4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */,
+				4EA9F34D281B303900AED467 /* MediaSectionList.swift */,
+				4EA9F350281B31A600AED467 /* MediaList.swift */,
 				4E24DA252815EABD00A39C7D /* MediaRow.swift */,
 				4E86FFD42816811000F126D7 /* MediaView.swift */,
 				4E24DA312815F16800A39C7D /* MediaDetail.swift */,
@@ -619,6 +627,7 @@
 				AD2FC4CC2654EF7C00E135D2 /* DscanError.swift in Sources */,
 				AD57B0F726561347005183D0 /* RefreshButton.swift in Sources */,
 				4E24DA0F2814AAB300A39C7D /* Media.swift in Sources */,
+				4EA9F352281B31A600AED467 /* MediaList.swift in Sources */,
 				4E860054281820D200F126D7 /* ScanView.swift in Sources */,
 				4E24DA242815D57000A39C7D /* MediaSort.swift in Sources */,
 				4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */,
@@ -626,6 +635,7 @@
 				AD57B0F326561178005183D0 /* ToolbarStatus.swift in Sources */,
 				4E86FFDF2816926900F126D7 /* MediaSortSelection.swift in Sources */,
 				4E24DA302815EF5D00A39C7D /* View+Extensions.swift in Sources */,
+				4EA9F34F281B303900AED467 /* MediaSectionList.swift in Sources */,
 				4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */,
 				4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */,
 				4E8600572818213200F126D7 /* ScanData.swift in Sources */,
@@ -672,7 +682,9 @@
 				4E24DA20281522BE00A39C7D /* SectionHeader.swift in Sources */,
 				4E24DA162814BB4600A39C7D /* Earthquakes.xcdatamodeld in Sources */,
 				4ED738E4281604E300C310B3 /* Media.xcdatamodeld in Sources */,
+				4EA9F34E281B303900AED467 /* MediaSectionList.swift in Sources */,
 				AD57B10226561FE1005183D0 /* ContentView.swift in Sources */,
+				4EA9F351281B31A600AED467 /* MediaList.swift in Sources */,
 				4E24DA0E2814AAB300A39C7D /* Media.swift in Sources */,
 				4E86FFE128169EBF00F126D7 /* QuakeSortSelection.swift in Sources */,
 				4E24DA1D2814BFFA00A39C7D /* MediaProvider.swift in Sources */,

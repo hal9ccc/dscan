@@ -339,13 +339,13 @@ struct MediaProperties: Decodable {
         self.title                  = title
         self.device                 = device
         self.filename               = filename
-        self.person                 = person   ?? ""
-        self.company                = company  ?? ""
-        self.carrier                = carrier  ?? ""
-        self.location               = location ?? ""
-        self.img                    = img      ?? ""
-        self.recognizedCodesJson    = recoginzedCodesJson ?? ""
-        self.recognizedTextJson     = recoginzedTextJson  ?? ""
+        self.person                 = person   ?? "␀"
+        self.company                = company  ?? "␀"
+        self.carrier                = carrier  ?? "␀"
+        self.location               = location ?? "␀"
+        self.img                    = img      ?? "␀"
+        self.recognizedCodesJson    = recoginzedCodesJson ?? "␀"
+        self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
         self.imageData              = imageData ?? Data()
     }
     

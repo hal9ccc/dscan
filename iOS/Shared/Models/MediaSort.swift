@@ -17,25 +17,27 @@ struct MediaSort: Hashable, Identifiable {
     static let sorts: [MediaSort] = [
       MediaSort (
             id:         0,
-            name:       "Time - descending",
+            name:       "by Person",
             descriptors:[
-                SortDescriptor (\Media.set, order: .reverse),
-                SortDescriptor (\Media.idx)
-            ],
-            section:    \Media.set
-        ),
-        MediaSort (
-            id:          1,
-            name:       "Time - ascending",
-            descriptors:[
+                SortDescriptor (\Media.person),
                 SortDescriptor (\Media.set),
                 SortDescriptor (\Media.idx)
             ],
-            section:    \Media.set
+            section:    \Media.person
+        ),
+        MediaSort (
+            id:         1,
+            name:       "by Company",
+            descriptors:[
+                SortDescriptor (\Media.company),
+                SortDescriptor (\Media.set),
+                SortDescriptor (\Media.idx)
+            ],
+            section:    \Media.company
         ),
         MediaSort(
             id:         2,
-            name:       "by Carrier, newest first",
+            name:       "by Carrier",
             descriptors:[
                 SortDescriptor (\Media.carrier),
                 SortDescriptor (\Media.set, order: .reverse),
@@ -43,15 +45,25 @@ struct MediaSort: Hashable, Identifiable {
             ],
             section:    \Media.carrier
         ),
-        MediaSort(
+        MediaSort (
             id:         3,
-            name:       "by Carrier",
+            name:       "by Location",
             descriptors:[
-                SortDescriptor (\Media.carrier),
+                SortDescriptor (\Media.location),
+                SortDescriptor (\Media.set),
+                SortDescriptor (\Media.idx)
+            ],
+            section:    \Media.location
+        ),
+        MediaSort(
+            id:         4,
+            name:       "by Device",
+            descriptors:[
+                SortDescriptor (\Media.device),
                 SortDescriptor (\Media.set),
                 SortDescriptor (\Media.idx),
             ],
-            section:    \Media.carrier
+            section:    \Media.device
         )
     ]
 

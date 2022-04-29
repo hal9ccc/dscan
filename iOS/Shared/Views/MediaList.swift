@@ -9,13 +9,13 @@
 import SwiftUI
 
     
-struct MediaView: View {
-    
+struct MediaList: View {
     @EnvironmentObject var scanData: ScanData
-    
+
+    var selectedSort:       MediaSort       = MediaSort.default
+    var section:            String          = ""
+
     var mediaProvider:      MediaProvider   = .shared
-    var selectedSection:    String          = ""
-    var expandItems:        Bool            = true
     
     @SectionedFetchRequest (
         sectionIdentifier: MediaSort.default.section,
@@ -34,7 +34,7 @@ struct MediaView: View {
     @State private var error: DscanError?
     @State private var hasError = false
     
-    @State private var selectedMediaSort: MediaSort = MediaSort.default
+//    @State private var selectedMediaSort: MediaSort = MediaSort.default
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
@@ -42,75 +42,72 @@ struct MediaView: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
+    @AppStorage("lastSelectedSection")
+    private var lastSelectedSection = ""
+
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
 
     var body: some View {
 
-        NavigationView {
-            
-            ZStack {
-                LinearGradient(
-                    colors: [.orange, .red],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .ignoresSafeArea()
+        ZStack {
+           
+            List(selection: $mediaSelection) {
                 
-                List(selection: $mediaSelection) {
+                ForEach(media) { sect in
                     
-                    ForEach(media) { section in
-                        
-                        Section (header:
-                            SectionHeader(name: "\(section.id)", pill:"\(section.count)")
-                        ) {
-                            ForEach(section, id: \.id) { media in
-                                NavigationLink(destination: MediaDetail(media: media)) {
-                                    MediaRow(media: media)
-                                }
-                            }
-                            .onDelete { indexSet in
-                                withAnimation { deleteMediaByOffsets (from: section, at: indexSet) }
+                    if sect.id == section {
+                   
+                        ForEach(sect, id: \.id) { media in
+                            NavigationLink(destination: MediaDetail(media: media)) {
+                                MediaRow(media: media)
                             }
                         }
-                        // .headerProminence(.increased)
+                        .onDelete { indexSet in
+                            withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
+                        }
                     }
-                } // List
-                .listStyle(SidebarListStyle())
-                .searchable(text: mediaSearchQuery)
-                .navigationTitle(title)
-                .toolbar(content: toolbarContent)
-
-        #if os(iOS)
-                .environment(\.editMode, $editMode)
-                .refreshable { await fetchMedia() }
-        #else
-                .frame(minWidth: 320)
-        #endif
-
-                // so that the view refreshes when the sort is changed
-                Text("\(lastSortChange)")
-                    .hidden()
-
+                }
             }
-            .sheet(isPresented: $showScannerSheet, content: {
-                self.makeScannerView()
-            })
-                
-            EmptyView()
+            .listStyle(PlainListStyle())
+            .searchable(text: mediaSearchQuery)
+            .navigationTitle (title)
+            .toolbar (content: toolbarContent)
+
+    #if os(iOS)
+            .environment(\.editMode, $editMode)
+            .refreshable { await fetchMedia() }
+    #else
+            .frame(minWidth: 320)
+    #endif
+
+            // so that the view refreshes when the sort is changed
+            Text("\(lastSortChange)")
+                .hidden()
+
         }
+        .onAppear {
+            let request = media
+            request.sectionIdentifier = selectedSort.section
+            request.sortDescriptors = selectedSort.descriptors
+            lastSortChange = Date()
+            lastSelectedSection = section
+            print("MediaList \(selectedSort.name) -> \(section) appeared")
+        }
+            
     }
+
     
     var title: String {
         #if os(iOS)
         if selectMode.isActive || mediaSelection.isEmpty {
-            return "Documents"
+            return section
         } else {
             return "\(mediaSelection.count) Selected"
         }
         #else
-        return "Documents"
+        return section
         #endif
     }
 
@@ -199,23 +196,24 @@ struct MediaView: View {
     #if os(iOS)
     @ToolbarContentBuilder
     private func toolbarContent_iOS() -> some ToolbarContent {
+//        ToolbarItem(placement: .primaryAction) {
+//            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSort.sorts)
+//            onChange(of: selectedMediaSort) { _ in
+//                // that let is there for a reason!
+//                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
+//                let request = media
+//                request.sectionIdentifier = selectedMediaSort.section
+//                request.sortDescriptors = selectedMediaSort.descriptors
+//                lastSortChange = Date()
+//            }
+//        }
+//
         ToolbarItem(placement: .primaryAction) {
-            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSort.sorts)
-            onChange(of: selectedMediaSort) { _ in
-                // that let is there for a reason!
-                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
-                let request = media
-                request.sectionIdentifier = selectedMediaSort.section
-                request.sortDescriptors = selectedMediaSort.descriptors
-                lastSortChange = Date()
-            }
-        }
-
-        ToolbarItem(placement: .navigationBarLeading) {
             if editMode == .active {
                 SelectButton(mode: $selectMode) {
                     if selectMode.isActive {
                         mediaSelection = Set(media.joined().map { $0.id })
+//                        mediaSelection = Set(media.first(where: section))
                     } else {
                         mediaSelection = []
                     }
@@ -223,7 +221,7 @@ struct MediaView: View {
             }
         }
 
-        ToolbarItem(placement: .navigationBarLeading) {
+        ToolbarItem(placement: .primaryAction) {
             EditButton(editMode: $editMode) {
                 mediaSelection.removeAll()
                 editMode = .inactive
@@ -231,48 +229,17 @@ struct MediaView: View {
             }
         }
 
-        ToolbarItemGroup(placement: .bottomBar) {
-            if (isLoading) {
-                ProgressView()
-            }
-            else {
-                RefreshButton {
-                    Task {
-                        await fetchMedia()
-                    }
+
+        ToolbarItem(placement: .destructiveAction) {
+            DeleteButton {
+                Task {
+                    await deleteMedia(for: mediaSelection)
+                    selectMode = .inactive
                 }
-                .disabled(isLoading || editMode == .active)
             }
-
-            Spacer()
-
-            ToolbarStatus(
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                sectionCount: media.count,
-                itemCount: media.joined().count
-            )
-
-            Spacer()
-
-            if editMode == .active {
-                DeleteButton {
-                    Task {
-                        await deleteMedia(for: mediaSelection)
-                        selectMode = .inactive
-                    }
-                }
-                .disabled(isLoading || mediaSelection.isEmpty)
-            }
-            
-//            if editMode != .active {
-//                Button(action: {
-//                    self.showScannerSheet = true
-//                }, label: {
-//                    Image(systemName: "doc.text.viewfinder")
-//                })
-//            }
+            .disabled(isLoading || mediaSelection.isEmpty)
         }
+
     }
     #else
     @ToolbarContentBuilder

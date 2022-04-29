@@ -12,63 +12,57 @@ struct MediaRow: View {
     var media: Media
     
     var body: some View {
-        VStack  () {
-            if media.code > "" && media.code != " - unbekannt -" {
-                Label("\(media.code)", systemImage: "qrcode")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .font(.subheadline)
-//                    .padding(2)
-//                    .background(.thinMaterial)
-                    .foregroundStyle(.primary)
+        HStack (alignment: .top) {
+            MediaThumbnail(media: media)
+            
+            VStack (alignment: .leading) {
+                if media.code > "" && media.code != " - unbekannt -" {
+                    Label("\(media.code)", systemImage: "qrcode")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
 
-//                Divider()
-//                    .frame(height: 1)
-//                    .padding(0)
-//                    .padding(.horizontal, 30)
-//                    .background(Color.red)
-            }
-                
-            HStack (alignment: .top) {
-                MediaThumbnail(media: media)
-                
-                VStack (alignment: .leading) {
-                    Label("\(media.time.formatted())", systemImage: "clock")
+                }
+
+                Spacer()
+
+                Label("\(media.time.formatted())", systemImage: "clock")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 2)
+
+                Spacer()
+
+                if media.person > "" && media.person != "␀"{
+                    Label("\(media.person)", systemImage: "person.circle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
-
-                    if media.person > "" {
-                        Label("\(media.person)", systemImage: "person.circle")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 2)
-                    }
-
-                    if media.company > "" {
-                        Label("\(media.company)", systemImage: "person.2.crop.square.stack")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 2)
-                    }
-
-
-                    if media.carrier > "" {
-                        Label("\(media.carrier)", systemImage: "shippingbox")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal, 2)
-                    }
-                        
-
                 }
-                .frame(maxWidth: .infinity, alignment: .topLeading)
-            }
-            .frame(maxWidth: .infinity)
-            .padding (.horizontal, 0)
 
+                if media.company > "" && media.company != "␀" {
+                    Label("\(media.company)", systemImage: "person.2.crop.square.stack")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 2)
+                }
+
+
+                if media.carrier > "" && media.carrier != "␀" {
+                    Label("\(media.carrier)", systemImage: "shippingbox")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 2)
+                }
+
+                Spacer()
+                Spacer()
+
+            }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
         }
-        .frame(height: 150)
-        .padding(0)
+        .frame(maxWidth: .infinity)
+        .padding (.horizontal, 0)
 
     }
 }

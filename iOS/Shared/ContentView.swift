@@ -19,7 +19,7 @@ struct ContentView: View {
 
         TabView {
 
-            MediaView()
+            MediaSectionList()
                 .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
                 .tabItem {
                     Label("Documents", systemImage: "doc.on.doc")
