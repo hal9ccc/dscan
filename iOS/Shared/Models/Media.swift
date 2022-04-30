@@ -27,6 +27,7 @@ class Media: NSManagedObject {
     @NSManaged var carrier:         String
     @NSManaged var location:        String
     @NSManaged var img:             String
+    @NSManaged var imageData:       Data?
 
     
     /// Updates a Media instance with the values from a MediaProperties.
@@ -46,8 +47,9 @@ class Media: NSManagedObject {
             let new_company     = dictionary["company"]    as? String,
             let new_carrier     = dictionary["carrier"]    as? String,
             let new_location    = dictionary["location"]   as? String,
-            let new_img         = dictionary["img"]        as? String
-
+            let new_img         = dictionary["img"]        as? String,
+            let new_imageData   = dictionary["imgageData"] as? Data
+                
         else {
             throw DscanError.missingData
         }
@@ -66,8 +68,9 @@ class Media: NSManagedObject {
         company        = new_company
         location       = new_location
         img            = new_img
-
-        print ("#\(id) \(set).\(idx): '\(code)' carrier:\(carrier) person:\(person)")
+        imageData      = new_imageData
+        
+        print ("#\(id) \(set).\(idx): '\(code)' carrier:\(carrier) person:\(person) data:\(String(describing: imageData?.count))")
     }
 }
 

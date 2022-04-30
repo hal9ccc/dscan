@@ -17,7 +17,30 @@ struct MediaThumbnail: View {
             .fill(.thinMaterial)
             .frame(width: 150, height: 250)
             .overlay {
-                LazyImage(source: media.img, resizingMode: .aspectFit)
+//                if media.img != "␀" {
+//                    LazyImage(source: media.img, resizingMode: .aspectFit)
+//                }
+//                else if media.imageData != nil {
+//                    let container = ImageContainer(image: UIImage(data: media.imageData)!, type: .jpeg)
+//                    Image(container)
+//                        .frame(width: 150, height: 250)
+//                }
+
+                ZStack {
+                    LazyImage(source: media.img, resizingMode: .aspectFit)
+                        .frame(width: 150, height: 250)
+                        .opacity(media.img == "␀" ? 0 : 1)
+
+                    if media.imageData != nil {
+                        let container = ImageContainer(image: UIImage(data: media.imageData!)!, type: .jpeg, data: media.imageData!)
+                        Image(container)
+                            .resizingMode(.aspectFit)
+                            .opacity(media.imageData == nil ? 0 : 1)
+                    }
+                }
+                .frame(width: 150, height: 250)
+
+
             }
     }
 }

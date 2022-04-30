@@ -51,9 +51,9 @@ struct MediaList: View {
 
     var body: some View {
 
-        print("rendering section \(section)")
-        print(selectedSort.section)
-        print(selectedSort.descriptors)
+//        print("rendering section \(section)")
+//        print(selectedSort.section)
+//        print(selectedSort.descriptors)
         
         return ZStack {
            

@@ -59,39 +59,43 @@ struct ScannerView: UIViewControllerRepresentable {
             let d = Date()
             let df = DateFormatter()
             df.dateFormat = "y-MM-dd HH:mm:ss.SSSS"
+            let idf = DateFormatter()
+            idf.dateFormat = "yMMddHHmmss.SSSS"
 //            let ts = df.string(from: d)
 //            df.dateFormat = "yMMdd_HH:mm:ss.SSSS"
             
             for pageNumber in 0 ..< scan.pageCount {
                 let m = MediaProperties (
-                  id:                     "",
+                  id:                     "\(idf.string(from: d))_\(pageNumber + 1)",
                   set:                    "\(df.string(from: d))",
                   idx:                    pageNumber,
                   time:                   d,
                   title:                  scan.title,
                   device:                 UIDevice.current.name,
                   filename:               "\(df.string(from: d))_\(pageNumber + 1)",
-                  code:                   "",
-                  person:                 "",
-                  company:                "",
-                  carrier:                "",
-                  location:               "",
-                  img:                    "",
-                  recognizedCodesJson:    "",
-                  recognizedTextJson:     "",
-                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 1) ?? Data()
+                  code:                   "␀",
+                  person:                 "␀",
+                  company:                "␀",
+                  carrier:                "␀",
+                  location:               "␀",
+                  img:                    "␀",
+                  recognizedCodesJson:    "␀",
+                  recognizedTextJson:     "␀",
+//                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.9) ?? Data()
+                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.1) ?? Data()
                 )
                 
                 scanData.mediaPropertiesList.append(m)
-                print(m)
+                print(pageNumber)
                 //self.processImage(image: image, filename: filename, title: scan.title, index: pageNumber, timestamp: ts)
             }
             
-            //print("Received \(mediaPropertiesList.count) records.")
+            print("Received \(scanData.mediaPropertiesList.count) records.")
+            
+            completionHandler(scanData.mediaPropertiesList)
+            
+            controller.dismiss(animated: true, completion: nil)
 
-            // Import the JSON into Core Data.
-            //print("Start importing data to the store...")
-            //await mediaProvider.importMedia(from: mediaPropertiesList)
         }
          
         func documentCameraViewControllerDidCancel(_ controller: VNDocumentCameraViewController) {

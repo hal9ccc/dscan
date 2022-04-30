@@ -30,16 +30,26 @@ struct ContentView: View {
 
             ScannerView(completion: {
                 scanData in
+             
                 print("got \(scanData?.count ?? 0) scans")
+
+                let mediaProvider:      MediaProvider   = .shared
+             
+                Task {
+                    // Import the JSON into Core Data.
+                    print("Start importing data to the store...")
+                    
+                    do {
+                        try await mediaProvider.importMedia(from: scanData!)
+                        print("Done!")
+                    }
+                    catch {
+                        print(error)
+                    }
+               }
                 
-    //            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
-    //                let newScanData = ScanDataOrig(content: outputText)
-    //                self.texts.append(newScanData)
-    //            }
-//                print (mediaProperties)
-//                self.showScannerSheet = false
             })
-            .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             .tabItem {
                 Label("scan", systemImage: "doc.text.viewfinder")
             }
@@ -60,6 +70,9 @@ struct ContentView: View {
         }
         .environmentObject(scanData)
         .onAppear() {
+
+
+            // configure NukeUI Image Loading Options
             // from https://www.raywenderlich.com/11070743-nuke-tutorial-for-ios-getting-started
             let contentModes = ImageLoadingOptions.ContentModes(
               success: .scaleAspectFill,

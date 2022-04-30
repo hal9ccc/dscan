@@ -17,8 +17,20 @@ struct MediaDetail: View {
     var body: some View {
         ScrollView {
             VStack {
-                LazyImage(source: media.img, resizingMode: .aspectFit)
-                    .frame(height: 500)
+                ZStack {
+                    LazyImage(source: media.img, resizingMode: .aspectFit)
+                        .frame(height: 500)
+                        .opacity(media.img == "␀" ? 0 : 1)
+
+                    //let container = ImageContainer(image: UIImage(data: media.imageData!)!, type: .jpeg, data: media.imageData!)
+                    if media.imageData != nil {
+                        Image(UIImage(data: media.imageData!)!)
+                            .resizingMode(.aspectFit)
+                            .opacity(media.imageData == nil ? 0 : 1)
+                    }
+                
+                }
+                .frame(height: 500)
 
                 Text(media.code)
                     .font(.title3)
