@@ -27,6 +27,7 @@
 		4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA312815F16800A39C7D /* MediaDetail.swift */; };
 		4E3BE65D280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E3BE65E280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
+		4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E5B7D82281FAC0F00842FE2 /* NukeUI */; };
 		4E86000A281806E100F126D7 /* _nighttrain.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E86FFE7281806DD00F126D7 /* _nighttrain.jpg */; };
 		4E86000B281806E200F126D7 /* _nighttrain.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E86FFE7281806DD00F126D7 /* _nighttrain.jpg */; };
 		4E86000C281806E200F126D7 /* a_s.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E86FFE8281806DD00F126D7 /* a_s.jpg */; };
@@ -113,7 +114,6 @@
 		4E86FFDF2816926900F126D7 /* MediaSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFDD2816926900F126D7 /* MediaSortSelection.swift */; };
 		4E86FFE128169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
 		4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */; };
-		4E86FFE62817527E00F126D7 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E86FFE52817527E00F126D7 /* NukeUI */; };
 		4EA9F34E281B303900AED467 /* MediaSectionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F34D281B303900AED467 /* MediaSectionList.swift */; };
 		4EA9F34F281B303900AED467 /* MediaSectionList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F34D281B303900AED467 /* MediaSectionList.swift */; };
 		4EA9F351281B31A600AED467 /* MediaList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F350281B31A600AED467 /* MediaList.swift */; };
@@ -242,7 +242,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4E86FFE62817527E00F126D7 /* NukeUI in Frameworks */,
+				4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -480,7 +480,7 @@
 			);
 			name = "dscan-iOS";
 			packageProductDependencies = (
-				4E86FFE52817527E00F126D7 /* NukeUI */,
+				4E5B7D82281FAC0F00842FE2 /* NukeUI */,
 			);
 			productName = Earthquakes;
 			productReference = AD43F1E226158A640068AABC /* dscan.app */;
@@ -515,7 +515,7 @@
 			);
 			mainGroup = AD43F1D926158A630068AABC;
 			packageReferences = (
-				4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */,
+				4E5B7D81281FAC0F00842FE2 /* XCRemoteSwiftPackageReference "NukeUI" */,
 			);
 			productRefGroup = AD43F1E326158A640068AABC /* Products */;
 			projectDirPath = "";
@@ -999,7 +999,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */ = {
+		4E5B7D81281FAC0F00842FE2 /* XCRemoteSwiftPackageReference "NukeUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kean/NukeUI";
 			requirement = {
@@ -1010,9 +1010,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4E86FFE52817527E00F126D7 /* NukeUI */ = {
+		4E5B7D82281FAC0F00842FE2 /* NukeUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 4E86FFE42817527E00F126D7 /* XCRemoteSwiftPackageReference "NukeUI" */;
+			package = 4E5B7D81281FAC0F00842FE2 /* XCRemoteSwiftPackageReference "NukeUI" */;
 			productName = NukeUI;
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SectionHeader: View {
     var name: String
-    var pill: String
+    var pill: Int16
 
     var body: some View {
         HStack {
@@ -25,6 +25,6 @@ struct SectionHeader: View {
 
 struct SectionHeader_Previews: PreviewProvider {
     static var previews: some View {
-        SectionHeader(name:"Earthquakes", pill:"3333")
+        SectionHeader(name:"Earthquakes", pill:3333)
     }
 }

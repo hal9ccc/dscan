@@ -50,7 +50,7 @@ struct QuakeView: View {
                     ForEach(quakes) { section in
                         
                         Section(
-                            header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
+                            header: SectionHeader(name: "\(section.id)", pill:Int16(section.count))) {
                                 //header: Text("\(section.id) [\(section.count)]")) {
                                 
                                 ForEach(section, id: \.code) { quake in

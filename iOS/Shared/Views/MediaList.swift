@@ -91,6 +91,9 @@ struct MediaList: View {
                 .hidden()
 
         }
+        .sheet(isPresented: $showScannerSheet, content: {
+            self.makeScannerView()
+        })
         .onAppear {
             let request = media
             request.sectionIdentifier = selectedSort.section
@@ -147,12 +150,28 @@ struct MediaList: View {
     
     private func makeScannerView()-> some View {
         ScannerView(completion: {
-            mediaProperties in
-//            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
-//                let newScanData = ScanDataOrig(content: outputText)
-//                self.texts.append(newScanData)
-//            }
-//            print (mediaProperties)
+            scanData in
+
+            print("MediaList got \(scanData?.count ?? 0) scans")
+
+            if scanData != nil && scanData!.count > 0 {
+                let mediaProvider:      MediaProvider   = .shared
+
+             
+                Task {
+                    // Import the JSON into Core Data.
+                    print("Start importing data to the store...")
+                    
+                    do {
+                        try await mediaProvider.importMedia(from: scanData!)
+                        print("Done!")
+                    }
+                    catch {
+                        print(error)
+                    }
+                }
+            }
+
             self.showScannerSheet = false
         })
         .environmentObject(scanData)
@@ -274,13 +293,13 @@ struct MediaList: View {
                 .disabled(isLoading || mediaSelection.isEmpty)
             }
             
-//            if editMode != .active {
-//                Button(action: {
-//                    self.showScannerSheet = true
-//                }, label: {
-//                    Image(systemName: "doc.text.viewfinder")
-//                })
-//            }
+            if editMode != .active {
+                Button(action: {
+                    self.showScannerSheet = true
+                }, label: {
+                    Image(systemName: "doc.text.viewfinder")
+                })
+            }
         }
 
         

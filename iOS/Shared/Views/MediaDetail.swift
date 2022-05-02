@@ -9,7 +9,10 @@
 
 import Foundation
 import SwiftUI
+
+#if os(iOS)
 import NukeUI
+#endif
 
 struct MediaDetail: View {
     var media: Media
