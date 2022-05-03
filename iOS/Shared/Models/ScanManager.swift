@@ -11,7 +11,7 @@ import Vision
 import VisionKit
 
 
-class ScanData: ObservableObject {
+class ScanManager: ObservableObject {
     @Published var mediaPropertiesList = [MediaProperties]()
 
     var textRecognitionRequest    = VNRecognizeTextRequest()

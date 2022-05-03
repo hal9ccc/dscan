@@ -11,7 +11,7 @@ import SwiftUI
     
 struct MediaView: View {
     
-    @EnvironmentObject var scanData: ScanData
+    @EnvironmentObject var scanData: ScanManager
     
     var mediaProvider:      MediaProvider   = .shared
     var selectedSection:    String          = ""

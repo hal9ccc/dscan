@@ -37,7 +37,7 @@ CREATE OR REPLACE PACKAGE media_api AS
 
   PROCEDURE upload (
     p_timestamp     IN  varchar2,
-    p_idx           IN  media.idx             %TYPE,
+    p_idx           IN  media.idx            %TYPE,
     p_file_name     IN  media.file_name      %TYPE,
     p_content_type  IN  media.content_type   %TYPE,
     p_content       IN  media.content        %TYPE,

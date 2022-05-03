@@ -15,7 +15,7 @@ import Nuke
 struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
-    @StateObject var scanData = ScanData()
+    @StateObject var scanData = ScanManager()
     
 
     var body: some View {
@@ -28,26 +28,8 @@ struct ContentView: View {
                     Label("Documents", systemImage: "doc.on.doc")
                 }
 
-            ScannerView(completion: {
-                scanData in
-             
-                print("got \(scanData?.count ?? 0) scans")
-
-                let mediaProvider:      MediaProvider   = .shared
-             
-                Task {
-                    // Import the JSON into Core Data.
-                    print("Start importing data to the store...")
-                    
-                    do {
-                        try await mediaProvider.importMedia(from: scanData!)
-                        print("Done!")
-                    }
-                    catch {
-                        print(error)
-                    }
-               }
-                
+            ScannerView(completion: { scanData in
+                MediaProvider.shared.importScanData (from: scanData ?? [])
             })
             .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             .tabItem {
@@ -81,7 +63,7 @@ struct ContentView: View {
 
             ImageLoadingOptions.shared.placeholder = UIImage(named: "dark-moon")
             ImageLoadingOptions.shared.failureImage = UIImage(named: "annoyed")
-            ImageLoadingOptions.shared.transition = .fadeIn(duration: 2.5)
+            ImageLoadingOptions.shared.transition = .fadeIn(duration: 0.5)
             ImageLoadingOptions.shared.contentModes = contentModes
 
             DataLoader.sharedUrlCache.diskCapacity = 0

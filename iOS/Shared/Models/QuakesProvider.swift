@@ -17,7 +17,7 @@ class QuakesProvider {
 
     // MARK: Logging
 
-    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "persistence")
+    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
 
     // MARK: Core Data
 

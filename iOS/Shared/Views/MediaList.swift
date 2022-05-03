@@ -6,11 +6,12 @@
 //  Copyright © 2022 Apple. All rights reserved.
 //
 
+import OSLog
 import SwiftUI
 
     
 struct MediaList: View {
-    @EnvironmentObject var scanData: ScanData
+    @EnvironmentObject var scanData: ScanManager
 
     var selectedSort:       MediaSort
     var section:            String
@@ -48,9 +49,10 @@ struct MediaList: View {
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
-
+    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
+    
     var body: some View {
-
+        
 //        print("rendering section \(section)")
 //        print(selectedSort.section)
 //        print(selectedSort.descriptors)
@@ -81,7 +83,7 @@ struct MediaList: View {
 
     #if os(iOS)
             .environment(\.editMode, $editMode)
-            .refreshable { await fetchMedia() }
+//            .refreshable { await fetchMedia() }
     #else
             .frame(minWidth: 320)
     #endif
@@ -97,7 +99,7 @@ struct MediaList: View {
         .onAppear {
             let request = media
             request.sectionIdentifier = selectedSort.section
-            request.sortDescriptors = selectedSort.descriptors
+            request.sortDescriptors   = selectedSort.descriptors
             lastSortChange = Date()
 //            lastSelectedSection = section
             print("MediaList \(selectedSort.name) -> \(section) appeared")
@@ -108,7 +110,7 @@ struct MediaList: View {
     
     var title: String {
         #if os(iOS)
-        print ("section is now \(section)")
+//        print ("section is now \(section)")
         if selectMode.isActive || mediaSelection.isEmpty {
             return "\(section != "␀" ? section : " unbekannt ")"
         } else {
@@ -121,26 +123,26 @@ struct MediaList: View {
 
     var mediaSearchQuery: Binding<String> {
         
-      let f = Binding {
-        mediaSearchTerm
-      } set: { newValue in
-        mediaSearchTerm = newValue
+        let f = Binding {
+            mediaSearchTerm
+        } set: { newValue in
+            mediaSearchTerm = newValue
         
-        guard !newValue.isEmpty else {
-          media.nsPredicate = nil
-          return
-        }
+            guard !newValue.isEmpty else {
+              media.nsPredicate = nil
+              return
+            }
 
-        media.nsPredicate = NSCompoundPredicate(
-            orPredicateWithSubpredicates: [
-                NSPredicate (format: "code contains[cd] %@", newValue),
-                NSPredicate (format: "device contains[cd] %@", newValue),
-                NSPredicate (format: "person contains[cd] %@", newValue),
-                NSPredicate (format: "company contains[cd] %@", newValue),
-                NSPredicate (format: "carrier contains[cd] %@", newValue),
-                NSPredicate (format: "location contains[cd] %@", newValue)
-        ])
-      }
+            media.nsPredicate = NSCompoundPredicate(
+                orPredicateWithSubpredicates: [
+                    NSPredicate (format: "code contains[cd] %@", newValue),
+                    NSPredicate (format: "device contains[cd] %@", newValue),
+                    NSPredicate (format: "person contains[cd] %@", newValue),
+                    NSPredicate (format: "company contains[cd] %@", newValue),
+                    NSPredicate (format: "carrier contains[cd] %@", newValue),
+                    NSPredicate (format: "location contains[cd] %@", newValue)
+            ])
+        }
         
         print("binding", f)
        
@@ -149,32 +151,12 @@ struct MediaList: View {
 
     
     private func makeScannerView()-> some View {
-        ScannerView(completion: {
-            scanData in
-
-            print("MediaList got \(scanData?.count ?? 0) scans")
-
-            if scanData != nil && scanData!.count > 0 {
-                let mediaProvider:      MediaProvider   = .shared
-
-             
-                Task {
-                    // Import the JSON into Core Data.
-                    print("Start importing data to the store...")
-                    
-                    do {
-                        try await mediaProvider.importMedia(from: scanData!)
-                        print("Done!")
-                    }
-                    catch {
-                        print(error)
-                    }
-                }
-            }
-
+        ScannerView(completion: { scanData in
+            MediaProvider.shared.importScanData (from: scanData ?? [])
             self.showScannerSheet = false
+            self.lastSortChange = Date()
         })
-        .environmentObject(scanData)
+//        .environmentObject(scanData)
     }
     
                              

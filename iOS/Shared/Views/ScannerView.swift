@@ -1,5 +1,8 @@
 //
 //  ScannerView.swift
+//
+//  wrapper for VNDocumentCameraViewController
+//
 //  dscan
 //
 //  Created by Matthias Schulze on 26.04.22.
@@ -7,12 +10,11 @@
 //
 
 import SwiftUI
-//import UIKit
 import Vision
 import VisionKit
 
 struct ScannerView: UIViewControllerRepresentable {
-    @EnvironmentObject var scanData: ScanData
+    @EnvironmentObject var scanData: ScanManager
 
     private let completionHandler: ([MediaProperties]?) -> Void
      
@@ -37,7 +39,7 @@ struct ScannerView: UIViewControllerRepresentable {
     final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var mediaProvider:  MediaProvider  = .shared
         
-        var scanData: ScanData = ScanData()
+        var scanData: ScanManager = ScanManager()
 
         private let completionHandler: ([MediaProperties]?) -> Void
         
@@ -54,7 +56,7 @@ struct ScannerView: UIViewControllerRepresentable {
             print("got \(scan.pageCount) pages")
 
             // create new ScanData before populating with info
-            scanData = ScanData()
+            scanData = ScanManager()
             
             let d = Date()
             let df = DateFormatter()
@@ -82,7 +84,8 @@ struct ScannerView: UIViewControllerRepresentable {
                   recognizedCodesJson:    "␀",
                   recognizedTextJson:     "␀",
 //                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.9) ?? Data()
-                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.1) ?? Data()
+                  imageData:              Data(),
+                  uiImage:                scan.imageOfPage(at: pageNumber)
                 )
                 
                 scanData.mediaPropertiesList.append(m)

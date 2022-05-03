@@ -100,8 +100,8 @@
 		4E86004F281806E200F126D7 /* ups.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E860009281806E100F126D7 /* ups.jpg */; };
 		4E860053281820D200F126D7 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E860052281820D200F126D7 /* ScanView.swift */; };
 		4E860054281820D200F126D7 /* ScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E860052281820D200F126D7 /* ScanView.swift */; };
-		4E8600562818213200F126D7 /* ScanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanData.swift */; };
-		4E8600572818213200F126D7 /* ScanData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanData.swift */; };
+		4E8600562818213200F126D7 /* ScanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanManager.swift */; };
+		4E8600572818213200F126D7 /* ScanManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600552818213200F126D7 /* ScanManager.swift */; };
 		4E8600592818218300F126D7 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600582818218300F126D7 /* ScannerView.swift */; };
 		4E86005A2818218300F126D7 /* ScannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E8600582818218300F126D7 /* ScannerView.swift */; };
 		4E86FFD52816811000F126D7 /* MediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E86FFD42816811000F126D7 /* MediaView.swift */; };
@@ -172,7 +172,7 @@
 		4E860008281806E100F126D7 /* willibetz.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = willibetz.gif; sourceTree = "<group>"; };
 		4E860009281806E100F126D7 /* ups.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = ups.jpg; sourceTree = "<group>"; };
 		4E860052281820D200F126D7 /* ScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanView.swift; sourceTree = "<group>"; };
-		4E8600552818213200F126D7 /* ScanData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanData.swift; sourceTree = "<group>"; };
+		4E8600552818213200F126D7 /* ScanManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanManager.swift; sourceTree = "<group>"; };
 		4E8600582818218300F126D7 /* ScannerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerView.swift; sourceTree = "<group>"; };
 		4E86FFD42816811000F126D7 /* MediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaView.swift; sourceTree = "<group>"; };
 		4E86FFD72816815700F126D7 /* QuakeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeView.swift; sourceTree = "<group>"; };
@@ -410,7 +410,7 @@
 				4E24DA0D2814AAB300A39C7D /* Media.swift */,
 				4E24DA222815D57000A39C7D /* MediaSort.swift */,
 				4E24DA1C2814BFFA00A39C7D /* MediaProvider.swift */,
-				4E8600552818213200F126D7 /* ScanData.swift */,
+				4E8600552818213200F126D7 /* ScanManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -638,7 +638,7 @@
 				4EA9F34F281B303900AED467 /* MediaSectionList.swift in Sources */,
 				4E86FFE228169EBF00F126D7 /* QuakeSortSelection.swift in Sources */,
 				4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */,
-				4E8600572818213200F126D7 /* ScanData.swift in Sources */,
+				4E8600572818213200F126D7 /* ScanManager.swift in Sources */,
 				4E86FFD92816815700F126D7 /* QuakeView.swift in Sources */,
 				AD2FC4CA2654EF7C00E135D2 /* QuakesProvider.swift in Sources */,
 				AD2FC4CE2654EF8200E135D2 /* QuakeRow.swift in Sources */,
@@ -668,7 +668,7 @@
 				AD57B0F226561178005183D0 /* ToolbarStatus.swift in Sources */,
 				4E860053281820D200F126D7 /* ScanView.swift in Sources */,
 				AD57B0FC26561547005183D0 /* EditButton.swift in Sources */,
-				4E8600562818213200F126D7 /* ScanData.swift in Sources */,
+				4E8600562818213200F126D7 /* ScanManager.swift in Sources */,
 				4E8600592818218300F126D7 /* ScannerView.swift in Sources */,
 				4E86FFDB281686A000F126D7 /* Test.swift in Sources */,
 				ADDDB17F2625235600241A73 /* QuakeMagnitude.swift in Sources */,
