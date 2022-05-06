@@ -38,7 +38,9 @@ struct MediaDetail: View {
 
                 Text("\(media.carrier)")
                     .foregroundStyle(Color.primary)
-
+               
+               
+                
                 Text("\(media.time.formatted())")
                     .foregroundStyle(Color.secondary)
                 

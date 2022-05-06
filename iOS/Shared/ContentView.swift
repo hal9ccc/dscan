@@ -28,31 +28,31 @@ struct ContentView: View {
                     Label("Documents", systemImage: "doc.on.doc")
                 }
 
-            ScannerView(completion: {
-                scanData in
-             
-                print("got \(scanData?.count ?? 0) scans")
-
-                let mediaProvider:      MediaProvider   = .shared
-             
-                Task {
-                    // Import the JSON into Core Data.
-                    print("Start importing data to the store...")
-                    
-                    do {
-                        try await mediaProvider.importMedia(from: scanData!)
-                        print("Done!")
-                    }
-                    catch {
-                        print(error)
-                    }
-               }
+//            ScannerView(completion: {
+//                scanData in
+//
+//                print("got \(scanData?.count ?? 0) scans")
+//
+//                let mediaProvider:      MediaProvider   = .shared
+//
+//                Task {
+//                    // Import the JSON into Core Data.
+//                    print("Start importing data to the store...")
+//
+//                    do {
+//                        try await mediaProvider.importMedia(from: scanData!)
+//                        print("Done!")
+//                    }
+//                    catch {
+//                        print(error)
+//                    }
+//               }
                 
-            })
-            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-            .tabItem {
-                Label("scan", systemImage: "doc.text.viewfinder")
-            }
+//            })
+//            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
+//            .tabItem {
+//                Label("scan", systemImage: "doc.text.viewfinder")
+//            }
 
             QuakeView()
                 .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
@@ -60,12 +60,20 @@ struct ContentView: View {
                     Label("Quakes", systemImage: "globe")
                 }
 
-            ScanView()
+            SettingsView()
 //                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
 
+            
+            
+            
+            
+            
+            
+            
+            
 
         }
         .environmentObject(scanData)
