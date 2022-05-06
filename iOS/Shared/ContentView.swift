@@ -16,6 +16,8 @@ struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
     @StateObject var mediaProcessor = MediaProcessor()
+    let mediaProvider:      MediaProvider   = .shared
+
 //    @StateObject var settings = AppSettings()
 
     var body: some View {
@@ -29,7 +31,7 @@ struct ContentView: View {
                 }
 
             ScannerView(completion: { scanData in
-                MediaProvider.shared.importScanData (from: scanData ?? [])
+                mediaProvider.importSet(scanData)
             })
             .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             .tabItem {

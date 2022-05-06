@@ -16,7 +16,7 @@ class Media: NSManagedObject {
 
     @NSManaged var id:              String // UNIQUE
     @NSManaged var set:             String
-    @NSManaged var idx:             Int16
+    @NSManaged var idx:             Int64
     @NSManaged var time:            Date
     @NSManaged var title:           String
     @NSManaged var device:          String
@@ -37,7 +37,7 @@ class Media: NSManagedObject {
         guard
             let new_id          = dictionary["id"]         as? String,
             let new_setName     = dictionary["setName"]    as? String,
-            let new_idx         = dictionary["idx"]        as? Int16,
+            let new_idx         = dictionary["idx"]        as? Int64,
             let new_time        = dictionary["time"]       as? Date,
             let new_title       = dictionary["title"]      as? String,
             let new_device      = dictionary["device"]     as? String,
@@ -101,13 +101,13 @@ extension Media {
     }
 
     @discardableResult
-    static func makePreviews(count: Int) -> [Media] {
+    static func makePreviews(count: Int64) -> [Media] {
         var media = [Media]()
         let viewContext = MediaProvider.preview.container.viewContext
         for index in 0..<count {
             let med = Media(context: viewContext)
             med.id = index.formatted()
-            med.idx = Int16(index)
+            med.idx = index
             med.time = Date().addingTimeInterval(Double(index) * -300)
             med.title = "\(med.time)"
             med.set = "\(med.time)"

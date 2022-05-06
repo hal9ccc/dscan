@@ -11,8 +11,8 @@ import Vision
 import VisionKit
 
 
-class ScanManager: ObservableObject {
-    @Published var mediaPropertiesList = [MediaProperties]()
+class MediaProcessor: ObservableObject {
+//    @Published var mediaPropertiesList = [MediaProperties]()
 
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var barcodeRecognitionRequest = VNDetectBarcodesRequest()
@@ -137,8 +137,8 @@ class ScanManager: ObservableObject {
         urlRequest.httpBody = data
 
         let task = session.dataTask(with: urlRequest) { data, response, error in
-            print ("completed \(filename)")
-           
+            print ("completed \(filename)", data.debugDescription, response.debugDescription, error.debugDescription)
+            
             //let str = String(decoding: data!, as: UTF8.self)
             let decoder = JSONDecoder()
             //print("BODY \n \(str)")
@@ -151,7 +151,7 @@ class ScanManager: ObservableObject {
 
         task.resume()
         
-    }
+    }   
 
 
     func uploadImage (image: UIImage, filename: String, title: String, index: Int, timestamp: String) {
@@ -175,7 +175,7 @@ class ScanManager: ObservableObject {
         urlRequest.httpBody = imgData
 
         let task = session.dataTask(with: urlRequest) { data, response, error in
-            print ("completed \(filename)")
+            print ("completed \(filename)", data.debugDescription, response.debugDescription, error.debugDescription)
            
             //let str = String(decoding: data!, as: UTF8.self)
             let decoder = JSONDecoder()

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct MediaSort: Hashable, Identifiable {
+struct MediaSort: Hashable, Identifiable, Equatable {
     let id:           Int
     let name:         String
     let descriptors:  [SortDescriptor<Media>]
@@ -19,7 +19,6 @@ struct MediaSort: Hashable, Identifiable {
             id:         0,
             name:       "by Date/Time",
             descriptors:[
-                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.set,  order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
@@ -74,6 +73,16 @@ struct MediaSort: Hashable, Identifiable {
                 SortDescriptor (\Media.idx),
             ],
             section:    \Media.device
+        ),
+        MediaSort(
+            id:         6,
+            name:       "by Code",
+            descriptors:[
+                SortDescriptor (\Media.code),
+                SortDescriptor (\Media.set),
+                SortDescriptor (\Media.idx),
+            ],
+            section:    \Media.code
         )
     ]
 

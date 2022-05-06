@@ -135,7 +135,7 @@ struct MediaList: View {
 
     private func makeScannerView()-> some View {
         ScannerView(completion: { scanData in
-            mediaProvider.importScanData (from: scanData ?? [])
+            mediaProvider.importSet(scanData)
             self.showScannerSheet = false
         })
     }
