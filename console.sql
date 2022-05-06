@@ -1,6 +1,12 @@
-select * from media;
+select t.*, t.rowid from media t;
 
-select * from TRACE where ts > systimestamp - numtodsinterval(5, 'minute') order by ts, nr;
+select * from TRACE where ts > systimestamp - numtodsinterval(30, 'minute') order by ts desc, nr;
+
+truncate table trace;
+
+select * from media order by timestamp desc;
+select * from media_details order by timestamp desc;
+
 
 /*
 ** from https://oracle-base.com/articles/misc/oracle-rest-data-services-ords-restful-web-services-handling-media
@@ -86,8 +92,21 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
 
     v_id := media_seq.NEXTVAL;
 
-    INSERT INTO media (id, content, content_type, file_name, "TYPE", title, timestamp, idx, device)
-    VALUES (v_id, p_content, p_content_type, v_file_name, p_type, v_title, v_timestamp, p_idx, p_device);
+    begin
+      INSERT INTO media (id, content, content_type, file_name, "TYPE", title, timestamp, idx, device)
+      VALUES (v_id, p_content, p_content_type, v_file_name, p_type, v_title, v_timestamp, p_idx, p_device);
+
+    exception when DUP_VAL_ON_INDEX then
+      UPDATE media
+        SET  content    = p_content,
+             file_name  = v_file_name,
+             title      = v_title,
+             device     = p_device
+      WHERE  id         = v_id
+      ;
+    end;
+
+    update_media_details(v_id);
 
     COMMIT;
     trc.EXIT('upload complete ('||DBMS_LOB.GETLENGTH(p_content)||' byte)');
@@ -102,7 +121,7 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
   PROCEDURE download (p_file_name  IN  media.file_name%TYPE) IS
     l_rec  media%ROWTYPE;
   BEGIN
-    trc.ENTER('download', 'p_file_name', p_file_name);
+    --trc.ENTER('download', 'p_file_name', p_file_name);
     SELECT *
     INTO   l_rec
     FROM   media
@@ -114,7 +133,7 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
     OWA_UTIL.http_header_close;
 
     WPG_DOCLOAD.download_file(l_rec.content);
-    trc.EXIT('download');
+    --trc.EXIT('download');
   END;
 
 END;
@@ -354,8 +373,9 @@ select M.*,
       '📷' || ' ' || M.device || '<br>' ||
       '📃' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
       '📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
-      nvl2(C.Codelist, '<hr>'  || C.Codelist
-      , '') ||
+--      nvl2(C.Codelist, '<hr>'  || C.Codelist
+      --, '') ||
+      C.Codelist ||
       '', 1, 4000)                           as HTML_Details,
        to_char(M.TIMESTAMP, 'yyyy-mm') month,
        to_char(M.TIMESTAMP, 'yyyy-mm-dd') day,
@@ -363,12 +383,16 @@ select M.*,
 --           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
          as SET_NAME,
        'http://mbp-mschulze.local/ords/dscan/media/files/'|| M.FILE_NAME as IMG
-from   MEDIA            M
+from   MEDIA M
 left outer join  V_MEDIA_TAGS     T on T.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 left outer join  V_MEDIA_FULLTEXT F on F.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 left outer join  V_MEDIA_CODELIST C on C.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 where  M.content_type in ('image/jpg')
+  and  M.type = 'scan'
 ;
+
+select * from media order by id desc;
+
 
 create table media_details
 as
@@ -410,6 +434,7 @@ create or replace procedure update_media_details
   tsStart Timestamp with time zone default null
  ) is
 begin
+  trc.ENTER('update_media_details', 'strID', strID, 'tsStart', tsStart);
   MERGE INTO media_details T USING
     (select   *
      from     v_media
@@ -465,8 +490,9 @@ begin
         Q.DAY,
         Q.SET_NAME,
         Q.IMG
-    )
-    ;
+    );
+
+  trc.EXIT('update_media_details, rowcount='||SQL%ROWCOUNT);
 end;
 
 begin

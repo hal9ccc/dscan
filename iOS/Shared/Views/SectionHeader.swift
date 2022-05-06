@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SectionHeader: View {
     var name: String
-    var pill: Int16
+    var pill: Int
 
     var body: some View {
         HStack {

@@ -11,9 +11,7 @@ import SwiftUI
     
 struct MediaSectionList: View {
     
-    @EnvironmentObject var scanData: ScanManager
-    
-    var mediaProvider:      MediaProvider   = .shared
+    let mediaProvider:      MediaProvider   = .shared
     
     @SectionedFetchRequest (
         sectionIdentifier: MediaSort.default.section,
@@ -24,15 +22,9 @@ struct MediaSectionList: View {
 
     @State private var mediaSelection: Set<String> = []
 
-    #if os(iOS)
-    @State private var editMode: EditMode = .inactive
-    @State private var selectMode: SelectMode = .inactive
-    #endif
-
     @State private var error: DscanError?
     @State private var hasError = false
     
-
     @State private var selectedMediaSort: MediaSort = MediaSort.default
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
@@ -50,7 +42,7 @@ struct MediaSectionList: View {
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
     
-    
+
     var body: some View {
 
         NavigationView {
@@ -61,8 +53,8 @@ struct MediaSectionList: View {
                     
                     ForEach(media) { section in
                         
-                        NavigationLink(destination: MediaList(selectedSort: selectedMediaSort, section: section.id)) {
-                            SectionHeader(name: "\(section.id != "␀" ? section.id : " unbekannt ")", pill:Int16(section.count))
+                        NavigationLink(destination: MediaList(sortId: selectedMediaSort.id, section: section.id)) {
+                            SectionHeader(name: "\(section.id != "␀" ? section.id : " unbekannt ")", pill:section.count)
                         }
                     }
                 } // List
@@ -72,7 +64,6 @@ struct MediaSectionList: View {
                 .toolbar (content: toolbarContent)
 
         #if os(iOS)
-                .environment(\.editMode, $editMode)
                 .refreshable { await fetchMedia() }
         #else
                 .frame(minWidth: 320)
@@ -86,15 +77,12 @@ struct MediaSectionList: View {
             .sheet(isPresented: $showScannerSheet, content: {
                 self.makeScannerView()
             })
-                
-            MediaList(selectedSort: selectedMediaSort, section: lastSelectedSection)
+
         }
-        .background (
-            LinearGradient(gradient: Gradient(colors: [.white, .black]), startPoint: .top, endPoint: .bottom)
-        )
         .onAppear {
             selectedMediaSort = MediaSort.sorts[lastSelectedSort]
         }
+        .alert(isPresented: $hasError, error: error) { }
 
     }
     
@@ -127,40 +115,12 @@ struct MediaSectionList: View {
 
     
     private func makeScannerView()-> some View {
-        ScannerView(completion: {
-            mediaProperties in
-//            if let outputText = textPerPage?.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines){
-//                let newScanData = ScanDataOrig(content: outputText)
-//                self.texts.append(newScanData)
-//            }
-//            print (mediaProperties)
+        ScannerView(completion: { scanData in
+            mediaProvider.importScanData (from: scanData ?? [])
             self.showScannerSheet = false
         })
-        .environmentObject(scanData)
     }
     
-                             
-    private func deleteMediaByOffsets(from section: SectionedFetchResults<String, Media>.Element, at offsets: IndexSet) {
-        let objectIDs = offsets.map { section[$0].objectID }
-        mediaProvider.deleteMedia(identifiedBy: objectIDs)
-        mediaSelection.removeAll()
-    }
-
-    private func deleteMedia(for codes: Set<String>) async {
-        do {
-            let mediaToDelete = media.joined().filter { codes.contains($0.id) }
-            print ("deleting \(mediaToDelete.count) media...")
-            try await mediaProvider.deleteMedia(mediaToDelete)
-        } catch {
-            self.error = error as? DscanError ?? .unexpectedError(error: error)
-            self.hasError = true
-        }
-
-        mediaSelection.removeAll()
-        #if os(iOS)
-        editMode = .inactive
-        #endif
-    }
 
     private func fetchMedia() async {
         isLoading = true
@@ -194,7 +154,7 @@ struct MediaSectionList: View {
                 // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
                 let request = media
                 request.sectionIdentifier = selectedMediaSort.section
-                request.sortDescriptors = selectedMediaSort.descriptors
+                request.sortDescriptors   = selectedMediaSort.descriptors
                 lastSelectedSort = selectedMediaSort.id
                 lastSortChange = Date()
                 print("sort \(selectedMediaSort.name) was selected")
@@ -211,19 +171,27 @@ struct MediaSectionList: View {
                         await fetchMedia()
                     }
                 }
-                .disabled(isLoading || editMode == .active)
+                .disabled(isLoading)
             }
 
             Spacer()
 
             ToolbarStatus(
+                itemCount: media.joined().count,
                 isLoading: isLoading,
                 lastUpdated: lastUpdated,
                 sectionCount: media.count,
-                itemCount: media.joined().count
+                selectedCount: 0
             )
 
             Spacer()
+
+            Button(action: {
+                self.showScannerSheet = true
+            }, label: {
+                Image(systemName: "doc.text.viewfinder")
+            })
+
         }
     }
     #else

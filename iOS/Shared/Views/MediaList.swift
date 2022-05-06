@@ -6,21 +6,18 @@
 //  Copyright © 2022 Apple. All rights reserved.
 //
 
-import OSLog
 import SwiftUI
 
-    
-struct MediaList: View {
-    @EnvironmentObject var scanData: ScanManager
 
-    var selectedSort:       MediaSort
-    var section:            String
+struct MediaList: View {
+    let sortId:  Int
+    let section: String
 
     var mediaProvider:      MediaProvider   = .shared
-    
+
     @SectionedFetchRequest (
         sectionIdentifier: MediaSort.default.section,
-        sortDescriptors: MediaSort.default.descriptors,
+        sortDescriptors:   MediaSort.default.descriptors,
         animation: .default
     )
     private var media: SectionedFetchResults<String, Media>
@@ -34,38 +31,34 @@ struct MediaList: View {
 
     @State private var error: DscanError?
     @State private var hasError = false
-    
-//    @State private var selectedMediaSort: MediaSort = MediaSort.default
+
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
-    
+
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
-    
-//    @AppStorage("lastSelectedSection")
-//    private var lastSelectedSection = ""
 
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
-    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
-    
+
     var body: some View {
-        
-//        print("rendering section \(section)")
-//        print(selectedSort.section)
-//        print(selectedSort.descriptors)
-        
+
+        let request = media
+        request.sectionIdentifier = MediaSort.sorts[sortId].section
+        request.sortDescriptors   = MediaSort.sorts[sortId].descriptors
+        print("rendering section \(MediaSort.sorts[sortId].name) -> \(section)")
+
         return ZStack {
-           
+
             List(selection: $mediaSelection) {
-                
+
                 ForEach(media) { sect in
-                    
+
                     if sect.id == section {
-                   
-                        ForEach(sect, id: \.id) { media in
+
+                        ForEach(sect, id: \.filename) { media in
                             NavigationLink(destination: MediaDetail(media: media)) {
                                 MediaRow(media: media)
                             }
@@ -83,7 +76,7 @@ struct MediaList: View {
 
     #if os(iOS)
             .environment(\.editMode, $editMode)
-//            .refreshable { await fetchMedia() }
+            .refreshable { await fetchMedia() }
     #else
             .frame(minWidth: 320)
     #endif
@@ -93,44 +86,36 @@ struct MediaList: View {
                 .hidden()
 
         }
+        .alert(isPresented: $hasError, error: error) { }
         .sheet(isPresented: $showScannerSheet, content: {
             self.makeScannerView()
         })
-        .onAppear {
-            let request = media
-            request.sectionIdentifier = selectedSort.section
-            request.sortDescriptors   = selectedSort.descriptors
-            lastSortChange = Date()
-//            lastSelectedSection = section
-            print("MediaList \(selectedSort.name) -> \(section) appeared")
-        }
-            
+
     }
 
-    
+
     var title: String {
         #if os(iOS)
-//        print ("section is now \(section)")
-        if selectMode.isActive || mediaSelection.isEmpty {
-            return "\(section != "␀" ? section : " unbekannt ")"
-        } else {
-            return "\(mediaSelection.count) Selected"
-        }
+//        if selectMode.isActive || mediaSelection.isEmpty {
+            return "\(section != "␀" ? section : " unbekannt")"
+//        } else {
+//            return "\(mediaSelection.count) Selected"
+//        }
         #else
-        return "\(section != "␀" ? section : " unbekannt ")"
+        return "\(section != "␀" ? section : " unbekannt")"
         #endif
     }
 
     var mediaSearchQuery: Binding<String> {
-        
+
         let f = Binding {
             mediaSearchTerm
         } set: { newValue in
             mediaSearchTerm = newValue
-        
+
             guard !newValue.isEmpty else {
-              media.nsPredicate = nil
-              return
+                media.nsPredicate = nil
+                return
             }
 
             media.nsPredicate = NSCompoundPredicate(
@@ -143,23 +128,19 @@ struct MediaList: View {
                     NSPredicate (format: "location contains[cd] %@", newValue)
             ])
         }
-        
-        print("binding", f)
-       
+
         return f
     }
 
-    
+
     private func makeScannerView()-> some View {
         ScannerView(completion: { scanData in
-            MediaProvider.shared.importScanData (from: scanData ?? [])
+            mediaProvider.importScanData (from: scanData ?? [])
             self.showScannerSheet = false
-            self.lastSortChange = Date()
         })
-//        .environmentObject(scanData)
     }
-    
-                             
+
+
     private func deleteMediaByOffsets(from section: SectionedFetchResults<String, Media>.Element, at offsets: IndexSet) {
         let objectIDs = offsets.map { section[$0].objectID }
         mediaProvider.deleteMedia(identifiedBy: objectIDs)
@@ -168,7 +149,7 @@ struct MediaList: View {
 
     private func deleteMedia(for codes: Set<String>) async {
         do {
-            let mediaToDelete = media.joined().filter { codes.contains($0.id) }
+            let mediaToDelete = media.joined().filter { codes.contains($0.filename) }
             print ("deleting \(mediaToDelete.count) media...")
             try await mediaProvider.deleteMedia(mediaToDelete)
         } catch {
@@ -194,7 +175,7 @@ struct MediaList: View {
         isLoading = false
     }
 
-    
+
     @ToolbarContentBuilder
     private func toolbarContent() -> some ToolbarContent {
         #if os(iOS)
@@ -207,41 +188,29 @@ struct MediaList: View {
     #if os(iOS)
     @ToolbarContentBuilder
     private func toolbarContent_iOS() -> some ToolbarContent {
-//        ToolbarItem(placement: .primaryAction) {
-//            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSort.sorts)
-//            onChange(of: selectedMediaSort) { _ in
-//                // that let is there for a reason!
-//                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
-//                let request = media
-//                request.sectionIdentifier = selectedMediaSort.section
-//                request.sortDescriptors = selectedMediaSort.descriptors
-//                lastSortChange = Date()
-//            }
-//        }
-//
-        ToolbarItem(placement: .primaryAction) {
-            if editMode == .active {
-                SelectButton(mode: $selectMode) {
-                    if selectMode.isActive {
-                        mediaSelection = Set(media.joined().map { $0.id })
-//                        mediaSelection = Set(media.first(where: section))
-                    } else {
-                        mediaSelection = []
-                    }
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            SelectButton(mode: $selectMode) {
+                let A = media.first(where: { $0.id == section })
+                if selectMode.isActive && A != nil {
+                    mediaSelection = Set(A!.map { $0.filename })
+                } else {
+                    mediaSelection = []
                 }
             }
-        }
+            .disabled(editMode != .active)
+            .opacity (editMode != .active ? 0 : 1)
 
-        ToolbarItem(placement: .primaryAction) {
             EditButton(editMode: $editMode) {
                 mediaSelection.removeAll()
                 editMode = .inactive
                 selectMode = .inactive
             }
+
         }
-
-
+        
         ToolbarItemGroup(placement: .bottomBar) {
+            let n = media.first(where: { $0.id == section })?.count ?? 0
+            
             if (isLoading) {
                 ProgressView()
             }
@@ -257,35 +226,26 @@ struct MediaList: View {
             Spacer()
 
             ToolbarStatus(
+                itemCount: n,
                 isLoading: isLoading,
                 lastUpdated: lastUpdated,
-                sectionCount: media.count,
-                itemCount: media.joined().count
+                sectionCount: 0,
+                selectedCount: mediaSelection.count
             )
 
             Spacer()
 
-            if editMode == .active {
-                DeleteButton {
-                    Task {
-                        await deleteMedia(for: mediaSelection)
-                        selectMode = .inactive
-                    }
+            DeleteButton {
+                Task {
+                    await deleteMedia(for: mediaSelection)
+                    selectMode = .inactive
                 }
-                .disabled(isLoading || mediaSelection.isEmpty)
             }
-            
-            if editMode != .active {
-                Button(action: {
-                    self.showScannerSheet = true
-                }, label: {
-                    Image(systemName: "doc.text.viewfinder")
-                })
-            }
+            .disabled(isLoading || mediaSelection.isEmpty)
+            .opacity (editMode == .active ? 1 : 0)
         }
-
-        
     }
+
     #else
     @ToolbarContentBuilder
     private func toolbarContent_macOS() -> some ToolbarContent {
@@ -304,8 +264,8 @@ struct MediaList: View {
             ToolbarStatus(
                 isLoading: isLoading,
                 lastUpdated: lastUpdated,
-                sectionCount: media.count,
-                itemCount: media.joined().count
+                sectionCount: 0,
+                itemCount: n
             )
         }
 
@@ -319,9 +279,9 @@ struct MediaList: View {
                     }
                 }
                 .hidden(isLoading)
-                
+
                 Spacer()
-                
+
                 DeleteButton {
                     Task {
                         await deleteMedia(for: selection)

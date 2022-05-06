@@ -15,8 +15,8 @@ import Nuke
 struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
-    @StateObject var scanData = ScanManager()
-
+    @StateObject var mediaProcessor = MediaProcessor()
+//    @StateObject var settings = AppSettings()
 
     var body: some View {
 
@@ -42,15 +42,14 @@ struct ContentView: View {
                     Label("Quakes", systemImage: "globe")
                 }
 
-            ScanView()
-//                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+            SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
 
 
         }
-        .environmentObject(scanData)
+        .environmentObject(mediaProcessor)
         .onAppear() {
 
 
@@ -63,7 +62,7 @@ struct ContentView: View {
 
             ImageLoadingOptions.shared.placeholder = UIImage(named: "dark-moon")
             ImageLoadingOptions.shared.failureImage = UIImage(named: "annoyed")
-            ImageLoadingOptions.shared.transition = .fadeIn(duration: 0.5)
+            ImageLoadingOptions.shared.transition = .fadeIn(duration: 2.5)
             ImageLoadingOptions.shared.contentModes = contentModes
 
             DataLoader.sharedUrlCache.diskCapacity = 0
