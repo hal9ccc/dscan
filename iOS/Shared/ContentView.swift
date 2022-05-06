@@ -16,7 +16,7 @@ struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
     @StateObject var scanData = ScanManager()
-    
+
 
     var body: some View {
 

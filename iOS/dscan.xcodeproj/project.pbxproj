@@ -120,6 +120,8 @@
 		4EA9F352281B31A600AED467 /* MediaList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EA9F350281B31A600AED467 /* MediaList.swift */; };
 		4ED738E4281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
 		4ED738E5281604E300C310B3 /* Media.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4ED738E2281604E300C310B3 /* Media.xcdatamodeld */; };
+		68EC74F12823E75900A4B3CE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EC74F02823E75900A4B3CE /* SettingsView.swift */; };
+		68EC74F22823E75900A4B3CE /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68EC74F02823E75900A4B3CE /* SettingsView.swift */; };
 		AD2FC4C82654EF0800E135D2 /* EarthquakesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD43F1E526158A640068AABC /* EarthquakesApp.swift */; };
 		AD2FC4CA2654EF7C00E135D2 /* QuakesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD43F1FE26158DAF0068AABC /* QuakesProvider.swift */; };
 		AD2FC4CB2654EF7C00E135D2 /* Quake.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD43F1F826158CD50068AABC /* Quake.swift */; };
@@ -209,6 +211,7 @@
 		4EA9F350281B31A600AED467 /* MediaList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaList.swift; sourceTree = "<group>"; };
 		4ED738E3281604E300C310B3 /* Media.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Media.xcdatamodel; sourceTree = "<group>"; };
 		54CF5BED3CD9DE525986B01C /* LICENSE.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		68EC74F02823E75900A4B3CE /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		6EC8C05DC1E92B40CD3EBA87 /* SampleCode.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SampleCode.xcconfig; path = Configuration/SampleCode.xcconfig; sourceTree = "<group>"; };
 		AD2FC4B92654EE7800E135D2 /* dscan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dscan.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD43F1E226158A640068AABC /* dscan.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dscan.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -434,6 +437,7 @@
 				4E86FFDA281686A000F126D7 /* Test.swift */,
 				4E860052281820D200F126D7 /* ScanView.swift */,
 				4E8600582818218300F126D7 /* ScannerView.swift */,
+				68EC74F02823E75900A4B3CE /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -642,6 +646,7 @@
 				4E86FFD92816815700F126D7 /* QuakeView.swift in Sources */,
 				AD2FC4CA2654EF7C00E135D2 /* QuakesProvider.swift in Sources */,
 				AD2FC4CE2654EF8200E135D2 /* QuakeRow.swift in Sources */,
+				68EC74F22823E75900A4B3CE /* SettingsView.swift in Sources */,
 				AD2FC4CB2654EF7C00E135D2 /* Quake.swift in Sources */,
 				4E24DA272815EABD00A39C7D /* MediaRow.swift in Sources */,
 				AD57B0FA26561484005183D0 /* DeleteButton.swift in Sources */,
@@ -660,6 +665,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				68EC74F12823E75900A4B3CE /* SettingsView.swift in Sources */,
 				ADDDB1812625242200241A73 /* QuakeRow.swift in Sources */,
 				AD43F1FF26158DAF0068AABC /* QuakesProvider.swift in Sources */,
 				4E24DA322815F16800A39C7D /* MediaDetail.swift in Sources */,

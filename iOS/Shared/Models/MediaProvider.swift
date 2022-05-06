@@ -5,6 +5,7 @@ Abstract:
 A class to fetch data from the remote server and save it to the Core Data store.
 */
 
+import SwiftUI
 import CoreData
 import OSLog
 import SwiftUI
@@ -14,7 +15,9 @@ class MediaProvider {
     // MARK: USGS Data
 
     /// Geological data provided by the U.S. Geological Survey (USGS). See ACKNOWLEDGMENTS.txt for additional details.
-    let url = URL(string: "http://mbp-mschulze.local/ords/dscan/media/list")!
+    @AppStorage("ServerURL")
+    private var serverurl = ""
+
 
     // MARK: Logging
 
@@ -112,6 +115,8 @@ class MediaProvider {
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
     func fetchMedia() async throws {
         let session = URLSession.shared
+        let url = URL(string: "\(serverurl)/media/list")!
+        
         guard let (data, response) = try? await session.data(from: url),
               let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200
