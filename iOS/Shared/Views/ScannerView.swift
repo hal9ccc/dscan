@@ -13,7 +13,7 @@ import VisionKit
 
 struct ScannerView: UIViewControllerRepresentable {
     @EnvironmentObject var scanData: ScanData
-
+    
     private let completionHandler: ([MediaProperties]?) -> Void
      
     init(completion: @escaping ([MediaProperties]?) -> Void) {
@@ -36,6 +36,9 @@ struct ScannerView: UIViewControllerRepresentable {
      
     final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var mediaProvider:  MediaProvider  = .shared
+        
+        @AppStorage("CompressionQuality")
+        private var comprQual: Double = 0.5
         
         var scanData: ScanData = ScanData()
 
@@ -82,8 +85,9 @@ struct ScannerView: UIViewControllerRepresentable {
                   recognizedCodesJson:    "␀",
                   recognizedTextJson:     "␀",
 //                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.9) ?? Data()
-                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.1) ?? Data()
-                )
+                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality:
+                                                                                   comprQual) ?? Data()
+            )
                 
                 scanData.mediaPropertiesList.append(m)
                 print(pageNumber)
