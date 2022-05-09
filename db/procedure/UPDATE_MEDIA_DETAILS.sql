@@ -3,6 +3,12 @@ create or replace procedure update_media_details
   tsStart   Timestamp with time zone default null
  ) is
 
+  /*
+  ** "materializes" contents from v_media in media_details, to enable fast queries
+  **
+  ** sorry, two sets of nearly identical statements for performance reasons. Otherwise single update wouldn't be fast
+  */
+
   M MEDIA%ROWTYPE;
 
 begin
@@ -35,6 +41,9 @@ begin
           TITLE         = Q.TITLE,
           TIMESTAMP     = Q.TIMESTAMP,
           IDX           = Q.IDX,
+          CID           = Q.CID,
+          HIDDEN        = Q.HIDDEN,
+          STATUS        = Q.STATUS,
           CONTENT_SIZE  = Q.CONTENT_SIZE,
           CODE          = Q.CODE,
           CARRIER       = Q.CARRIER,
@@ -44,6 +53,10 @@ begin
           COMPANY       = Q.COMPANY,
           LOCATION      = Q.LOCATION,
           DEVICE        = Q.DEVICE,
+          INFO1         = Q.INFO1,
+          INFO2         = Q.INFO2,
+          INFO3         = Q.INFO3,
+          INFO4         = Q.INFO4,
           FULLTEXT      = Q.FULLTEXT,
           CODELIST      = Q.CODELIST,
           TAGLIST       = Q.TAGLIST,
@@ -60,8 +73,15 @@ begin
           Q.TITLE,
           Q.TIMESTAMP,
           Q.IDX,
+          Q.CID,
+          Q.HIDDEN,
+          Q.STATUS,
           Q.CONTENT_SIZE,
           Q.DEVICE,
+          Q.INFO1,
+          Q.INFO2,
+          Q.INFO3,
+          Q.INFO4,
           Q.CODE,
           Q.CARRIER,
           Q.TRACKINGNR,
@@ -96,6 +116,9 @@ begin
           TITLE         = Q.TITLE,
           TIMESTAMP     = Q.TIMESTAMP,
           IDX           = Q.IDX,
+          CID           = Q.CID,
+          HIDDEN        = Q.HIDDEN,
+          STATUS        = Q.STATUS,
           CONTENT_SIZE  = Q.CONTENT_SIZE,
           CODE          = Q.CODE,
           CARRIER       = Q.CARRIER,
@@ -105,6 +128,10 @@ begin
           COMPANY       = Q.COMPANY,
           LOCATION      = Q.LOCATION,
           DEVICE        = Q.DEVICE,
+          INFO1         = Q.INFO1,
+          INFO2         = Q.INFO2,
+          INFO3         = Q.INFO3,
+          INFO4         = Q.INFO4,
           FULLTEXT      = Q.FULLTEXT,
           CODELIST      = Q.CODELIST,
           TAGLIST       = Q.TAGLIST,
@@ -121,8 +148,15 @@ begin
           Q.TITLE,
           Q.TIMESTAMP,
           Q.IDX,
+          Q.CID,
+          Q.HIDDEN,
+          Q.STATUS,
           Q.CONTENT_SIZE,
           Q.DEVICE,
+          Q.INFO1,
+          Q.INFO2,
+          Q.INFO3,
+          Q.INFO4,
           Q.CODE,
           Q.CARRIER,
           Q.TRACKINGNR,
@@ -156,6 +190,5 @@ begin
 end;
 
 
-select   *
-     from     v_media
-     where   ID         = 1442
+select   * from     v_media        where   ID = 1442
+select   * from     MEDIA_DETAILS  where   ID = 1442

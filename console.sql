@@ -4,8 +4,22 @@ select * from TRACE where ts > systimestamp - numtodsinterval(200, 'minute') ord
 
 truncate table trace;
 
+update media set status = 'scanned';
+
 select * from media order by file_name desc;
 select * from media_details order by timestamp desc;
+
+
+begin DBMS_UTILITY.compile_schema(SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')); end;
+/
+
+
+select *
+from sys.all_errors
+where owner = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
+order by 1,2,3
+;
+
 
 
 /*

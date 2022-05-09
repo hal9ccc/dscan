@@ -275,53 +275,6 @@ class MediaProvider {
     }
 
 
-    // import MediaProperties into the store
-//    func importScanData (from scanData: [MediaProperties]) {
-//        self.logger.debug("importing \(scanData.count) scans...")
-//
-//        Task {
-//            do {
-//                try await importMedia(from: scanData)
-//                self.logger.debug("Done!")
-//                Task {
-//                    var scanDataJpeg : [MediaProperties] = []
-//                    scanData.forEach { (scan) in
-//                        self.logger.debug ("converting \(scan.id)...")
-//                        scanDataJpeg.append(
-//                            MediaProperties (
-//                                id:                     scan.id,
-//                                set:                    scan.set,
-//                                idx:                    scan.idx,
-//                                time:                   scan.time,
-//                                title:                  scan.title,
-//                                device:                 scan.device,
-//                                filename:               scan.filename,
-//                                code:                   scan.code,
-//                                person:                 scan.person,
-//                                company:                scan.company,
-//                                carrier:                scan.carrier,
-//                                location:               scan.location,
-//                                img:                    scan.img,
-//                                recognizedCodesJson:    scan.recognizedCodesJson,
-//                                recognizedTextJson:     scan.recognizedTextJson,
-//                                imageData:              scan.uiImage!.jpegData(compressionQuality: 0.9)!,
-//                                uiImage:                scan.uiImage!
-//                            )
-//                        )
-//                    }
-//
-//                    self.logger.debug ("updating...")
-//                    try await importMedia(from: scanDataJpeg)
-//                    self.logger.debug ("Done!")
-//                }
-//            }
-//            catch {
-//                print(error)
-//            }
-//        }
-//
-//    }
-
     func importSet(_ scanData: [MediaProperties]?) {
         self.logger.debug("Importing \(scanData?.count ?? 0) scan(s)...")
 

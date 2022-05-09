@@ -158,17 +158,6 @@ class MediaProcessor: ObservableObject {
         self.idx        = idx
         self.timestamp  = timestamp
  
-        //var img = MMImage()
-        //metadata.images.append(img)
-
-//        if let imageData = image.jpegData(compressionQuality: 1.0) {
-//            let imageCFData = imageData as CFData
-//            if let cgImage = CGImageSourceCreateWithData(imageCFData, nil), let metaDict: NSDictionary = CGImageSourceCopyPropertiesAtIndex(cgImage, 0, nil) {
-//                let exifDict: NSDictionary = metaDict.object(forKey: kCGImagePropertyExifDictionary) as! NSDictionary
-//                print(exifDict)
-//            }
-//        }
-
         uploadImage (image: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
 
         self.isRecognizingTexts = true

@@ -62,11 +62,8 @@ final class Upload {
     }
 
     func upload(completionHandler: @escaping (UploadResult) -> Void) {
-//        let imageData = uploadImage.jpegData(compressionQuality: compressionQuality)!
-//        let mimeType = imageData.mimeType!
 
         var request = URLRequest(url: endpointURI, method: method, headers: headers)
-//        request.httpBody = createHttpBody(binaryData: data, mimeType: mimeType)
         request.httpBody = data
 
         logger.debug("DataTask \(self.method) \(self.endpointURI.description)")

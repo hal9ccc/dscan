@@ -19,7 +19,7 @@ struct ContentView: View {
     let mediaProvider:      MediaProvider   = .shared
 
 //    @StateObject var settings = AppSettings()
-    @StateObject var scanData = ScanData()
+//    @StateObject var scanData = ScanData()
     
     @AppStorage("CacheSize")
     private var cachesize: Double = 50

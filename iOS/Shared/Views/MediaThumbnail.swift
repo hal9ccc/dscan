@@ -17,14 +17,6 @@ struct MediaThumbnail: View {
             .fill(.thinMaterial)
             .frame(width: 150, height: 250)
             .overlay {
-//                if media.img != "␀" {
-//                    LazyImage(source: media.img, resizingMode: .aspectFit)
-//                }
-//                else if media.imageData != nil {
-//                    let container = ImageContainer(image: UIImage(data: media.imageData)!, type: .jpeg)
-//                    Image(container)
-//                        .frame(width: 150, height: 250)
-//                }
 
                 ZStack {
                     LazyImage(source: media.img, resizingMode: .aspectFit)
@@ -39,8 +31,6 @@ struct MediaThumbnail: View {
                     }
                 }
                 .frame(width: 150, height: 250)
-
-
             }
     }
 }

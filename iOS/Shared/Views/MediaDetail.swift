@@ -39,7 +39,6 @@ struct MediaDetail: View {
                         .frame(height: 500)
                         .opacity(media.img == "␀" ? 0 : 1)
 
-                    //let container = ImageContainer(image: UIImage(data: media.imageData!)!, type: .jpeg, data: media.imageData!)
                     if media.imageData != nil {
                         Image(UIImage(data: media.imageData!)!)
                             .resizingMode(.aspectFit)

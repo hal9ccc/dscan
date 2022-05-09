@@ -38,16 +38,9 @@ struct ScannerView: UIViewControllerRepresentable {
         var mediaProvider:  MediaProvider  = .shared
         
         @AppStorage("CompressionQuality")
-        private var comprQual: Double = 0.5
+        private var compressionQuality: Double = 0.5
         
-        var scanData: ScanData = ScanData()
-
         private let completionHandler: ([MediaProperties]?) -> Void
-
-//        private var metadata: MMMetadata = MMMetadata()
-//        private var textRecognitionRequest = VNRecognizeTextRequest()
-//        private var barcodeRecognitionRequest = VNDetectBarcodesRequest()
-
 
         init(completion: @escaping ([MediaProperties]?) -> Void) {
             self.completionHandler = completion
@@ -83,7 +76,6 @@ struct ScannerView: UIViewControllerRepresentable {
                   img:                    "␀",
                   recognizedCodesJson:    "␀",
                   recognizedTextJson:     "␀",
-//                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.9) ?? Data()
                   imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.1) ?? Data(),
                   uiImage:                scan.imageOfPage(at: pageNumber)
                 )
