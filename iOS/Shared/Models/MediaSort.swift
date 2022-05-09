@@ -8,15 +8,24 @@
 
 import Foundation
 
-struct MediaSort: Hashable, Identifiable {
+struct MediaSort: Hashable, Identifiable, Equatable {
     let id:           Int
     let name:         String
     let descriptors:  [SortDescriptor<Media>]
     let section:      KeyPath<Media, String>
 
     static let sorts: [MediaSort] = [
-      MediaSort (
+        MediaSort (
             id:         0,
+            name:       "by Date/Time",
+            descriptors:[
+                SortDescriptor (\Media.set,  order: .reverse),
+                SortDescriptor (\Media.idx)
+            ],
+            section:    \Media.set
+        ),
+        MediaSort (
+            id:         1,
             name:       "by Person",
             descriptors:[
                 SortDescriptor (\Media.person),
@@ -26,7 +35,7 @@ struct MediaSort: Hashable, Identifiable {
             section:    \Media.person
         ),
         MediaSort (
-            id:         1,
+            id:         2,
             name:       "by Company",
             descriptors:[
                 SortDescriptor (\Media.company),
@@ -36,7 +45,7 @@ struct MediaSort: Hashable, Identifiable {
             section:    \Media.company
         ),
         MediaSort(
-            id:         2,
+            id:         3,
             name:       "by Carrier",
             descriptors:[
                 SortDescriptor (\Media.carrier),
@@ -46,7 +55,7 @@ struct MediaSort: Hashable, Identifiable {
             section:    \Media.carrier
         ),
         MediaSort (
-            id:         3,
+            id:         4,
             name:       "by Location",
             descriptors:[
                 SortDescriptor (\Media.location),
@@ -56,7 +65,7 @@ struct MediaSort: Hashable, Identifiable {
             section:    \Media.location
         ),
         MediaSort(
-            id:         4,
+            id:         5,
             name:       "by Device",
             descriptors:[
                 SortDescriptor (\Media.device),
@@ -64,6 +73,16 @@ struct MediaSort: Hashable, Identifiable {
                 SortDescriptor (\Media.idx),
             ],
             section:    \Media.device
+        ),
+        MediaSort(
+            id:         6,
+            name:       "by Code",
+            descriptors:[
+                SortDescriptor (\Media.code),
+                SortDescriptor (\Media.set),
+                SortDescriptor (\Media.idx),
+            ],
+            section:    \Media.code
         )
     ]
 

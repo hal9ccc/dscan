@@ -15,6 +15,10 @@ import Nuke
 struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
+    @StateObject var mediaProcessor = MediaProcessor()
+    let mediaProvider:      MediaProvider   = .shared
+
+//    @StateObject var settings = AppSettings()
     @StateObject var scanData = ScanData()
     
     @AppStorage("CacheSize")
@@ -30,31 +34,13 @@ struct ContentView: View {
                     Label("Documents", systemImage: "doc.on.doc")
                 }
 
-//            ScannerView(completion: {
-//                scanData in
-//
-//                print("got \(scanData?.count ?? 0) scans")
-//
-//                let mediaProvider:      MediaProvider   = .shared
-//
-//                Task {
-//                    // Import the JSON into Core Data.
-//                    print("Start importing data to the store...")
-//
-//                    do {
-//                        try await mediaProvider.importMedia(from: scanData!)
-//                        print("Done!")
-//                    }
-//                    catch {
-//                        print(error)
-//                    }
-//               }
-                
-//            })
-//            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-//            .tabItem {
-//                Label("scan", systemImage: "doc.text.viewfinder")
-//            }
+            ScannerView(completion: { scanData in
+                mediaProvider.importSet(scanData)
+            })
+            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
+            .tabItem {
+                Label("scan", systemImage: "doc.text.viewfinder")
+            }
 
             QuakeView()
                 .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
@@ -63,22 +49,13 @@ struct ContentView: View {
                 }
 
             SettingsView()
-//                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
                 .tabItem {
                     Label("Settings", systemImage: "gear")
                 }
 
-            
-            
-            
-            
-            
-            
-            
-            
 
         }
-        .environmentObject(scanData)
+        .environmentObject(mediaProcessor)
         .onAppear() {
 
 

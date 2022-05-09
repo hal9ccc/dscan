@@ -50,7 +50,7 @@ struct QuakeView: View {
                     ForEach(quakes) { section in
                         
                         Section(
-                            header: SectionHeader(name: "\(section.id)", pill:"\(section.count)")) {
+                            header: SectionHeader(name: "\(section.id)", pill:section.count)) {
                                 //header: Text("\(section.id) [\(section.count)]")) {
                                 
                                 ForEach(section, id: \.code) { quake in
@@ -231,10 +231,11 @@ struct QuakeView: View {
             Spacer()
 
             ToolbarStatus(
+                itemCount: quakes.joined().count,
                 isLoading: isLoading,
                 lastUpdated: lastUpdated,
                 sectionCount: quakes.count,
-                itemCount: quakes.joined().count
+                selectedCount: 0
             )
 
             Spacer()

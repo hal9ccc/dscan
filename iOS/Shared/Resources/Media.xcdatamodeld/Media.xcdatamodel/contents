@@ -7,7 +7,7 @@
         <attribute name="device" optional="YES" attributeType="String"/>
         <attribute name="filename" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="String"/>
-        <attribute name="idx" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="idx" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="imageData" optional="YES" attributeType="Binary"/>
         <attribute name="img" optional="YES" attributeType="String"/>
         <attribute name="location" optional="YES" attributeType="String"/>
@@ -25,7 +25,7 @@
         </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
-                <constraint value="id"/>
+                <constraint value="filename"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>

@@ -210,7 +210,7 @@ struct QuakeProperties: Decodable {
             + "place = \(rawPlace?.description ?? "nil"), "
             + "time = \(rawTime?.description ?? "nil")"
 
-            let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "parsing")
+            let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "parsing")
             logger.debug("Ignored: \(values)")
 
             throw DscanError.missingData

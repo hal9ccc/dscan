@@ -9,10 +9,27 @@
 
 import Foundation
 import SwiftUI
+
+#if os(iOS)
 import NukeUI
+#endif
+
+struct GrowingButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(Color.blue)
+            .foregroundColor(.white)
+            .clipShape(Capsule())
+            .scaleEffect(configuration.isPressed ? 1.2 : 1)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
 
 struct MediaDetail: View {
     var media: Media
+    
+    @EnvironmentObject var mp: MediaProcessor
     
     var body: some View {
         ScrollView {
@@ -31,6 +48,23 @@ struct MediaDetail: View {
                 
                 }
                 .frame(height: 500)
+                
+                
+                if media.imageData != nil {
+                    Button(action: {
+                        processImage (
+                            image:      UIImage(data: media.imageData!)!,
+                            filename:   media.filename,
+                            title:      media.title,
+                            idx:        Int(media.idx),
+                            timestamp:  media.time
+                        )
+                    }) {
+                        Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
+                    }
+                    .buttonStyle(GrowingButton())
+                }
+                
 
                 Text(media.code)
                     .font(.title3)
@@ -38,9 +72,7 @@ struct MediaDetail: View {
 
                 Text("\(media.carrier)")
                     .foregroundStyle(Color.primary)
-               
-               
-                
+
                 Text("\(media.time.formatted())")
                     .foregroundStyle(Color.secondary)
                 
@@ -51,9 +83,14 @@ struct MediaDetail: View {
     }
     
     var title: String {
-        "\(media.carrier) #\(media.code)"
+        media.code == "␀" ? media.filename : "\(media.carrier) #\(media.code)"
+    }
+    
+    func processImage(image: UIImage, filename: String, title: String, idx: Int, timestamp: Date ) {
+        mp.processImage(image: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
     }
 }
+
 
 struct MediaDetail_Previews: PreviewProvider {
     static var previews: some View {

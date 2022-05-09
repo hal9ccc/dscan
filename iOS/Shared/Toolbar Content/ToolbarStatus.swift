@@ -9,10 +9,11 @@ import Foundation
 import SwiftUI
 
 struct ToolbarStatus: View {
+    var itemCount: Int
     var isLoading: Bool
     var lastUpdated: TimeInterval
     var sectionCount: Int
-    var itemCount: Int
+    var selectedCount: Int
 
     @State var currentDate = Date()
     @State var lastUpdate_str = ""
@@ -29,7 +30,10 @@ struct ToolbarStatus: View {
             else {
                 Text("Updated \(lastUpdate_str)")
             }
-            Text("\(itemCount) documents in \(sectionCount) sections")
+            Text((selectedCount > 0 ? "\(selectedCount) of " : "")
+                 + "\(itemCount) documents"
+                 + (sectionCount > 0 ? " in \(sectionCount) sections" : "")
+                 + (selectedCount > 0 ? " selected" : ""))
                 .foregroundStyle(Color.secondary)
 
         }
@@ -47,31 +51,35 @@ struct ToolbarStatus: View {
 struct ToolbarStatus_Previews: PreviewProvider {
     static var previews: some View {
         ToolbarStatus(
+            itemCount: 10_000,
             isLoading: true,
             lastUpdated: Date.distantPast.timeIntervalSince1970,
             sectionCount: 5,
-            itemCount: 10_000
+            selectedCount: 88
         )
 
         ToolbarStatus(
+            itemCount: 10_000,
             isLoading: false,
             lastUpdated: Date.distantFuture.timeIntervalSince1970,
             sectionCount: 5,
-            itemCount: 10_000
+            selectedCount: 0
         )
 
         ToolbarStatus(
+            itemCount: 10_000,
             isLoading: false,
             lastUpdated: Date.now.timeIntervalSince1970,
             sectionCount: 5,
-            itemCount: 10_000
+            selectedCount: 777
         )
 
         ToolbarStatus(
+            itemCount: 10_000,
             isLoading: false,
             lastUpdated: Date.distantPast.timeIntervalSince1970,
             sectionCount: 5,
-            itemCount: 10_000
+            selectedCount: 88
         )
     }
 }

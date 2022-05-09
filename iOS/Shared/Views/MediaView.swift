@@ -11,7 +11,7 @@ import SwiftUI
     
 struct MediaView: View {
     
-    @EnvironmentObject var scanData: ScanData
+    @EnvironmentObject var scanData: ScanManager
     
     var mediaProvider:      MediaProvider   = .shared
     var selectedSection:    String          = ""
@@ -63,7 +63,7 @@ struct MediaView: View {
                     ForEach(media) { section in
                         
                         Section (header:
-                            SectionHeader(name: "\(section.id)", pill:"\(section.count)")
+                            SectionHeader(name: "\(section.id)", pill:Int16(section.count))
                         ) {
                             ForEach(section, id: \.id) { media in
                                 NavigationLink(destination: MediaDetail(media: media)) {

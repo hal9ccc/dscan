@@ -5,22 +5,16 @@ Abstract:
 A class to fetch data from the remote server and save it to the Core Data store.
 */
 
-import SwiftUI
 import CoreData
 import OSLog
+import SwiftUI
 
 class MediaProvider {
 
-    // MARK: USGS Data
-
-    /// Geological data provided by the U.S. Geological Survey (USGS). See ACKNOWLEDGMENTS.txt for additional details.
-    @AppStorage("ServerURL")
-    private var serverurl = ""
-
+    let url: URL
 
     // MARK: Logging
-
-    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "persistence")
+    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
 
     // MARK: Core Data
 
@@ -39,8 +33,12 @@ class MediaProvider {
     private var notificationToken: NSObjectProtocol?
 
     private init(inMemory: Bool = false) {
-        self.inMemory = inMemory
+        @AppStorage("ServerURL")
+        var serverurl = "http://localhost"
 
+        self.inMemory = inMemory
+        self.url = URL(string: "\(serverurl)/media/list")!
+        
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
             self.logger.debug("Received a persistent store remote change notification.")
@@ -114,17 +112,23 @@ class MediaProvider {
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
     func fetchMedia() async throws {
         let session = URLSession.shared
-        let url = URL(string: "\(serverurl)/media/list")!
-        
-        guard let (data, response) = try? await session.data(from: url),
-              let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200
+
+        guard let (data, response) = try? await session.data(from: url)
         else {
-            logger.debug("Failed to receive valid response and/or data.")
+            logger.debug("Failed to fetch data from the server.")
             throw DscanError.missingData
         }
 
-        
+
+        guard let httpResponse = response as? HTTPURLResponse,
+              httpResponse.statusCode == 200
+        else {
+            logger.debug("Failed to receive valid response and/or data.")
+            print(response)
+            throw DscanError.missingData
+        }
+
+
         do {
             // Decode the JSON into a data model.
             let jsonDecoder = JSONDecoder()
@@ -150,7 +154,7 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-        
+
         //print (propertiesList)
 
         /// - Tag: performAndWait
@@ -163,8 +167,8 @@ class MediaProvider {
                let success = batchInsertResult.result as? Bool, success {
                 return
             }
-            
-           
+
+
             self.logger.debug("Failed to execute batch insert request.")
             throw DscanError.batchInsertError
         }
@@ -269,4 +273,74 @@ class MediaProvider {
             }
         }
     }
+
+
+    // import MediaProperties into the store
+//    func importScanData (from scanData: [MediaProperties]) {
+//        self.logger.debug("importing \(scanData.count) scans...")
+//
+//        Task {
+//            do {
+//                try await importMedia(from: scanData)
+//                self.logger.debug("Done!")
+//                Task {
+//                    var scanDataJpeg : [MediaProperties] = []
+//                    scanData.forEach { (scan) in
+//                        self.logger.debug ("converting \(scan.id)...")
+//                        scanDataJpeg.append(
+//                            MediaProperties (
+//                                id:                     scan.id,
+//                                set:                    scan.set,
+//                                idx:                    scan.idx,
+//                                time:                   scan.time,
+//                                title:                  scan.title,
+//                                device:                 scan.device,
+//                                filename:               scan.filename,
+//                                code:                   scan.code,
+//                                person:                 scan.person,
+//                                company:                scan.company,
+//                                carrier:                scan.carrier,
+//                                location:               scan.location,
+//                                img:                    scan.img,
+//                                recognizedCodesJson:    scan.recognizedCodesJson,
+//                                recognizedTextJson:     scan.recognizedTextJson,
+//                                imageData:              scan.uiImage!.jpegData(compressionQuality: 0.9)!,
+//                                uiImage:                scan.uiImage!
+//                            )
+//                        )
+//                    }
+//
+//                    self.logger.debug ("updating...")
+//                    try await importMedia(from: scanDataJpeg)
+//                    self.logger.debug ("Done!")
+//                }
+//            }
+//            catch {
+//                print(error)
+//            }
+//        }
+//
+//    }
+
+    func importSet(_ scanData: [MediaProperties]?) {
+        self.logger.debug("Importing \(scanData?.count ?? 0) scan(s)...")
+
+        if scanData != nil && scanData!.count > 0 {
+            Task {
+                // Import the JSON into Core Data.
+                do {
+                    try await importMedia(from: scanData!)
+                    self.logger.debug("Done!")
+                }
+                catch {
+                    self.logger.debug("\(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+
+
+
+
 }
