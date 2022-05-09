@@ -19,6 +19,10 @@ struct ContentView: View {
     let mediaProvider:      MediaProvider   = .shared
 
 //    @StateObject var settings = AppSettings()
+    @StateObject var scanData = ScanData()
+    
+    @AppStorage("CacheSize")
+    private var cachesize: Double = 50
 
     var body: some View {
 
@@ -62,6 +66,8 @@ struct ContentView: View {
               failure: .scaleAspectFit,
               placeholder: .scaleAspectFit)
 
+            
+            
             ImageLoadingOptions.shared.placeholder = UIImage(named: "dark-moon")
             ImageLoadingOptions.shared.failureImage = UIImage(named: "annoyed")
             ImageLoadingOptions.shared.transition = .fadeIn(duration: 2.5)
@@ -71,7 +77,7 @@ struct ContentView: View {
 
             let pipeline = ImagePipeline {
               let dataCache = try? DataCache(name: "de.hal9ccc.dscan.datacache")
-              dataCache?.sizeLimit = 200 * 1024 * 1024
+              dataCache?.sizeLimit = Int(cachesize)
               $0.dataCache = dataCache
             }
             ImagePipeline.shared = pipeline

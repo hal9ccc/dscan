@@ -36,6 +36,11 @@ struct ScannerView: UIViewControllerRepresentable {
 
     final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var mediaProvider:  MediaProvider  = .shared
+        
+        @AppStorage("CompressionQuality")
+        private var comprQual: Double = 0.5
+        
+        var scanData: ScanData = ScanData()
 
         private let completionHandler: ([MediaProperties]?) -> Void
 
