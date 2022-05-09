@@ -14,142 +14,6 @@ select * from media_details order by timestamp desc;
 
 drop table media;
 
-CREATE TABLE media (
-  id             NUMBER(10)     NOT NULL,
-  content_type   VARCHAR2(100)  NOT NULL,
-  file_name      VARCHAR2(100)  NOT NULL,
-  content        BLOB           ,
-  type           VARCHAR2(100)  NOT NULL,
-  title          VARCHAR2(100)  NOT NULL,
-  timestamp      timestamp      NOT NULL,
-  idx            int            NOT NULL,
-  device         VARCHAR2(100)
-);
-
-alter table media modify content null;
-
-
-ALTER TABLE media ADD (
-  CONSTRAINT media_pk PRIMARY KEY (id)
-);
-
-ALTER TABLE media ADD (
-  CONSTRAINT media_uk UNIQUE (file_name)
-);
-
-CREATE SEQUENCE media_seq;
-
-CREATE OR REPLACE PACKAGE media_api AS
-
-  PROCEDURE upload (
-    p_timestamp     IN  varchar2,
-    p_idx           IN  media.idx            %TYPE,
-    p_file_name     IN  media.file_name      %TYPE,
-    p_content_type  IN  media.content_type   %TYPE,
-    p_content       IN  media.content        %TYPE,
-    p_type          IN  media.type           %TYPE,
-    p_title         IN  media.title          %TYPE,
-    p_device        IN  media.device         %TYPE
-   );
-
-  PROCEDURE download (p_file_name  IN  media.file_name%TYPE);
-
-END;
-/
-
-
-CREATE OR REPLACE PACKAGE BODY media_api AS
-
-  PROCEDURE upload (
-    p_timestamp     IN  varchar2,
-    p_idx           IN  media.idx             %TYPE,
-    p_file_name     IN  media.file_name       %TYPE,
-    p_content_type  IN  media.content_type    %TYPE,
-    p_content       IN  media.content         %TYPE,
-    p_type          IN  media.type            %TYPE,
-    p_title         IN  media.title           %TYPE,
-    p_device        IN  media.device          %TYPE
-   )
-   is
-    v_id                media.ID              %TYPE;
-    v_file_name         media.file_name       %TYPE;
-    v_title             media.title           %TYPE;
-    v_timestamp         media.timestamp       %TYPE;
-
-  BEGIN
-    trc.ENTER('upload', 'p_file_name', p_file_name, 'ts', p_timestamp);
-
-    begin
-        v_timestamp := nvl(to_timestamp(p_timestamp, 'yyyy-mm-dd"T"hh24:mi:ss"Z"'), SYSTIMESTAMP);
-    exception
-      when others then
-        trc.err('Failed to convert timestamp: '||p_timestamp);
-        v_timestamp := SYSTIMESTAMP;
-    end;
-
-    v_file_name := p_file_name; --to_char(v_timestamp, 'YYYYMMDD-HH24:MI:SS,FF4')||'_'||ltrim(to_char(p_idx, '0000'))||'.jpg';
-    v_title     := nvl(p_title, to_char(v_timestamp, 'YYYYMMDD-HH24:MI:SS')||'-'||ltrim(to_char(p_idx, '0000')));
-
-    v_id := media_seq.NEXTVAL;
-
-    begin
-      INSERT INTO media (id, content, content_type, file_name, "TYPE", title, timestamp, idx, device)
-      VALUES (v_id, p_content, p_content_type, v_file_name, p_type, v_title, v_timestamp, p_idx, p_device);
-
-    exception when DUP_VAL_ON_INDEX then
-      UPDATE media
-        SET  content    = p_content,
-             file_name  = v_file_name,
-             title      = v_title,
-             device     = p_device
-      WHERE  id         = v_id
-      ;
-    end;
-
-    COMMIT;
-
-    if p_content_type = 'text/json' then
-      DBMS_SCHEDULER.CREATE_JOB (
-        job_name   => 'update_media_details_'||v_id,
-        job_type   => 'PLSQL_BLOCK',
-        job_action => 'BEGIN  update_media_details('||v_id||'); END;',
-        start_date => SYSTIMESTAMP, -- - NUMTODSINTERVAL(1, 'day'),
-        enabled    => true
-      );
-      trc.EXIT('created job update_media_details_'||v_id);
-    end if;
-
-    trc.EXIT('upload complete ('||DBMS_LOB.GETLENGTH(p_content)||' byte)');
-
-  EXCEPTION
-    when others then
-      trc.err('error saving media content');
-      raise;
-  END;
-
-
-  PROCEDURE download (p_file_name  IN  media.file_name%TYPE) IS
-    l_rec  media%ROWTYPE;
-  BEGIN
-    --trc.ENTER('download', 'p_file_name', p_file_name);
-    SELECT *
-    INTO   l_rec
-    FROM   media
-    WHERE  file_name = p_file_name;
-
-    OWA_UTIL.mime_header(l_rec.content_type, FALSE);
-    HTP.p('Content-Length: ' || DBMS_LOB.getlength(l_rec.content));
-    HTP.p('Content-Disposition: filename="' || l_rec.file_name || '"');
-    OWA_UTIL.http_header_close;
-
-    WPG_DOCLOAD.download_file(l_rec.content);
-    --trc.EXIT('download');
-  END;
-
-END;
-/
-
-
 
 CONN dscan/dscan@dm1/xepdb2
 
@@ -340,67 +204,9 @@ BEGIN
   COMMIT;
 END;
 
-CREATE OR REPLACE FUNCTION listagg_clob (
-column_name IN VARCHAR2,
-table_name  IN VARCHAR2,
-where_cond  IN VARCHAR2 DEFAULT NULL,
-order_by    IN VARCHAR2 DEFAULT NULL,
-delimiter   IN VARCHAR2 DEFAULT ',')
-RETURN CLOB
-IS
-ret_clob CLOB;
-BEGIN
-EXECUTE IMMEDIATE q'!select replace(replace(XmlAgg(
-                  XmlElement("a", !' || column_name ||')
-                  order by ' ||nvl(order_by,'1') ||
-                  q'!)
-                  .getClobVal(),
-              '<a>', ''),
-            '</a>','!'|| delimiter ||q'!') as aggname
-   from !' || table_name || q'!
-  where  !' || nvl(where_cond,' 1=1') INTO ret_clob;
-RETURN ret_clob;
-END;
-/
 
 
 
-create or replace view V_MEDIA as
-select M.*,
-       sys.dbms_lob.getlength(M."CONTENT") "CONTENT_SIZE",
-       nvl(T.Code,          '')   as Code,
-       nvl(T.Carrier,       '')   as Carrier,
-       nvl(T.TrackingNr,    '')   as TrackingNr,
-       nvl(T.Name,          '')   as Name,
-       nvl(T.Person,        '')   as Person,
-       nvl(T.Company,       '')   as Company,
-       nvl(T.Location,      '')   as Location,
-       nvl(F.Fulltext,      '')   as FullText,
-       nvl(C.Codelist,      '')   as CodeList,
-       nvl(T.TagList,       '')   as TagList,
-      substr(''    || '<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
-      '🗓' || ' ' || to_char(M.TIMESTAMP, 'dd.mm.yyyy hh24:mi:ss') || ' - ' || M.idx || '<br>' ||
-      '📷' || ' ' || M.device || '<br>' ||
-      '📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
-    --'📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
-      '📃' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '</a>' || '<br>' ||
---      nvl2(C.Codelist, '<hr>'  || C.Codelist
-      --, '') ||
-      C.Codelist ||
-      '', 1, 4000)                           as HTML_Details,
-       to_char(M.TIMESTAMP, 'yyyy-mm') month,
-       to_char(M.TIMESTAMP, 'yyyy-mm-dd') day,
-       to_char(M.TIMESTAMP, 'yyyymmdd-hh24:mi:ss')
---           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
-         as SET_NAME,
-       'http://mbp-mschulze.local/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') as IMG
-from   MEDIA M
-left outer join  V_MEDIA_TAGS     T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_FULLTEXT F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_CODELIST C on C.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-where  M.content_type in ('text/json')
-  and  M.type = 'scan'
-;
 
 select * from media order by id desc;
 
@@ -435,7 +241,6 @@ as
  )
 ;
 
-drop table media_details;
 select * from media_details;
 select count(*) from media_details;
 delete from media_details where rownum < 38;
@@ -447,95 +252,6 @@ select * from V_MEDIA where id = 1366;
 select * from MEDIA_DETAILS where file_name = '2022-05-08 20:59:58.2790_1.jpg';
 
 
-create or replace procedure update_media_details
- (strID Varchar2 default null,
-  tsStart Timestamp with time zone default null
- ) is
-
-  M MEDIA%ROWTYPE;
-
-begin
-  trc.ENTER('update_media_details', 'strID', strID, 'tsStart', tsStart);
-
-  if strID is not null then
-    select *
-    into   M
-    from   MEDIA
-    where  ID = strID
-    ;
-
-    --if M.content_type = 'text/json'
-  end if;
-
-
-  MERGE INTO media_details T USING
-    (select   *
-     from     v_media
-     where   (ID         = strID   or strID   is null)
-      and    (Timestamp >= tsStart or tsStart is null)
-    ) Q
-    ON (T.ID = Q.ID)
-    WHEN MATCHED THEN UPDATE
-    SET CONTENT_TYPE  = Q.CONTENT_TYPE,
-        TYPE          = Q.TYPE,
-        TITLE         = Q.TITLE,
-        TIMESTAMP     = Q.TIMESTAMP,
-        IDX           = Q.IDX,
-        CONTENT_SIZE  = Q.CONTENT_SIZE,
-        CODE          = Q.CODE,
-        CARRIER       = Q.CARRIER,
-        TRACKINGNR    = Q.TRACKINGNR,
-        NAME          = Q.NAME,
-        PERSON        = Q.PERSON,
-        COMPANY       = Q.COMPANY,
-        LOCATION      = Q.LOCATION,
-        DEVICE        = Q.DEVICE,
-        FULLTEXT      = Q.FULLTEXT,
-        CODELIST      = Q.CODELIST,
-        TAGLIST       = Q.TAGLIST,
-        HTML_DETAILS  = Q.HTML_DETAILS,
-        MONTH         = Q.MONTH,
-        DAY           = Q.DAY,
-        SET_NAME      = Q.SET_NAME,
-        IMG           = Q.IMG
-    WHEN NOT MATCHED THEN INSERT VALUES (
-        Q.ID,
-        Q.CONTENT_TYPE,
-        Q.FILE_NAME,
-        Q.TYPE,
-        Q.TITLE,
-        Q.TIMESTAMP,
-        Q.IDX,
-        Q.CONTENT_SIZE,
-        Q.DEVICE,
-        Q.CODE,
-        Q.CARRIER,
-        Q.TRACKINGNR,
-        Q.NAME,
-        Q.PERSON,
-        Q.COMPANY,
-        Q.LOCATION,
-        Q.FULLTEXT,
-        Q.CODELIST,
-        Q.TAGLIST,
-        Q.HTML_DETAILS,
-        Q.MONTH,
-        Q.DAY,
-        Q.SET_NAME,
-        Q.IMG
-    );
-
-  trc.EXIT('update_media_details, rowcount='||SQL%ROWCOUNT);
-end;
-
-begin
-  update_media_details;
-end;
-
-begin
-  update_media_details('1366');
-end;
-
 
 delete media where timestamp > sysdate -1;
 
@@ -543,19 +259,9 @@ select * from v_media order by id desc;
 select * from v_media where ID = '1366 ' order by id desc;
 select * from media_details order by id desc;
 
-select * from media order by ID desc;
+select * from media order by timestamp desc;
 select * from media_details order by TIMESTAMP desc;
-select REGEXP_REPLACE('sfkjdsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;
-
-create or replace view V_MEDIA_DETAILS
-as
- (Select T.*,
-         TO_CHAR(T.TIMESTAMP, 'YYYYMMDDHH24MISSFF3') as TIMESTAMP_STR,
-         REGEXP_REPLACE(T.FILE_NAME, '.json$', '.jpg') as FILE_NAME_IMG
-  From   MEDIA_DETAILS T
- );
-
-select * from V_MEDIA_DETAILS;
+select REGEXP_REPLACE('sfkj dsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;
 
 
 
@@ -635,108 +341,8 @@ exception when others then
 end;
 
 
-create or replace view V_MEDIA_RECOGNIZEDTEXT
-as
-with Q as
- (select M.ID,
-         M.file_name,
-         M.idx,
-         M.content_type,
-         M.timestamp,
-         JT.Text,
-         JT.confidence,
-         JT.x,
-         JT.y,
-         JT.w,
-         JT.h
-  from   Media      M,
-         JSON_TABLE
-          (M.content, '$' COLUMNS
-            (ID Varchar2(32) PATH '$.ID',
-             nested path '$.recognizedText[*]' columns
-              (Text         Varchar2(4000) PATH '$.text',
-               Confidence   Varchar2(100) PATH '$.confidence',
-               X            Varchar2(100) PATH '$.x',
-               y            Varchar2(100) PATH '$.y',
-               w            Varchar2(100) PATH '$.w',
-               h            Varchar2(100) PATH '$.h'
-              )
-            )
-          ) JT
- )
-Select Q.ID,
-       Q.file_name,
-       Q.idx,
-       Q.content_type,
-       Q.timestamp,
-       Q.Text,
-     --Q.confidence,
-     --Q.x,
-     --Q.y,
-     --Q.w,
-     --Q.h
-       to_number(Q.confidence , 'fm9999999D9999999999999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') confidence,
-       to_number(Q.x          , 'fm9999999D9999999999999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') x,
-       to_number(Q.y          , 'fm9999999D9999999999999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') y,
-       to_number(Q.w          , 'fm9999999D9999999999999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') w,
-       to_number(Q.h          , 'fm9999999D9999999999999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') h
-from   Q
---where  rtrim(translate (x, '-0123456789.', '            ')) is null
---  and  rtrim(translate (y, '-0123456789.', '            ')) is null
---  and  rtrim(translate (w, '-0123456789.', '            ')) is null
---  and  rtrim(translate (h, '-0123456789.', '            ')) is null
-;
 
 
-create or replace view V_MEDIA_DETECTEDBARCODES
-as
-with Q as
- (select M.ID,
-         M.file_name,
-         M.idx,
-         M.content_type,
-         M.timestamp,
-         JT.Symbology,
-         JT.Payload
-  from   Media      M,
-         JSON_TABLE
-          (M.content, '$' COLUMNS
-            (ID Varchar2(32) PATH '$.ID',
-             nested path '$.detectedBarcodes[*]' columns
-              (Payload      Varchar2(4000) PATH '$.payload',
-               Symbology    Varchar2(100) PATH '$.symbology'
-              )
-            )
-          ) JT
-  UNION ALL
-  select M.ID,
-         M.file_name,
-         M.idx,
-         M.content_type,
-         M.timestamp,
-         JT.Symbology,
-         JT.Payload
-  from   Media      M,
-         JSON_TABLE
-          (M.content, '$' COLUMNS
-            (ID Varchar2(32) PATH '$.ID',
-             nested path '$.recognizedCodes[*]' columns
-              (Payload      Varchar2(4000) PATH '$.payload',
-               Symbology    Varchar2(100) PATH '$.symbology'
-              )
-            )
-          ) JT
- )
-Select Q.ID,
-       Q.file_name,
-       Q.idx,
-       Q.content_type,
-       Q.timestamp,
-       Q.Symbology,
-       Q.payload
-from   Q
-where  Payload is not null
-;
 
 
 select to_number('-0.00017175078392809', 'fm9999999D9999999999999999999', 'NLS_NUMERIC_CHARACTERS = ''.,''') from dual;
