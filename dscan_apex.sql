@@ -28,17 +28,17 @@ prompt APPLICATION 103 - dscan
 -- Application Export:
 --   Application:     103
 --   Name:            dscan
---   Date and Time:   04:54 Tuesday April 19, 2022
+--   Date and Time:   08:25 Monday May 9, 2022
 --   Exported By:     ADMIN
 --   Flashback:       0
 --   Export Type:     Application Export
 --     Pages:                     10
---       Items:                   56
+--       Items:                   60
 --       Validations:              1
 --       Processes:               14
 --       Regions:                 29
---       Buttons:                 19
---       Dynamic Actions:          5
+--       Buttons:                 20
+--       Dynamic Actions:          6
 --     Shared Components:
 --       Logic:
 --       Navigation:
@@ -117,7 +117,7 @@ wwv_flow_api.create_flow(
 ,p_substitution_string_01=>'APP_NAME'
 ,p_substitution_value_01=>'dscan'
 ,p_last_updated_by=>'ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20220419043532'
+,p_last_upd_yyyymmddhh24miss=>'20220508201648'
 ,p_file_prefix => nvl(wwv_flow_application_install.get_static_app_file_prefix,'')
 ,p_files_version=>3
 ,p_ui_type_name => null
@@ -144,8 +144,9 @@ wwv_flow_api.create_list_item(
 wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(5000386061524958)
 ,p_list_item_display_sequence=>30
-,p_list_item_link_text=>'Image List'
+,p_list_item_link_text=>'Scan list'
 ,p_list_item_link_target=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-media-list'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'4'
 );
@@ -153,7 +154,8 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(10811561983650537)
 ,p_list_item_display_sequence=>50
 ,p_list_item_link_text=>'Automatic Tagging'
-,p_list_item_link_target=>'f?p=&APP_ID.:10:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_link_target=>'f?p=&APP_ID.:10:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-tags'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'10'
 );
@@ -161,7 +163,8 @@ wwv_flow_api.create_list_item(
  p_id=>wwv_flow_api.id(12201108855585642)
 ,p_list_item_display_sequence=>60
 ,p_list_item_link_text=>'Name Lookup'
-,p_list_item_link_target=>'f?p=&APP_ID.:20:&APP_SESSION.::&DEBUG.:::'
+,p_list_item_link_target=>'f?p=&APP_ID.:20:&SESSION.::&DEBUG.::::'
+,p_list_item_icon=>'fa-contacts'
 ,p_list_item_current_type=>'COLON_DELIMITED_PAGE_LIST'
 ,p_list_item_current_for_pages=>'20'
 );
@@ -411,8 +414,8 @@ wwv_flow_api.create_menu_option(
 );
 wwv_flow_api.create_menu_option(
  p_id=>wwv_flow_api.id(13623670191082307)
-,p_short_name=>'Media List'
-,p_link=>'f?p=&APP_ID.:2:&APP_SESSION.::&DEBUG.:::'
+,p_short_name=>'Scan List'
+,p_link=>'f?p=&APP_ID.:2:&SESSION.::&DEBUG.:::'
 ,p_page_id=>2
 );
 wwv_flow_api.create_menu_option(
@@ -14551,7 +14554,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20220419034018'
+,p_last_upd_yyyymmddhh24miss=>'20220508201648'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(9505705458346867)
@@ -14576,7 +14579,7 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(4033504734122179)
 ,p_plug_display_sequence=>20
 ,p_query_type=>'TABLE'
-,p_query_table=>'MEDIA_DETAILS'
+,p_query_table=>'V_MEDIA_DETAILS'
 ,p_include_rowid_column=>false
 ,p_lazy_loading=>false
 ,p_plug_source_type=>'NATIVE_CARDS'
@@ -14596,9 +14599,9 @@ wwv_flow_api.create_card(
 ,p_body_adv_formatting=>true
 ,p_body_html_expr=>wwv_flow_string.join(wwv_flow_t_varchar2(
 '<div style="text-align:center">',
-'    <a href="http://localhost/ords/dscan/media/files/&FILE_NAME." target="image">',
+'    <a href="http://localhost/ords/dscan/media/files/&FILE_NAME_IMG." target="image">',
 '    <img style="object-fit: contain; height:240px; width:100%; shadow: 5px 5px 15px 5px #c0c0c0;"',
-'src="http://localhost/ords/dscan/media/files/&FILE_NAME.">',
+'src="http://localhost/ords/dscan/media/files/&FILE_NAME_IMG.">',
 '    </a>',
 '</div>'))
 ,p_second_body_adv_formatting=>false
@@ -14671,7 +14674,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9501432527346852)
 ,p_name=>'P1_MONTH'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>50
+,p_item_sequence=>60
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Month'
 ,p_source=>'MONTH'
@@ -14697,7 +14700,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9501848857346852)
 ,p_name=>'P1_DAY'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>60
+,p_item_sequence=>70
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Day'
 ,p_source=>'DAY'
@@ -14724,7 +14727,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9502243887346852)
 ,p_name=>'P1_SET_NAME'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>70
+,p_item_sequence=>80
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Set Name'
 ,p_source=>'SET_NAME'
@@ -14754,7 +14757,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9502654418346853)
 ,p_name=>'P1_TYPE'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>80
+,p_item_sequence=>90
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Type'
 ,p_source=>'TYPE'
@@ -14778,7 +14781,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9503076144346853)
 ,p_name=>'P1_CONTENT_TYPE'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>90
+,p_item_sequence=>100
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Content Type'
 ,p_source=>'CONTENT_TYPE'
@@ -14802,7 +14805,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(9503400794346853)
 ,p_name=>'P1_DEVICE'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>100
+,p_item_sequence=>110
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Device'
 ,p_source=>'DEVICE'
@@ -14851,7 +14854,7 @@ wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(10100295586037902)
 ,p_name=>'P1_TRACKINGNR'
 ,p_source_data_type=>'VARCHAR2'
-,p_item_sequence=>40
+,p_item_sequence=>50
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
 ,p_prompt=>'Tracking-Nr.'
 ,p_source=>'TRACKINGNR'
@@ -14874,25 +14877,49 @@ wwv_flow_api.create_page_item(
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(10103186953037931)
-,p_name=>'P1_NAME'
+,p_name=>'P1_PERSON'
 ,p_source_data_type=>'VARCHAR2'
 ,p_item_sequence=>30
 ,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
-,p_prompt=>'Name'
-,p_source=>'NAME'
+,p_prompt=>'Person'
+,p_source=>'PERSON'
 ,p_source_type=>'FACET_COLUMN'
-,p_display_as=>'NATIVE_RADIOGROUP'
+,p_display_as=>'NATIVE_CHECKBOX'
 ,p_item_template_options=>'#DEFAULT#'
 ,p_encrypt_session_state_yn=>'N'
-,p_attribute_05=>'N'
 ,p_fc_show_label=>true
 ,p_fc_collapsible=>true
 ,p_fc_initial_collapsed=>true
 ,p_fc_compute_counts=>true
 ,p_fc_show_counts=>true
 ,p_fc_zero_count_entries=>'H'
-,p_fc_show_more_count=>100
-,p_fc_filter_values=>false
+,p_fc_show_more_count=>20
+,p_fc_filter_values=>true
+,p_fc_sort_by_top_counts=>false
+,p_fc_show_selected_first=>false
+,p_fc_show_chart=>false
+,p_fc_toggleable=>false
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(12271008911869646)
+,p_name=>'P1_COMPANY'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>40
+,p_item_plug_id=>wwv_flow_api.id(14501366143871771)
+,p_prompt=>'Company'
+,p_source=>'COMPANY'
+,p_source_type=>'FACET_COLUMN'
+,p_display_as=>'NATIVE_CHECKBOX'
+,p_item_template_options=>'#DEFAULT#'
+,p_encrypt_session_state_yn=>'N'
+,p_fc_show_label=>true
+,p_fc_collapsible=>true
+,p_fc_initial_collapsed=>true
+,p_fc_compute_counts=>true
+,p_fc_show_counts=>true
+,p_fc_zero_count_entries=>'H'
+,p_fc_show_more_count=>20
+,p_fc_filter_values=>true
 ,p_fc_sort_by_top_counts=>false
 ,p_fc_show_selected_first=>false
 ,p_fc_show_chart=>false
@@ -14905,15 +14932,15 @@ begin
 wwv_flow_api.create_page(
  p_id=>2
 ,p_user_interface_id=>wwv_flow_api.id(4143947832122245)
-,p_name=>'Media Details'
+,p_name=>'Scan List'
 ,p_alias=>'MEDIA-LIST'
-,p_step_title=>'Media Details'
+,p_step_title=>'Scan List'
 ,p_autocomplete_on_off=>'OFF'
 ,p_step_template=>wwv_flow_api.id(4024173337122172)
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20220419043532'
+,p_last_upd_yyyymmddhh24miss=>'20220505222344'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(13616339340082293)
@@ -15009,7 +15036,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>13
 ,p_column_identifier=>'Q'
 ,p_column_label=>'Img'
-,p_column_html_expression=>'<img src=''#IMG#'' style="height:200px;">'
+,p_column_html_expression=>'<img src=''#IMG#'' style="max-height:200px; max-width:300px;">'
 ,p_column_type=>'STRING'
 ,p_column_alignment=>'CENTER'
 );
@@ -15019,7 +15046,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>23
 ,p_column_identifier=>'S'
 ,p_column_label=>'Details'
-,p_column_html_expression=>'<div style="max-height:200px; overflow:auto">#HTML_DETAILS#</div>'
+,p_column_html_expression=>'<div style="max-height:200px; max-width:300px;  overflow:auto">#HTML_DETAILS#</div>'
 ,p_column_type=>'STRING'
 ,p_display_text_as=>'WITHOUT_MODIFICATION'
 ,p_heading_alignment=>'LEFT'
@@ -15111,15 +15138,6 @@ wwv_flow_api.create_worksheet_column(
 ,p_heading_alignment=>'LEFT'
 );
 wwv_flow_api.create_worksheet_column(
- p_id=>wwv_flow_api.id(13621218952082306)
-,p_db_column_name=>'NAME'
-,p_display_order=>123
-,p_column_identifier=>'L'
-,p_column_label=>'Name'
-,p_column_type=>'STRING'
-,p_heading_alignment=>'LEFT'
-);
-wwv_flow_api.create_worksheet_column(
  p_id=>wwv_flow_api.id(13622058281082306)
 ,p_db_column_name=>'MONTH'
 ,p_display_order=>133
@@ -15161,7 +15179,7 @@ wwv_flow_api.create_worksheet_column(
 ,p_display_order=>183
 ,p_column_identifier=>'V'
 ,p_column_label=>'Fulltext'
-,p_column_html_expression=>'<pre style="max-width:500px; height: 200px; overflow:auto">#FULLTEXT#</pre>'
+,p_column_html_expression=>'<pre style="max-width:700px; height: 200px; overflow:auto">#FULLTEXT#</pre>'
 ,p_allow_sorting=>'N'
 ,p_allow_ctrl_breaks=>'N'
 ,p_allow_aggregations=>'N'
@@ -15172,6 +15190,46 @@ wwv_flow_api.create_worksheet_column(
 ,p_column_type=>'CLOB'
 ,p_rpt_show_filter_lov=>'N'
 );
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(12270944012869645)
+,p_db_column_name=>'PERSON'
+,p_display_order=>193
+,p_column_identifier=>'W'
+,p_column_label=>'Person'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(12271237131869648)
+,p_db_column_name=>'CODE'
+,p_display_order=>203
+,p_column_identifier=>'X'
+,p_column_label=>'Code'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(12271331129869649)
+,p_db_column_name=>'NAME'
+,p_display_order=>213
+,p_column_identifier=>'Y'
+,p_column_label=>'Name'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(12271467243869650)
+,p_db_column_name=>'COMPANY'
+,p_display_order=>223
+,p_column_identifier=>'Z'
+,p_column_label=>'Company'
+,p_column_type=>'STRING'
+);
+wwv_flow_api.create_worksheet_column(
+ p_id=>wwv_flow_api.id(35566674530193201)
+,p_db_column_name=>'LOCATION'
+,p_display_order=>233
+,p_column_identifier=>'AA'
+,p_column_label=>'Location'
+,p_column_type=>'STRING'
+);
 wwv_flow_api.create_worksheet_rpt(
  p_id=>wwv_flow_api.id(13701156210111136)
 ,p_application_user=>'APXWS_DEFAULT'
@@ -15179,7 +15237,7 @@ wwv_flow_api.create_worksheet_rpt(
 ,p_report_alias=>'137012'
 ,p_status=>'PUBLIC'
 ,p_is_default=>'Y'
-,p_report_columns=>'IMG:TAGLIST:HTML_DETAILS:'
+,p_report_columns=>'IMG:TAGLIST:HTML_DETAILS::PERSON:CODE:NAME:COMPANY:LOCATION'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(13623836742082309)
@@ -15208,7 +15266,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210314141542'
+,p_last_upd_yyyymmddhh24miss=>'20220419050021'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(13600397659082228)
@@ -15217,12 +15275,13 @@ wwv_flow_api.create_page_plug(
 ,p_plug_template=>wwv_flow_api.id(4058725034122188)
 ,p_plug_display_sequence=>10
 ,p_query_type=>'TABLE'
-,p_query_table=>'V_MEDIA'
+,p_query_table=>'MEDIA_DETAILS'
 ,p_include_rowid_column=>false
 ,p_is_editable=>true
 ,p_edit_operations=>'i:u:d'
 ,p_lost_update_check_type=>'VALUES'
 ,p_plug_source_type=>'NATIVE_FORM'
+,p_plug_query_options=>'DERIVED_REPORT_COLUMNS'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(13624431495082312)
@@ -15302,6 +15361,89 @@ wwv_flow_api.create_page_branch(
 ,p_branch_sequence=>1
 );
 wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(12270027874869636)
+,p_name=>'P3_CONTENT_SIZE'
+,p_source_data_type=>'NUMBER'
+,p_item_sequence=>180
+,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_prompt=>'Content Size'
+,p_source=>'CONTENT_SIZE'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_NUMBER_FIELD'
+,p_cSize=>30
+,p_field_template=>wwv_flow_api.id(4119839627122215)
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_attribute_03=>'right'
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(12270128503869637)
+,p_name=>'P3_CODELIST'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>190
+,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_prompt=>'Codelist'
+,p_source=>'CODELIST'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_TEXTAREA'
+,p_cSize=>30
+,p_cMaxlength=>4000
+,p_cHeight=>5
+,p_field_template=>wwv_flow_api.id(4119839627122215)
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'N'
+,p_attribute_03=>'N'
+,p_attribute_04=>'BOTH'
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(12270257394869638)
+,p_name=>'P3_TAGLIST'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>200
+,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_prompt=>'Taglist'
+,p_source=>'TAGLIST'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_TEXTAREA'
+,p_cSize=>30
+,p_cMaxlength=>4000
+,p_cHeight=>5
+,p_field_template=>wwv_flow_api.id(4119839627122215)
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'N'
+,p_attribute_03=>'N'
+,p_attribute_04=>'BOTH'
+);
+wwv_flow_api.create_page_item(
+ p_id=>wwv_flow_api.id(12270353231869639)
+,p_name=>'P3_HTML_DETAILS'
+,p_source_data_type=>'VARCHAR2'
+,p_item_sequence=>210
+,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
+,p_prompt=>'Html Details'
+,p_source=>'HTML_DETAILS'
+,p_source_type=>'REGION_SOURCE_COLUMN'
+,p_display_as=>'NATIVE_TEXTAREA'
+,p_cSize=>30
+,p_cMaxlength=>4000
+,p_cHeight=>5
+,p_field_template=>wwv_flow_api.id(4119839627122215)
+,p_item_template_options=>'#DEFAULT#'
+,p_is_persistent=>'N'
+,p_attribute_01=>'Y'
+,p_attribute_02=>'N'
+,p_attribute_03=>'N'
+,p_attribute_04=>'BOTH'
+);
+wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(13600771221082231)
 ,p_name=>'P3_ID'
 ,p_source_data_type=>'NUMBER'
@@ -15309,14 +15451,10 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>10
 ,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
 ,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
-,p_use_cache_before_default=>'NO'
-,p_prompt=>'Id'
+,p_item_default=>'610'
 ,p_source=>'ID'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_HIDDEN'
-,p_label_alignment=>'RIGHT'
-,p_field_template=>wwv_flow_api.id(4119839627122215)
-,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
 ,p_protection_level=>'S'
 ,p_encrypt_session_state_yn=>'N'
@@ -15373,33 +15511,6 @@ wwv_flow_api.create_page_item(
 ,p_attribute_02=>'N'
 ,p_attribute_03=>'N'
 ,p_attribute_04=>'BOTH'
-);
-wwv_flow_api.create_page_item(
- p_id=>wwv_flow_api.id(13601839230082245)
-,p_name=>'P3_CONTENT'
-,p_source_data_type=>'BLOB'
-,p_item_sequence=>40
-,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
-,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
-,p_use_cache_before_default=>'NO'
-,p_prompt=>'Content'
-,p_source=>'CONTENT'
-,p_source_type=>'REGION_SOURCE_COLUMN'
-,p_display_as=>'NATIVE_FILE'
-,p_cSize=>60
-,p_cMaxlength=>255
-,p_cHeight=>1
-,p_label_alignment=>'RIGHT'
-,p_field_template=>wwv_flow_api.id(4119839627122215)
-,p_item_template_options=>'#DEFAULT#'
-,p_is_persistent=>'N'
-,p_encrypt_session_state_yn=>'N'
-,p_attribute_01=>'DB_COLUMN'
-,p_attribute_06=>'Y'
-,p_attribute_08=>'attachment'
-,p_attribute_09=>'SESSION'
-,p_attribute_10=>'N'
-,p_attribute_12=>'INLINE'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(13602295895082246)
@@ -15604,11 +15715,10 @@ wwv_flow_api.create_page_item(
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(13605800624082259)
 ,p_name=>'P3_FULLTEXT'
-,p_source_data_type=>'VARCHAR2'
+,p_source_data_type=>'CLOB'
 ,p_item_sequence=>130
 ,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
 ,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
-,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Fulltext'
 ,p_source=>'FULLTEXT'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
@@ -15616,7 +15726,6 @@ wwv_flow_api.create_page_item(
 ,p_cSize=>60
 ,p_cMaxlength=>4000
 ,p_cHeight=>4
-,p_label_alignment=>'RIGHT'
 ,p_field_template=>wwv_flow_api.id(4119839627122215)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -15708,15 +15817,13 @@ wwv_flow_api.create_page_item(
 ,p_item_sequence=>170
 ,p_item_plug_id=>wwv_flow_api.id(13600397659082228)
 ,p_item_source_plug_id=>wwv_flow_api.id(13600397659082228)
-,p_use_cache_before_default=>'NO'
 ,p_prompt=>'Img'
 ,p_source=>'IMG'
 ,p_source_type=>'REGION_SOURCE_COLUMN'
 ,p_display_as=>'NATIVE_TEXTAREA'
 ,p_cSize=>60
-,p_cMaxlength=>161
+,p_cMaxlength=>140
 ,p_cHeight=>4
-,p_label_alignment=>'RIGHT'
 ,p_field_template=>wwv_flow_api.id(4119839627122215)
 ,p_item_template_options=>'#DEFAULT#'
 ,p_is_persistent=>'N'
@@ -16795,7 +16902,7 @@ wwv_flow_api.create_page(
 ,p_page_template_options=>'#DEFAULT#'
 ,p_protection_level=>'C'
 ,p_last_updated_by=>'ADMIN'
-,p_last_upd_yyyymmddhh24miss=>'20210314182740'
+,p_last_upd_yyyymmddhh24miss=>'20220428200834'
 );
 wwv_flow_api.create_page_plug(
  p_id=>wwv_flow_api.id(10101838835037918)
@@ -17492,7 +17599,7 @@ wwv_flow_api.create_report_region(
 ,p_source_type=>'NATIVE_SQL_REPORT'
 ,p_query_type=>'TABLE'
 ,p_query_table=>'V_MEDIA_AUTOTAGGING'
-,p_query_where=>'"ID" = :P10_ID'
+,p_query_where=>'"ID" = :P10_ID '
 ,p_include_rowid_column=>false
 ,p_display_when_condition=>'P10_ID'
 ,p_display_condition_type=>'ITEM_IS_NOT_NULL'
@@ -17696,11 +17803,23 @@ wwv_flow_api.create_page_button(
 ,p_button_action=>'REDIRECT_PAGE'
 ,p_button_template_options=>'#DEFAULT#:t-Button--iconLeft'
 ,p_button_template_id=>wwv_flow_api.id(4121370132122218)
-,p_button_is_hot=>'Y'
 ,p_button_image_alt=>'Create'
 ,p_button_position=>'NEXT'
 ,p_button_redirect_url=>'f?p=&APP_ID.:6:&APP_SESSION.::&DEBUG.:RP,6::'
 ,p_icon_css_classes=>'fa-plus'
+);
+wwv_flow_api.create_page_button(
+ p_id=>wwv_flow_api.id(12270664758869642)
+,p_button_sequence=>30
+,p_button_plug_id=>wwv_flow_api.id(10812016822650544)
+,p_button_name=>'ApplyTags'
+,p_button_action=>'SUBMIT'
+,p_button_template_options=>'#DEFAULT#:t-Button--iconRight'
+,p_button_template_id=>wwv_flow_api.id(4121370132122218)
+,p_button_is_hot=>'Y'
+,p_button_image_alt=>'Regenerate Tags'
+,p_button_position=>'NEXT'
+,p_icon_css_classes=>'fa-gears'
 );
 wwv_flow_api.create_page_item(
  p_id=>wwv_flow_api.id(10813832983650548)
@@ -17778,6 +17897,9 @@ wwv_flow_api.create_page_da_action(
 ,p_affected_elements_type=>'REGION'
 ,p_affected_region_id=>wwv_flow_api.id(10827777206650578)
 );
+end;
+/
+begin
 wwv_flow_api.create_page_da_action(
  p_id=>wwv_flow_api.id(10837497706650586)
 ,p_event_id=>wwv_flow_api.id(10827876590650578)
@@ -17798,9 +17920,6 @@ wwv_flow_api.create_page_da_event(
 ,p_bind_type=>'bind'
 ,p_bind_event_type=>'keypress'
 );
-end;
-/
-begin
 wwv_flow_api.create_page_da_action(
  p_id=>wwv_flow_api.id(10853002021650636)
 ,p_event_id=>wwv_flow_api.id(10851216586650635)
@@ -17818,6 +17937,35 @@ wwv_flow_api.create_page_da_action(
 ,p_action_sequence=>30
 ,p_execute_on_page_init=>'N'
 ,p_action=>'NATIVE_CANCEL_EVENT'
+);
+wwv_flow_api.create_page_da_event(
+ p_id=>wwv_flow_api.id(12270719281869643)
+,p_name=>'ClickApplyTags'
+,p_event_sequence=>160
+,p_triggering_element_type=>'BUTTON'
+,p_triggering_button_id=>wwv_flow_api.id(12270664758869642)
+,p_bind_type=>'bind'
+,p_bind_event_type=>'click'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(12270845933869644)
+,p_event_id=>wwv_flow_api.id(12270719281869643)
+,p_event_result=>'TRUE'
+,p_action_sequence=>10
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_EXECUTE_PLSQL_CODE'
+,p_attribute_01=>'update_media_details'
+,p_attribute_05=>'PLSQL'
+,p_wait_for_result=>'Y'
+);
+wwv_flow_api.create_page_da_action(
+ p_id=>wwv_flow_api.id(12271115672869647)
+,p_event_id=>wwv_flow_api.id(12270719281869643)
+,p_event_result=>'TRUE'
+,p_action_sequence=>20
+,p_execute_on_page_init=>'N'
+,p_action=>'NATIVE_JAVASCRIPT_CODE'
+,p_attribute_01=>'alert ("done.")'
 );
 wwv_flow_api.create_page_process(
  p_id=>wwv_flow_api.id(10103493024037934)
@@ -18345,13 +18493,36 @@ wwv_flow_api.create_install_script(
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
 'CREATE TABLE "NAME_DICTIONARY" ',
-'   (	"ID" NUMBER DEFAULT NULL, ',
+'   (	"ID" NUMBER DEFAULT "DSCAN"."NAME_DICTIONARY_SEQ"."NEXTVAL" NOT NULL ENABLE, ',
 '	"RE_PATTERN1" VARCHAR2(100) NOT NULL ENABLE, ',
 '	"NAME" VARCHAR2(100) NOT NULL ENABLE, ',
 '	"TYPE" VARCHAR2(10), ',
 '	"ORIGINAL_ID" VARCHAR2(100), ',
 '	 CONSTRAINT "NAME_DICTIONARY_PK" PRIMARY KEY ("ID")',
 '  USING INDEX  ENABLE',
+'   ) ;',
+'',
+'CREATE TABLE "MEDIA_DETAILS" ',
+'   (	"ID" NUMBER(10,0) NOT NULL ENABLE, ',
+'	"CONTENT_TYPE" VARCHAR2(100) NOT NULL ENABLE, ',
+'	"FILE_NAME" VARCHAR2(100) NOT NULL ENABLE, ',
+'	"TYPE" VARCHAR2(100) NOT NULL ENABLE, ',
+'	"TITLE" VARCHAR2(100) NOT NULL ENABLE, ',
+'	"TIMESTAMP" TIMESTAMP (6) NOT NULL ENABLE, ',
+'	"IDX" NUMBER(*,0) NOT NULL ENABLE, ',
+'	"CONTENT_SIZE" NUMBER, ',
+'	"DEVICE" VARCHAR2(100), ',
+'	"CARRIER" VARCHAR2(4000), ',
+'	"TRACKINGNR" VARCHAR2(4000), ',
+'	"NAME" VARCHAR2(4000), ',
+'	"FULLTEXT" CLOB, ',
+'	"CODELIST" VARCHAR2(4000), ',
+'	"TAGLIST" VARCHAR2(4000), ',
+'	"HTML_DETAILS" VARCHAR2(4000), ',
+'	"MONTH" VARCHAR2(7), ',
+'	"DAY" VARCHAR2(10), ',
+'	"SET_NAME" VARCHAR2(17), ',
+'	"IMG" VARCHAR2(140)',
 '   ) ;',
 '',
 'CREATE TABLE "MEDIA_AUTOTAGGING" ',
@@ -18397,11 +18568,11 @@ wwv_flow_api.create_install_script(
 'CREATE UNIQUE INDEX "NAME_DICTIONARY_PK" ON "NAME_DICTIONARY" ("ID") ',
 '  ;',
 '',
-'CREATE OR REPLACE SYNONYM ""."TRC" FOR ""."TRC_APEX";',
-'',
-' CREATE SEQUENCE  "MEDIA_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 661 CACHE 20 NOORDER  NOCYCLE  NOKEEP  GLOBAL ;',
+' CREATE SEQUENCE  "MEDIA_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 901 CACHE 20 NOORDER  NOCYCLE  NOKEEP  GLOBAL ;',
 '',
 ' CREATE SEQUENCE  "NAME_DICTIONARY_SEQ"  MINVALUE 1 MAXVALUE 9999999999999999999999999999 INCREMENT BY 1 START WITH 41 CACHE 20 NOORDER  NOCYCLE  NOKEEP  GLOBAL ;',
+'',
+'CREATE OR REPLACE EDITIONABLE SYNONYM ""."TRC" FOR ""."TRC_APEX";',
 '',
 ''))
 );
@@ -18494,6 +18665,17 @@ wwv_flow_api.create_install_object(
 ,p_created_on=>to_date('20210315125158','YYYYMMDDHH24MISS')
 );
 wwv_flow_api.create_install_object(
+ p_id=>wwv_flow_api.id(29366528682406171)
+,p_script_id=>wwv_flow_api.id(17200462308135969)
+,p_object_owner=>'#OWNER#'
+,p_object_type=>'TABLE'
+,p_object_name=>'MEDIA_DETAILS'
+,p_last_updated_by=>'ADMIN'
+,p_last_updated_on=>to_date('20220419074757','YYYYMMDDHH24MISS')
+,p_created_by=>'ADMIN'
+,p_created_on=>to_date('20220419074757','YYYYMMDDHH24MISS')
+);
+wwv_flow_api.create_install_object(
  p_id=>wwv_flow_api.id(17201133806135991)
 ,p_script_id=>wwv_flow_api.id(17200462308135969)
 ,p_object_owner=>'#OWNER#'
@@ -18526,7 +18708,7 @@ wwv_flow_api.create_install_script(
 ,p_sequence=>20
 ,p_script_type=>'INSTALL'
 ,p_script_clob=>wwv_flow_string.join(wwv_flow_t_varchar2(
-'CREATE OR REPLACE PACKAGE "MEDIA_API" AS',
+'CREATE OR REPLACE EDITIONABLE PACKAGE "MEDIA_API" AS',
 '',
 '  PROCEDURE upload (',
 '    p_timestamp     IN  varchar2,',
@@ -18545,7 +18727,7 @@ wwv_flow_api.create_install_script(
 '/',
 '',
 '',
-'CREATE OR REPLACE PACKAGE BODY "MEDIA_API" AS',
+'CREATE OR REPLACE EDITIONABLE PACKAGE BODY "MEDIA_API" AS',
 '',
 '  PROCEDURE upload (',
 '    p_timestamp     IN  varchar2,',
@@ -18613,7 +18795,7 @@ wwv_flow_api.create_install_script(
 'END;',
 '/',
 '',
-'CREATE OR REPLACE PACKAGE "TRC_APEX" AS',
+'CREATE OR REPLACE EDITIONABLE PACKAGE "TRC_APEX" AS',
 '  /*',
 unistr('  ** kombiniertes Trace f\00FCr APEX_DEBUG, DBMS_OUTPUT und einfache Tabelle'),
 '  **',
@@ -18695,7 +18877,7 @@ unistr('  ** kombiniertes Trace f\00FCr APEX_DEBUG, DBMS_OUTPUT und einfache Tab
 '/',
 '',
 '',
-'CREATE OR REPLACE PACKAGE BODY "TRC_APEX" AS',
+'CREATE OR REPLACE EDITIONABLE PACKAGE BODY "TRC_APEX" AS',
 '  /*',
 '  ** **************************************************************************',
 '  */',
@@ -18962,36 +19144,37 @@ unistr('    -- f\00FChrende und abschlie\00DFende Zeilenumbr\00FCche entfernen')
 'end;',
 '/',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA" ("ID", "CONTENT_TYPE", "FILE_NAME", "CONTENT", "TYPE", "TITLE", "TIMESTAMP", "IDX", "DEVICE", "CARRIER", "TRACKINGNR", "NAME", "FULLTEXT", "CODELIST", "TAGLIST", "HTML_DETAILS", "MONTH", "DAY", "SET_NAME", "IMG"'
-||') AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA" ("ID", "CONTENT_TYPE", "FILE_NAME", "CONTENT", "TYPE", "TITLE", "TIMESTAMP", "IDX", "DEVICE", "CONTENT_SIZE", "CARRIER", "TRACKINGNR", "NAME", "FULLTEXT", "CODELIST", "TAGLIST", "HTML_DETAILS", "MONT'
+||'H", "DAY", "SET_NAME", "IMG") AS ',
 '  select M."ID",M."CONTENT_TYPE",M."FILE_NAME",M."CONTENT",M."TYPE",M."TITLE",M."TIMESTAMP",M."IDX",M."DEVICE",',
+'       sys.dbms_lob.getlength(M."CONTENT") "CONTENT_SIZE",',
 '       nvl(T.Carrier,       '' - unbekannt -'') as Carrier,',
 '       nvl(T.TrackingNr,    '' - unbekannt -'') as TrackingNr,',
 '       nvl(T.Name,          '' - unbekannt -'') as Name,',
 '       nvl(F.Fulltext,      '' - leer -''     ) as FullText,',
 '       nvl(C.Codelist,      '' - keine -''    ) as CodeList,',
 '       nvl(T.TagList,       ''''              ) as TagList,',
-'      ''''    || ''<strong style="font-size:125%;">''      || M.title || ''</strong>'' || ''<br><br>'' ||',
+'      substr(''''    || ''<strong style="font-size:125%;">''      || M.title || ''</strong>'' || ''<br><br>'' ||',
 unistr('      ''\D83D\DDD3'' || '' '' || to_char(M.TIMESTAMP, ''dd.mm.yyyy hh24:mi:ss'') || '' - '' || M.idx || ''<br>'' ||'),
 unistr('      ''\D83D\DCF7'' || '' '' || M.device || ''<br>'' ||'),
-unistr('      ''\D83D\DCC3'' || '' <a href="'' || ''http://mbp-mschulze.local/ords/dscan/media/files/''|| M.FILE_NAME || ''">'' || M.FILE_NAME || ''</a>'' || ''<br>'' ||'),
-unistr('      ''\D83D\DCCE'' || '' <a href="'' || ''http://mbp-mschulze.local/ords/dscan/media/files/''|| REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'') || ''">'' || REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'') || ''</a>'' || ''<br>'' ||'),
+unistr('      ''\D83D\DCC3'' || '' <a href="'' || ''http://localhost/ords/dscan/media/files/''|| M.FILE_NAME || ''">'' || M.FILE_NAME || ''</a>'' || ''<br>'' ||'),
+unistr('      ''\D83D\DCCE'' || '' <a href="'' || ''http://localhost/ords/dscan/media/files/''|| REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'') || ''">'' || REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'') || ''</a>'' || ''<br>'' ||'),
 '      nvl2(C.Codelist, ''<hr>''  || C.Codelist',
 '      , '''') ||',
-'      ''''                                      as HTML_Details,',
+'      '''', 1, 4000)                           as HTML_Details,',
 '       to_char(M.TIMESTAMP, ''yyyy-mm'') month,',
 '       to_char(M.TIMESTAMP, ''yyyy-mm-dd'') day,',
 '       to_char(M.TIMESTAMP, ''yyyymmdd-hh24:mi:ss'')',
 '--           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '''', '' [''||count(*) OVER (PARTITION BY T.TIMESTAMP)||'']'')',
 '         as SET_NAME,',
-'       ''http://mbp-mschulze.local/ords/dscan/media/files/''|| M.FILE_NAME as IMG',
+'       ''http://localhost/ords/dscan/media/files/''|| M.FILE_NAME as IMG',
 'from   MEDIA            M',
 'left outer join  V_MEDIA_TAGS     T on T.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'')',
 'left outer join  V_MEDIA_FULLTEXT F on F.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'')',
 'left outer join  V_MEDIA_CODELIST C on C.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, ''.jpg$|.jpeg$'', ''.json'')',
 'where  M.content_type in (''image/jpg'');',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_AUTOTAGGING" ("TYPE", "ID", "FILE_NAME", "MATCHCODE1", "MATCHCODE2", "MATCHCODE3", "TAG_NAME", "TAG_VALUE", "RE_PATTERN1", "RE_PATTERN2", "RE_PATTERN3") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_AUTOTAGGING" ("TYPE", "ID", "FILE_NAME", "MATCHCODE1", "MATCHCODE2", "MATCHCODE3", "TAG_NAME", "TAG_VALUE", "RE_PATTERN1", "RE_PATTERN2", "RE_PATTERN3") AS ',
 '  (select MAT.type,',
 '        MAT.ID,',
 '        MRC.file_name,',
@@ -19016,7 +19199,8 @@ unistr('      ''\D83D\DCCE'' || '' <a href="'' || ''http://mbp-mschulze.local/or
 '        '''',       -- matchcode2',
 '        '''',       -- matchcode3',
 '        MAT.tag_name,',
-'        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MAT.re_result_substr) as tag_value,',
+'      --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MAT.re_result_substr) as tag_value,',
+'        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,',
 '        MAT.re_pattern1,',
 '        MAT.re_pattern2,',
 '        MAT.re_pattern3',
@@ -19034,14 +19218,14 @@ unistr('      ''\D83D\DCCE'' || '' <a href="'' || ''http://mbp-mschulze.local/or
 '        ''Name'',   -- tag_name,',
 '        NAD.name, -- tag_value',
 '        NAD.re_pattern1,',
-'        '''', --re_pattern2',
+'      , --re_pattern2',
 '        ''''  --MAT.re_pattern3',
 ' from   NAME_DICTIONARY NAD',
 ' join   V_MEDIA_RECOGNIZEDTEXT MRT',
 '   on   REGEXP_LIKE (MRT.Text, NAD.re_pattern1)',
 ');',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_CODELI("ID", "FILE_NAME", "CODELIST") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_CODELIST" ("ID", "FILE_NAME", "CODELIST") AS ',
 '  with Q as (',
 '  select   Q2.*,',
 unistr('           Symbology||'' \279C <b>''||payload||''</b>'' as codelist'),
@@ -19064,14 +19248,23 @@ unistr('           Symbology||'' \279C <b>''||payload||''</b>'' as codelist'),
 'group by  Q.ID,',
 '          Q.file_name;',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_FULLTEXT" ("ID", "FILE_NAME", "FULLTEXT") AS ',
-'  with Q as (',
-'  select   Q2.*,',
-'         lead(line) over (partition by file_name order by line, col) lllll,',
-unistr('           case when line = lag (line) over (partition by file_name order by line, col, y, x) then ''\2E31'' else   ''''     end  as prefix,'),
-'           case when line = lead(line) over (partition by file_name order by line, col, y, x) then ''''  else  chr(10) end  as suffix',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_FULLTEXT" ("ID", "FILE_NAME", "FULLTEXT") AS ',
+'  select    Q.ID,',
+'          Q.file_name,',
+'          listagg_clob(''textline'',''V_MEDIA_FULLTEXT_DATA'', where_cond=>''ID=''''''||Q.ID||'''''''') as Fulltext',
+'        --LISTAGG(Q.prefix || Q.Text || Q.suffix, '''')  as Fulltext',
+'from      MEDIA Q',
+'group by  Q.ID,',
+'          Q.file_name;',
+'',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_FULLTEXT_DATA" ("LINE", "COL", "ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "TEXT", "CONFIDENCE", "X", "Y", "W", "H", "TEXTLINE") AS ',
+'  (select   Q2."LINE",Q2."COL",Q2."ID",Q2."FILE_NAME",Q2."IDX",Q2."CONTENT_TYPE",Q2."TIMESTAMP",Q2."TEXT",Q2."CONFIDENCE",Q2."X",Q2."Y",Q2."W",Q2."H",',
+'           --lead(line) over (partition by file_name order by line, col) lllll,',
+unistr('           case when line = lag (line) over (partition by file_name order by line, col, y, x) then ''\2E31'' else   ''''     end  --as prefix,'),
+'           ||Q2.TEXT||',
+'           case when line = lead(line) over (partition by file_name order by line, col, y, x) then ''''  else  chr(10) end  as textline',
 '  from',
-'   (select   40 - (round (y * 40)) as line,',
+'   (select   12 - (round (y * 12)) as line,',
 '             round (x*12) as col,',
 '             T.*',
 '    from     V_MEDIA_RECOGNIZEDTEXT T',
@@ -19081,15 +19274,9 @@ unistr('           case when line = lag (line) over (partition by file_name orde
 '             y,',
 '             x',
 '   ) Q2',
-')',
-'select    Q.ID,',
-'          Q.file_name,',
-'          LISTAGG(Q.prefix || Q.Text || Q.suffix, '''')  as Fulltext',
-'from      Q',
-'group by  Q.ID,',
-'          Q.file_name;',
+' );',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_METADATA" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "TEXT", "CCC", "CONFIDENCE", "X", "Y", "W", "H") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_METADATA" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "TEXT", "CCC", "CONFIDENCE", "X", "Y", "W", "H") AS ',
 '  with Q as',
 ' (select M.file_name,',
 '         M.idx,',
@@ -19132,7 +19319,7 @@ unistr('           case when line = lag (line) over (partition by file_name orde
 '       to_number(Q.h,          ''fm9999999D9999999999999999999'', ''NLS_NUMERIC_CHARACTERS = ''''.,'''''') h',
 'from   Q;',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_RECOGNIZEDCODES" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "SYMBOLOGY", "PAYLOAD") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_RECOGNIZEDCODES" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "SYMBOLOGY", "PAYLOAD") AS ',
 '  with Q as',
 ' (select M.ID,',
 '         M.file_name,',
@@ -19162,7 +19349,7 @@ unistr('           case when line = lag (line) over (partition by file_name orde
 'from   Q',
 'where  Payload is not null;',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_RECOGNIZEDTEXT" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "TEXT", "CONFIDENCE", "X", "Y", "W", "H") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_RECOGNIZEDTEXT" ("ID", "FILE_NAME", "IDX", "CONTENT_TYPE", "TIMESTAMP", "TEXT", "CONFIDENCE", "X", "Y", "W", "H") AS ',
 '  with Q as',
 ' (select M.ID,',
 '         M.file_name,',
@@ -19208,7 +19395,7 @@ unistr('           case when line = lag (line) over (partition by file_name orde
 '       to_number(Q.h          , ''fm9999999D9999999999999999999999999999'', ''NLS_NUMERIC_CHARACTERS = ''''.,'''''') h',
 'from   Q;',
 '',
-'CREATE OR REPLACE FORCE VIEW "V_MEDIA_TAGS" ("ID", "FILE_NAME", "TAGLIST", "NAME", "CARRIER", "TRACKINGNR") AS ',
+'CREATE OR REPLACE FORCE EDITIONABLE VIEW "V_MEDIA_TAGS" ("ID", "FILE_NAME", "TAGLIST", "NAME", "CARRIER", "TRACKINGNR") AS ',
 '  with V_DistinctTags as (',
 '  select  DISTINCT',
 '          M.ID,',
@@ -19231,7 +19418,100 @@ unistr('          LISTAGG(Q.TrackingNr, ''\2E31'')  as TrackingNr'),
 'from      V_DistinctTags Q',
 'group by  Q.ID,',
 '          Q.file_name,',
-'          Q.TagList;'))
+'          Q.TagList;',
+'',
+'CREATE OR REPLACE EDITIONABLE FUNCTION "LISTAGG_CLOB" (',
+'column_name IN VARCHAR2,',
+'table_name  IN VARCHAR2,',
+'where_cond  IN VARCHAR2 DEFAULT NULL,',
+'order_by    IN VARCHAR2 DEFAULT NULL,',
+'delimiter   IN VARCHAR2 DEFAULT '''')',
+'RETURN CLOB',
+'IS',
+'ret_clob CLOB;',
+'BEGIN',
+'EXECUTE IMMEDIATE q''!select replace(replace(XmlAgg(',
+'                  XmlElement("a", !'' || column_name ||'')',
+'                  order by '' ||nvl(order_by,''1'') ||',
+'                  q''!)',
+'                  .getClobVal(),',
+'              ''<a>'', ''''),',
+'            ''</a>'',''!''|| delimiter ||q''!'') as aggname',
+'   from !'' || table_name || q''!',
+'  where  !'' || nvl(where_cond,'' 1=1'') INTO ret_clob;',
+'RETURN ret_clob;',
+'END;',
+'/',
+'',
+'CREOR REPLACE EDITIONABLE FUNCTION "TO_TO_NUMBER" (s Varchar2) return number is',
+'begin',
+'  DBMS_OUTPUT.PUT_LINE(''[''||s||'']'');',
+'  return to_number(s, ''S9999999D9999999999999999999'', ''NLS_NUMERIC_CHARACTERS = ''''.,'''''');',
+'exception when others then',
+'  DBMS_OUTPUT.PUT_LINE(''[''||s||'']'');',
+'  DBMS_OUTPUT.PUT_LINE(''''||DBMS_UTILITY.FORMAT_ERROR_STACK());',
+'  return null;',
+'end;',
+'/',
+'',
+'CREATE OR REPLACE EDITIONABLE PROCEDURE "UPDATE_MEDIA_DETAILS" ',
+' (strID Varchar2 default null,',
+'  tsStart Timestamp with time zone default null',
+' ) is',
+'begin',
+'  MERGE INTO media_details T USING',
+'    (select   *',
+'     from     v_media',
+'     where   (ID         = strID   or strID   is null)',
+'      and    (Timestamp >= tsStart or tsStart is null)',
+'    ) Q',
+'    ON (T.ID = Q.ID)',
+'    WHEN MATCHED THEN UPDATE',
+'    SET CONTENT_TYPE  = Q.CONTENT_TYPE,',
+'        TYPE          = Q.TYPE,',
+'        TITLE         = Q.TITLE,',
+'        TIMESTAMP     = Q.TIMESTAMP,',
+'        IDX           = Q.IDX,',
+'        CONTENT_SIZE  = Q.CONTENT_SIZE,',
+'        DEVICE        = Q.DEVICE,',
+'        CARRIER       = Q.CARRIER,',
+'        TRACKINGNR    = Q.TRACKINGNR,',
+'        NAME          = Q.NAME,',
+'        FULLTEXT      = Q.FULLTEXT,',
+'        CODELIST      = Q.CODELIST,',
+'        TAGLIST       = Q.TAGLIST,',
+'        HTML_DETAILS  = Q.HTML_DETAILS,',
+'        MONTH         = Q.MONTH,',
+'        DAY           = Q.DAY,',
+'        SET_NAME      = Q.SET_NAME,',
+'        IMG           = Q.IMG',
+'    ;',
+'end;',
+'/',
+'',
+''))
+);
+wwv_flow_api.create_install_object(
+ p_id=>wwv_flow_api.id(29066912030346587)
+,p_script_id=>wwv_flow_api.id(17300354850150154)
+,p_object_owner=>'#OWNER#'
+,p_object_type=>'FUNCTION'
+,p_object_name=>'LISTAGG_CLOB'
+,p_last_updated_by=>'ADMIN'
+,p_last_updated_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
+,p_created_by=>'ADMIN'
+,p_created_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
+);
+wwv_flow_api.create_install_object(
+ p_id=>wwv_flow_api.id(29066782838346585)
+,p_script_id=>wwv_flow_api.id(17300354850150154)
+,p_object_owner=>'#OWNER#'
+,p_object_type=>'FUNCTION'
+,p_object_name=>'TO_TO_NUMBER'
+,p_last_updated_by=>'ADMIN'
+,p_last_updated_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
+,p_created_by=>'ADMIN'
+,p_created_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
 );
 wwv_flow_api.create_install_object(
  p_id=>wwv_flow_api.id(17300453694150171)
@@ -19254,6 +19534,17 @@ wwv_flow_api.create_install_object(
 ,p_last_updated_on=>to_date('20210315125420','YYYYMMDDHH24MISS')
 ,p_created_by=>'ADMIN'
 ,p_created_on=>to_date('20210315125420','YYYYMMDDHH24MISS')
+);
+wwv_flow_api.create_install_object(
+ p_id=>wwv_flow_api.id(29067185887346587)
+,p_script_id=>wwv_flow_api.id(17300354850150154)
+,p_object_owner=>'#OWNER#'
+,p_object_type=>'PROCEDURE'
+,p_object_name=>'UPDATE_MEDIA_DETAILS'
+,p_last_updated_by=>'ADMIN'
+,p_last_updated_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
+,p_created_by=>'ADMIN'
+,p_created_on=>to_date('20220419073801','YYYYMMDDHH24MISS')
 );
 wwv_flow_api.create_install_object(
  p_id=>wwv_flow_api.id(17300857105150173)
@@ -19298,6 +19589,20 @@ wwv_flow_api.create_install_object(
 ,p_last_updated_on=>to_date('20210315125420','YYYYMMDDHH24MISS')
 ,p_created_by=>'ADMIN'
 ,p_created_on=>to_date('20210315125420','YYYYMMDDHH24MISS')
+);
+end;
+/
+begin
+wwv_flow_api.create_install_object(
+ p_id=>wwv_flow_api.id(29066611509346530)
+,p_script_id=>wwv_flow_api.id(17300354850150154)
+,p_object_owner=>'#OWNER#'
+,p_object_type=>'VIEW'
+,p_object_name=>'V_MEDIA_FULLTEXT_DATA'
+,p_last_updated_by=>'ADMIN'
+,p_last_updated_on=>to_date('20220419073800','YYYYMMDDHH24MISS')
+,p_created_by=>'ADMIN'
+,p_created_on=>to_date('20220419073800','YYYYMMDDHH24MISS')
 );
 wwv_flow_api.create_install_object(
  p_id=>wwv_flow_api.id(17301604717150173)
