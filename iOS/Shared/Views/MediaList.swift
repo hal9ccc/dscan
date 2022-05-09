@@ -48,7 +48,7 @@ struct MediaList: View {
         let request = media
         request.sectionIdentifier = MediaSort.sorts[sortId].section
         request.sortDescriptors   = MediaSort.sorts[sortId].descriptors
-        print("rendering section \(MediaSort.sorts[sortId].name) -> \(section)")
+//        print("rendering section \(MediaSort.sorts[sortId].name) -> \(section)")
 
         return ZStack {
 

@@ -11,13 +11,9 @@ import SwiftUI
 
 class MediaProvider {
 
-    // MARK: USGS Data
-
-    /// Geological data provided by the U.S. Geological Survey (USGS). See ACKNOWLEDGMENTS.txt for additional details.
-    let url = URL(string: "http://mbp-mschulze.local/ords/dscan/media/list")!
+    let url: URL
 
     // MARK: Logging
-
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
 
     // MARK: Core Data
@@ -37,8 +33,12 @@ class MediaProvider {
     private var notificationToken: NSObjectProtocol?
 
     private init(inMemory: Bool = false) {
-        self.inMemory = inMemory
+        @AppStorage("ServerURL")
+        var serverurl = "http://localhost"
 
+        self.inMemory = inMemory
+        self.url = URL(string: "\(serverurl)/media/list")!
+        
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
             self.logger.debug("Received a persistent store remote change notification.")
@@ -119,7 +119,7 @@ class MediaProvider {
             throw DscanError.missingData
         }
 
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200
         else {
@@ -128,7 +128,7 @@ class MediaProvider {
             throw DscanError.missingData
         }
 
-        
+
         do {
             // Decode the JSON into a data model.
             let jsonDecoder = JSONDecoder()
@@ -154,7 +154,7 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-        
+
         //print (propertiesList)
 
         /// - Tag: performAndWait
@@ -167,8 +167,8 @@ class MediaProvider {
                let success = batchInsertResult.result as? Bool, success {
                 return
             }
-            
-           
+
+
             self.logger.debug("Failed to execute batch insert request.")
             throw DscanError.batchInsertError
         }
@@ -273,8 +273,8 @@ class MediaProvider {
             }
         }
     }
-    
-    
+
+
     // import MediaProperties into the store
 //    func importScanData (from scanData: [MediaProperties]) {
 //        self.logger.debug("importing \(scanData.count) scans...")
@@ -321,9 +321,9 @@ class MediaProvider {
 //        }
 //
 //    }
-    
+
     func importSet(_ scanData: [MediaProperties]?) {
-        self.logger.debug("MediaList got \(scanData?.count ?? 0) scans")
+        self.logger.debug("Importing \(scanData?.count ?? 0) scan(s)...")
 
         if scanData != nil && scanData!.count > 0 {
             Task {
@@ -341,6 +341,6 @@ class MediaProvider {
 
 
 
-    
-    
+
+
 }

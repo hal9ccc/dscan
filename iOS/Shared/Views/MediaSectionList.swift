@@ -59,7 +59,7 @@ struct MediaSectionList: View {
                     }
                 } // List
                 .listStyle(SidebarListStyle())
-//                .searchable(text: mediaSearchQuery)
+                .searchable(text: mediaSearchQuery)
                 .navigationTitle (title)
                 .toolbar (content: toolbarContent)
 

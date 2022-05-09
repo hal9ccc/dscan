@@ -85,7 +85,6 @@ struct ScannerView: UIViewControllerRepresentable {
 
                 mediaPropertiesList.append(m)
                 print(pageNumber)
-                //self.processImage(image: image, filename: filename, title: scan.title, index: pageNumber, timestamp: ts)
             }
 
             print("Received \(mediaPropertiesList.count) records.")

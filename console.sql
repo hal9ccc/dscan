@@ -1,10 +1,10 @@
-select t.*, t.rowid from media t;
+select t.*, t.rowid from media t order by timestamp desc, content_type;
 
-select * from TRACE where ts > systimestamp - numtodsinterval(30, 'minute') order by ts desc, nr;
+select * from TRACE where ts > systimestamp - numtodsinterval(200, 'minute') order by ts, nr;
 
 truncate table trace;
 
-select * from media order by timestamp desc;
+select * from media order by file_name desc;
 select * from media_details order by timestamp desc;
 
 
@@ -80,7 +80,7 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
     trc.ENTER('upload', 'p_file_name', p_file_name, 'ts', p_timestamp);
 
     begin
-        v_timestamp := nvl(to_timestamp(p_timestamp, 'yyyy-mm-dd hh24:mi:ss,ff4'), SYSTIMESTAMP);
+        v_timestamp := nvl(to_timestamp(p_timestamp, 'yyyy-mm-dd"T"hh24:mi:ss"Z"'), SYSTIMESTAMP);
     exception
       when others then
         trc.err('Failed to convert timestamp: '||p_timestamp);
@@ -106,9 +106,19 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
       ;
     end;
 
-    update_media_details(v_id);
-
     COMMIT;
+
+    if p_content_type = 'text/json' then
+      DBMS_SCHEDULER.CREATE_JOB (
+        job_name   => 'update_media_details_'||v_id,
+        job_type   => 'PLSQL_BLOCK',
+        job_action => 'BEGIN  update_media_details('||v_id||'); END;',
+        start_date => SYSTIMESTAMP, -- - NUMTODSINTERVAL(1, 'day'),
+        enabled    => true
+      );
+      trc.EXIT('created job update_media_details_'||v_id);
+    end if;
+
     trc.EXIT('upload complete ('||DBMS_LOB.GETLENGTH(p_content)||' byte)');
 
   EXCEPTION
@@ -371,8 +381,9 @@ select M.*,
       substr(''    || '<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
       '🗓' || ' ' || to_char(M.TIMESTAMP, 'dd.mm.yyyy hh24:mi:ss') || ' - ' || M.idx || '<br>' ||
       '📷' || ' ' || M.device || '<br>' ||
-      '📃' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
-      '📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
+      '📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
+    --'📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
+      '📃' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '</a>' || '<br>' ||
 --      nvl2(C.Codelist, '<hr>'  || C.Codelist
       --, '') ||
       C.Codelist ||
@@ -382,12 +393,12 @@ select M.*,
        to_char(M.TIMESTAMP, 'yyyymmdd-hh24:mi:ss')
 --           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
          as SET_NAME,
-       'http://mbp-mschulze.local/ords/dscan/media/files/'|| M.FILE_NAME as IMG
+       'http://mbp-mschulze.local/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') as IMG
 from   MEDIA M
-left outer join  V_MEDIA_TAGS     T on T.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_FULLTEXT F on F.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_CODELIST C on C.FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-where  M.content_type in ('image/jpg')
+left outer join  V_MEDIA_TAGS     T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+left outer join  V_MEDIA_FULLTEXT F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+left outer join  V_MEDIA_CODELIST C on C.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+where  M.content_type in ('text/json')
   and  M.type = 'scan'
 ;
 
@@ -428,13 +439,35 @@ drop table media_details;
 select * from media_details;
 select count(*) from media_details;
 delete from media_details where rownum < 38;
+select * from V_MEDIA where id = 1341;
+select * from V_MEDIA_CODELIST where file_name = '2022-05-08 20:59:58.2790_1.json';
+select * from V_MEDIA where file_name = '2022-05-08 20:59:58.2790_1.json';
+select * from V_MEDIA where file_name = '2022-05-08 20:59:58.2790_1.json';
+select * from V_MEDIA where id = 1366;
+select * from MEDIA_DETAILS where file_name = '2022-05-08 20:59:58.2790_1.jpg';
+
 
 create or replace procedure update_media_details
  (strID Varchar2 default null,
   tsStart Timestamp with time zone default null
  ) is
+
+  M MEDIA%ROWTYPE;
+
 begin
   trc.ENTER('update_media_details', 'strID', strID, 'tsStart', tsStart);
+
+  if strID is not null then
+    select *
+    into   M
+    from   MEDIA
+    where  ID = strID
+    ;
+
+    --if M.content_type = 'text/json'
+  end if;
+
+
   MERGE INTO media_details T USING
     (select   *
      from     v_media
@@ -499,11 +532,30 @@ begin
   update_media_details;
 end;
 
-select * from v_media;
+begin
+  update_media_details('1366');
+end;
 
-select * from media_details;
+
+delete media where timestamp > sysdate -1;
+
+select * from v_media order by id desc;
+select * from v_media where ID = '1366 ' order by id desc;
+select * from media_details order by id desc;
+
+select * from media order by ID desc;
+select * from media_details order by TIMESTAMP desc;
 select REGEXP_REPLACE('sfkjdsfh.jpeg', '.jpg$|.jpeg$', '.json') from dual;
 
+create or replace view V_MEDIA_DETAILS
+as
+ (Select T.*,
+         TO_CHAR(T.TIMESTAMP, 'YYYYMMDDHH24MISSFF3') as TIMESTAMP_STR,
+         REGEXP_REPLACE(T.FILE_NAME, '.json$', '.jpg') as FILE_NAME_IMG
+  From   MEDIA_DETAILS T
+ );
+
+select * from V_MEDIA_DETAILS;
 
 
 
@@ -636,10 +688,28 @@ from   Q
 ;
 
 
-create or replace view V_MEDIA_RECOGNIZEDCODES
+create or replace view V_MEDIA_DETECTEDBARCODES
 as
 with Q as
  (select M.ID,
+         M.file_name,
+         M.idx,
+         M.content_type,
+         M.timestamp,
+         JT.Symbology,
+         JT.Payload
+  from   Media      M,
+         JSON_TABLE
+          (M.content, '$' COLUMNS
+            (ID Varchar2(32) PATH '$.ID',
+             nested path '$.detectedBarcodes[*]' columns
+              (Payload      Varchar2(4000) PATH '$.payload',
+               Symbology    Varchar2(100) PATH '$.symbology'
+              )
+            )
+          ) JT
+  UNION ALL
+  select M.ID,
          M.file_name,
          M.idx,
          M.content_type,
@@ -682,9 +752,10 @@ order by 2 desc;
 
 
 select * from V_MEDIA_RECOGNIZEDTEXT order by id, h desc, confidence desc;
-select * from V_MEDIA_RECOGNIZEDCODES order by file_name;
+select * from V_MEDIA_DETECTEDBARCODES order by file_name;
 
 select * from V_MEDIA_RECOGNIZEDTEXT where rtrim(translate (confidence, '-0123456789.', '            ')) is not null;
+select * from V_MEDIA_RECOGNIZEDTEXT where file_name = '2022-05-08 18:36:14.7460_1.json';
 
 select * from Media order by 1;
 select * from Media where id = 641;
@@ -735,7 +806,7 @@ as
         MAT.re_pattern2,
         MAT.re_pattern3
  from   Media_Autotagging MAT
- join   V_MEDIA_RECOGNIZEDCODES MRC
+ join   V_MEDIA_DETECTEDBARCODES MRC
    on   REGEXP_LIKE (MRC.Symbology, MAT.re_pattern1)
   and   REGEXP_LIKE (MRC.Payload,   MAT.re_pattern2)
  where  MAT.type = 'code'
@@ -950,7 +1021,7 @@ with Q as (
              File_Name,
              Symbology,
              payload
-    from     V_MEDIA_RECOGNIZEDCODES C
+    from     V_MEDIA_DETECTEDBARCODES C
 --    where    file_name = '20210313_11:05:35.6630_1.json'
     order by 1,
              2
@@ -968,6 +1039,10 @@ select *
 from   V_MEDIA_CODELIST Q
 where  file_name = '20210313_11:05:35.6630_1.json'
 
+
+
+
+select * from media;
 
 CREATE OR REPLACE FUNCTION listagg_clob (
 column_name IN VARCHAR2,

@@ -276,7 +276,7 @@ struct MediaProperties: Decodable {
     init(from decoder: Decoder) throws {
 
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        formatter.dateFormat = "yyyyMMddHHmmssSSS"
         
         let values = try decoder.container(keyedBy: CodingKeys.self)
         

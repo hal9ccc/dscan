@@ -9,7 +9,6 @@
 
 import Foundation
 import SwiftUI
-import SwiftUI
 
 #if os(iOS)
 import NukeUI
@@ -30,7 +29,7 @@ struct GrowingButton: ButtonStyle {
 struct MediaDetail: View {
     var media: Media
     
-    @EnvironmentObject var mediaProcessor: MediaProcessor
+    @EnvironmentObject var mp: MediaProcessor
     
     var body: some View {
         ScrollView {
@@ -52,7 +51,15 @@ struct MediaDetail: View {
                 
                 
                 if media.imageData != nil {
-                    Button(action: { mediaProcessor.processImage(image: UIImage(data: media.imageData!)!, filename: media.filename, title: media.title, index: Int(media.idx), timestamp: "\(media.time)")}) {
+                    Button(action: {
+                        processImage (
+                            image:      UIImage(data: media.imageData!)!,
+                            filename:   media.filename,
+                            title:      media.title,
+                            idx:        Int(media.idx),
+                            timestamp:  media.time
+                        )
+                    }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
                     .buttonStyle(GrowingButton())
@@ -78,7 +85,12 @@ struct MediaDetail: View {
     var title: String {
         media.code == "␀" ? media.filename : "\(media.carrier) #\(media.code)"
     }
+    
+    func processImage(image: UIImage, filename: String, title: String, idx: Int, timestamp: Date ) {
+        mp.processImage(image: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
+    }
 }
+
 
 struct MediaDetail_Previews: PreviewProvider {
     static var previews: some View {
