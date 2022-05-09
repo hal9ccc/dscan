@@ -33,7 +33,8 @@ struct MediaSectionList: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
-    @AppStorage("lastSelectedSort")
+//    @AppStorage("lastSelectedSort")
+    @State
     private var lastSelectedSort = MediaSort.default.id
 
     @AppStorage("lastSelectedSection")

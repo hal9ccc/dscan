@@ -17,10 +17,18 @@ class Media: NSManagedObject {
     @NSManaged var id:              String // UNIQUE
     @NSManaged var set:             String
     @NSManaged var idx:             Int64
+    @NSManaged var cid:             Int64  // database change ID
+    @NSManaged var hidden:          Bool
+    @NSManaged var status:          String
+    @NSManaged var type:            String
     @NSManaged var time:            Date
     @NSManaged var title:           String
     @NSManaged var device:          String
-    @NSManaged var filename:        String
+    @NSManaged var info1:           String
+    @NSManaged var info2:           String
+    @NSManaged var info3:           String
+    @NSManaged var info4:           String
+    @NSManaged var filename:        String // UNIQUE
     @NSManaged var code:            String
     @NSManaged var person:          String
     @NSManaged var company:         String
@@ -38,9 +46,17 @@ class Media: NSManagedObject {
             let new_id          = dictionary["id"]         as? String,
             let new_setName     = dictionary["setName"]    as? String,
             let new_idx         = dictionary["idx"]        as? Int64,
-            let new_time        = dictionary["time"]       as? Date,
+            let new_cid         = dictionary["cid"]        as? Int64,
+            let new_hidden      = dictionary["hidden"]     as? Bool,
+            let new_status      = dictionary["status"]     as? String,
+            let new_type        = dictionary["type"]       as? String,
+            let new_time        = dictionary["status"]     as? Date,
             let new_title       = dictionary["title"]      as? String,
             let new_device      = dictionary["device"]     as? String,
+            let new_info1       = dictionary["info1"]      as? String,
+            let new_info2       = dictionary["info2"]      as? String,
+            let new_info3       = dictionary["info3"]      as? String,
+            let new_info4       = dictionary["info4"]      as? String,
             let new_filename    = dictionary["filename"]   as? String,
             let new_code        = dictionary["code"]       as? String,
             let new_person      = dictionary["person"]     as? String,
@@ -58,9 +74,17 @@ class Media: NSManagedObject {
         id             = new_id
         set            = new_setName
         idx            = new_idx
+        cid            = new_cid
+        hidden         = new_hidden
+        status         = new_status
+        type           = new_type
         time           = new_time
         title          = new_title
         device         = new_device
+        info1          = new_info1
+        info2          = new_info2
+        info3          = new_info3
+        info4          = new_info4
         filename       = new_filename
         code           = new_code
         person         = new_person
@@ -79,19 +103,27 @@ class Media: NSManagedObject {
 extension Media {
     
     override var description: String {
-        return  "id = \(id.description       ), "
-        +      "set = \(set.description      ), "
-        +      "idx = \(idx.description      ), "
-        +     "time = \(time.description     ), "
-        +    "title = \(title.description    ), "
-        +   "device = \(device.description   ), "
-        + "filename = \(filename.description ), "
-        +     "code = \(code.description     ), "
-        +   "person = \(person.description   ), "
-        +  "company = \(company.description  ), "
-        +  "carrier = \(carrier.description  ), "
-        + "location = \(location.description ), "
-        +      "img = \(img.description      )"
+        return  "id:\(id.description       ), "
+        +      "set:\(set.description      ), "
+        +      "idx:\(idx.description      ), "
+        +      "cid:\(cid.description      ), "
+        +   "hidden:\(hidden.description   ), "
+        +   "status:\(status.description   ), "
+        +     "type:\(type.description     ), "
+        +     "time:\(time.description     ), "
+        +    "title:\(title.description    ), "
+        +   "device:\(device.description   ), "
+        +    "info1:\(info1.description    ), "
+        +    "info2:\(info2.description    ), "
+        +    "info3:\(info3.description    ), "
+        +    "info4:\(info4.description    ), "
+        + "filename:\(filename.description ), "
+        +     "code:\(code.description     ), "
+        +   "person:\(person.description   ), "
+        +  "company:\(company.description  ), "
+        +  "carrier:\(carrier.description  ), "
+        + "location:\(location.description ), "
+        +      "img:\(img.description      )"
     }
     
     /// An earthmedia for use with canvas previews.
@@ -108,6 +140,10 @@ extension Media {
             let med = Media(context: viewContext)
             med.id = index.formatted()
             med.idx = index
+            med.cid = 2334243
+            med.hidden = false
+            med.status = "scanned"
+            med.type = "scan"
             med.time = Date().addingTimeInterval(Double(index) * -300)
             med.title = "\(med.time)"
             med.set = "\(med.time)"
@@ -200,9 +236,17 @@ struct MediaProperties: Decodable {
         case id
         case set         = "set_name"
         case idx
+        case cid
+        case hidden
+        case status
+        case type
         case time        = "timestamp"
         case title
         case device
+        case info1
+        case info2
+        case info3
+        case info4
         case filename    = "file_name"
         case code        = "trackingnr"
         case person
@@ -218,9 +262,17 @@ struct MediaProperties: Decodable {
     let id:                     String
     let set:                    String
     let idx:                    Int
+    let cid:                    Int
+    let hidden:                 Bool
+    let status:                 String
+    let type:                   String
     let time:                   Date
     let title:                  String
     let device:                 String
+    let info1:                  String
+    let info2:                  String
+    let info3:                  String
+    let info4:                  String
     let filename:               String
     let code:                   String
     let person:                 String
@@ -237,9 +289,17 @@ struct MediaProperties: Decodable {
         id:                     String,
         set:                    String,
         idx:                    Int,
+        cid:                    Int,
+        hidden:                 Bool,
+        status:                 String,
+        type:                   String,
         time:                   Date,
         title:                  String,
         device:                 String,
+        info1:                  String,
+        info2:                  String,
+        info3:                  String,
+        info4:                  String,
         filename:               String,
         code:                   String,
         person:                 String,
@@ -255,9 +315,17 @@ struct MediaProperties: Decodable {
         self.id                     = id
         self.set                    = set
         self.idx                    = idx
+        self.cid                    = cid
+        self.hidden                 = hidden
+        self.status                 = status
+        self.type                   = type
         self.time                   = time
         self.title                  = title
         self.device                 = device
+        self.info1                  = info1
+        self.info2                  = info2
+        self.info3                  = info3
+        self.info4                  = info4
         self.filename               = filename
         self.code                   = code
         self.person                 = person
@@ -283,8 +351,16 @@ struct MediaProperties: Decodable {
         let raw_id         = try? values.decode (Int.self,      forKey: .id         )
         let raw_set        = try? values.decode (String.self,   forKey: .set        )
         let raw_idx        = try? values.decode (Int.self,      forKey: .idx        )
+        let raw_cid        = try? values.decode (Int.self,      forKey: .cid        )
+        let raw_hidden     = try? values.decode (Bool.self,     forKey: .hidden     )
+        let raw_status     = try? values.decode (String.self,   forKey: .status     )
+        let raw_type       = try? values.decode (String.self,   forKey: .type       )
         let raw_title      = try? values.decode (String.self,   forKey: .title      )
         let raw_device     = try? values.decode (String.self,   forKey: .device     )
+        let raw_info1      = try? values.decode (String.self,   forKey: .info1      )
+        let raw_info2      = try? values.decode (String.self,   forKey: .info2      )
+        let raw_info3      = try? values.decode (String.self,   forKey: .info3      )
+        let raw_info4      = try? values.decode (String.self,   forKey: .info4      )
         let raw_filename   = try? values.decode (String.self,   forKey: .filename   )
         let raw_code       = try? values.decode (String.self,   forKey: .code       )
         let raw_person     = try? values.decode (String.self,   forKey: .person     )
@@ -298,12 +374,18 @@ struct MediaProperties: Decodable {
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
 
+        let hidden              = raw_hidden ?? false
+        let status              = raw_status ?? ""
         let code                = raw_code
         let person              = raw_person
         let company             = raw_company
         let carrier             = raw_carrier
         let location            = raw_location
         let img                 = raw_img
+        let info1               = raw_info1
+        let info2               = raw_info2
+        let info3               = raw_info3
+        let info4               = raw_info4
         let recoginzedCodesJson = raw_RCJ
         let recoginzedTextJson  = raw_RTJ
         let imageData           = raw_ID
@@ -313,23 +395,29 @@ struct MediaProperties: Decodable {
             let id              = raw_id,
             let set             = raw_set,
             let idx             = raw_idx,
+            let cid             = raw_cid,
+            let type            = raw_type,
             let time            = raw_time,
             let title           = raw_title,
             let device          = raw_device,
             let filename        = raw_filename
                 
         else {
-            let values =    "id = \(raw_id?.description         ?? "nil"), "
-              +            "set = \(raw_set?.description        ?? "nil"), "
-              +            "idx = \(raw_idx?.description        ?? "nil"), "
-              +           "code = \(raw_code?.description       ?? "nil"), "
-              +           "time = \(raw_time?.description       ?? "nil"), "
-              +          "title = \(raw_title?.description      ?? "nil"), "
-              +         "device = \(raw_device?.description     ?? "nil"), "
-              +       "filename = \(raw_filename?.description   ?? "nil"), "
-              +        "carrier = \(raw_carrier?.description    ?? "nil"), "
-              +         "person = \(raw_person?.description     ?? "nil"), "
-              +            "img = \(raw_img?.description        ?? "nil")"
+            let values =    "id:\(String(describing: raw_id       )), "
+              +            "set:\(String(describing: raw_set      )), "
+              +            "idx:\(String(describing: raw_idx      )), "
+              +            "cid:\(String(describing: raw_cid      )), "
+              +         "hidden:\(String(describing: raw_hidden   )), "
+              +         "status:\(String(describing: raw_status   )), "
+              +           "type:\(String(describing: raw_type     )), "
+              +           "code:\(String(describing: raw_code     )), "
+              +           "time:\(String(describing: raw_time     )), "
+              +          "title:\(String(describing: raw_title    )), "
+              +         "device:\(String(describing: raw_device   )), "
+              +       "filename:\(String(describing: raw_filename )), "
+              +        "carrier:\(String(describing: raw_carrier  )), "
+              +         "person:\(String(describing: raw_person   )), "
+              +            "img:\(String(describing: raw_img      ))"
             
             let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "parsing")
             logger.debug("Ignored: \(values)")
@@ -340,9 +428,17 @@ struct MediaProperties: Decodable {
         self.id                     = id.formatted()
         self.set                    = set
         self.idx                    = idx
+        self.cid                    = cid
+        self.hidden                 = hidden
+        self.status                 = status
+        self.type                   = type
         self.time                   = time
         self.title                  = title
         self.device                 = device
+        self.info1                  = info1    ?? ""
+        self.info2                  = info2    ?? ""
+        self.info3                  = info3    ?? ""
+        self.info4                  = info4    ?? ""
         self.filename               = filename
         self.code                   = code     ?? "␀"
         self.person                 = person   ?? "␀"

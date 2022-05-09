@@ -14,9 +14,9 @@ select M.*,
       substr(''    || '<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
       '🗓' || ' ' || to_char(M.TIMESTAMP, 'dd.mm.yyyy hh24:mi:ss') || ' - ' || M.idx || '<br>' ||
       '📷' || ' ' || M.device || '<br>' ||
-      '📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
-    --'📎' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
-      '📃' || ' <a href="' || 'http://localhost/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '</a>' || '<br>' ||
+      '📎' || ' <a href="' || 'dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||
+    --'📎' || ' <a href="' || 'dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json') || '</a>' || '<br>' ||
+      '📃' || ' <a href="' || 'dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '">' || REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') || '</a>' || '<br>' ||
 --      nvl2(C.Codelist, '<hr>'  || C.Codelist
       --, '') ||
       C.Codelist ||
@@ -26,7 +26,7 @@ select M.*,
        to_char(M.TIMESTAMP, 'yyyymmdd-hh24:mi:ss')
 --           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
          as SET_NAME,
-       'http://mbp-mschulze.local/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') as IMG
+       UTL_URL.escape(REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg')) as IMG
 from   MEDIA M
 left outer join  V_MEDIA_TAGS         T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 left outer join  V_MEDIA_FULLTEXT     F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')

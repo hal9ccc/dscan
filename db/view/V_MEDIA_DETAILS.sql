@@ -8,3 +8,5 @@ as
 
 select * from V_MEDIA_DETAILS;
 
+update media set file_name = replace(FILE_NAME, ' ', '_');
+

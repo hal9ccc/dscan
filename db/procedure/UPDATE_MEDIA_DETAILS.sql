@@ -183,12 +183,18 @@ end;
 
 begin
   update_media_details;
+  commit;
 end;
 
 begin
   update_media_details(1442);
+  commit;
 end;
 
 
+
+delete MEDIA_DETAILS;
+
 select   * from     v_media        where   ID = 1442
-select   * from     MEDIA_DETAILS  where   ID = 1442
+select   * from     V_MEDIA_DETAILS--  where   cid is null
+;

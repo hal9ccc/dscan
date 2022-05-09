@@ -11,15 +11,19 @@ import NukeUI
 
 struct MediaThumbnail: View {
     var media: Media
+
+    @AppStorage("ServerURL")
+    var serverurl = "http://localhost"
     
     var body: some View {
-        RoundedRectangle(cornerRadius: 4)
+        print ("img: \(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)")
+        return RoundedRectangle(cornerRadius: 4)
             .fill(.thinMaterial)
             .frame(width: 150, height: 250)
             .overlay {
 
                 ZStack {
-                    LazyImage(source: media.img, resizingMode: .aspectFit)
+                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)", resizingMode: .aspectFit)
                         .frame(width: 150, height: 250)
                         .opacity(media.img == "␀" ? 0 : 1)
 

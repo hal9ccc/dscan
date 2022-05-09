@@ -25,6 +25,8 @@ CREATE TABLE media (
 --alter table media add  info2          VARCHAR2(4000 char);
 --alter table media add  info3          VARCHAR2(4000 char);
 --alter table media add  info4          VARCHAR2(4000 char);
+select * from media;
+update media set status = 'scanned', cid=0;
 
 
 ALTER TABLE media ADD (
