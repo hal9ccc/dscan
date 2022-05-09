@@ -22,7 +22,7 @@ class MediaProcessor: ObservableObject {
     private var serverurl = "http://localhost"
     
     @AppStorage("jpegCompressionQuality")
-    private var compressionQuality = 0.2
+    private var compressionQuality = 0.9
     
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var detectBarcodesRequest     = VNDetectBarcodesRequest()
@@ -116,8 +116,9 @@ class MediaProcessor: ObservableObject {
         })
         detectBarcodesRequest.revision    = VNDetectBarcodesRequestRevision2
         detectBarcodesRequest.symbologies = [.code128, .code39, .code39Checksum, .dataMatrix, .pdf417, .qr, .aztec, .ean13, .i2of5, .upce ]
+//        detectBarcodesRequest.symbologies = [.code39]
 //        detectBarcodesRequest.symbologies = [.code39, .code39Checksum, .code39FullASCII]
-//        detectBarcodesRequest.usesCPUOnly = true
+        detectBarcodesRequest.usesCPUOnly = true
     }
         
     func reset () {

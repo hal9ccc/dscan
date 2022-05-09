@@ -28,9 +28,13 @@ select M.*,
          as SET_NAME,
        'http://mbp-mschulze.local/ords/dscan/media/files/'|| REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') as IMG
 from   MEDIA M
-left outer join  V_MEDIA_TAGS     T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_FULLTEXT F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
-left outer join  V_MEDIA_CODELIST C on C.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+left outer join  V_MEDIA_TAGS         T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+left outer join  V_MEDIA_FULLTEXT     F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
+left outer join  V_MEDIA_BARCODELIST  C on C.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 where  M.content_type in ('text/json')
   and  M.type = 'scan'
 ;
+
+
+select * from v_media where id = 1442;
+select * from v_media where file_name = '2022-05-09 00:13:30.9780_1.json';

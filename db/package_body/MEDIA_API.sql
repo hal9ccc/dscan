@@ -30,33 +30,46 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
     v_file_name := p_file_name; --to_char(v_timestamp, 'YYYYMMDD-HH24:MI:SS,FF4')||'_'||ltrim(to_char(p_idx, '0000'))||'.jpg';
     v_title     := nvl(p_title, to_char(v_timestamp, 'YYYYMMDD-HH24:MI:SS')||'-'||ltrim(to_char(p_idx, '0000')));
 
-    v_id := media_seq.NEXTVAL;
-
     begin
+      select ID
+      into   v_id
+      from   MEDIA
+      where  FILE_NAME = v_file_name
+      ;
+
+      UPDATE media
+        SET  id         = v_id,
+             content    = p_content,
+             title      = v_title,
+             device     = p_device,
+             timestamp  = v_timestamp
+      WHERE  file_name  = v_file_name
+      ;
+      trc.MSG('updated MEDIA record #'||v_id);
+
+    exception when no_data_found then
+      v_id := media_seq.NEXTVAL;
       INSERT INTO media (id, content, content_type, file_name, "TYPE", title, timestamp, idx, device)
       VALUES (v_id, p_content, p_content_type, v_file_name, p_type, v_title, v_timestamp, p_idx, p_device);
-
-    exception when DUP_VAL_ON_INDEX then
-      UPDATE media
-        SET  content    = p_content,
-             file_name  = v_file_name,
-             title      = v_title,
-             device     = p_device
-      WHERE  id         = v_id
-      ;
+      trc.MSG('inserted MEDIA record #'||v_id);
     end;
 
     COMMIT;
 
     if p_content_type = 'text/json' then
-      DBMS_SCHEDULER.CREATE_JOB (
-        job_name   => 'update_media_details_'||v_id,
-        job_type   => 'PLSQL_BLOCK',
-        job_action => 'BEGIN  update_media_details('||v_id||'); END;',
-        start_date => SYSTIMESTAMP, -- - NUMTODSINTERVAL(1, 'day'),
-        enabled    => true
-      );
-      trc.EXIT('created job update_media_details_'||v_id);
+      begin
+        DBMS_SCHEDULER.CREATE_JOB (
+          job_name   => 'update_media_details_'||v_id,
+          job_type   => 'PLSQL_BLOCK',
+          job_action => 'BEGIN  update_media_details('||v_id||'); END;',
+          start_date => SYSTIMESTAMP, -- - NUMTODSINTERVAL(1, 'day'),
+          enabled    => true
+        );
+        trc.EXIT('created job update_media_details_'||v_id);
+
+      exception when others then
+        trc.err('error creating job');
+      end;
     end if;
 
     trc.EXIT('upload complete ('||DBMS_LOB.GETLENGTH(p_content)||' byte)');

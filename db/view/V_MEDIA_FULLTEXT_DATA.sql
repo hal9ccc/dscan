@@ -8,7 +8,7 @@ create or replace view V_MEDIA_FULLTEXT_DATA as
    (select   12 - (round (y * 12)) as line,
              round (x*12) as col,
              T.*
-    from     V_MEDIA_RECOGNIZEDTEXT T
+    from     V_MEDIA_RECOGNIZED_TEXT T
 --    where    file_name = '20210313_11:05:35.6630_1.json'
     order by 1,
              2,

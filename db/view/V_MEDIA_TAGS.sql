@@ -10,8 +10,10 @@ select    Q.ID,
           LISTAGG(Q.Company,    '⸱')  as Company,
           LISTAGG(Q.Location,   '⸱')  as Location,
           LISTAGG(Q.TrackingNr, '⸱')  as TrackingNr
-from      V_DistinctTags Q
+from      V_Media_DistinctTags Q
 group by  Q.ID,
           Q.file_name
 ;
 /
+
+select * from v_media_tags where id = '1442';

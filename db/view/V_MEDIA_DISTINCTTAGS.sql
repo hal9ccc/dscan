@@ -13,7 +13,7 @@ select   DISTINCT
          rtrim(ltrim(Max(decode(T.tag_name, 'Location',   ltrim(rtrim(T.Tag_value)), '')))) as Location,
          rtrim(ltrim(Max(decode(T.tag_name, 'TrackingNr', ltrim(rtrim(T.Tag_value)), '')))) as TrackingNr
 from     MEDIA M
-join     V_MEDIA_AUTOTAGGING T on T.FILE_NAME = M.FILE_NAME
+join     V_MEDIA_AUTOTAGGING T on T.ID = M.ID
 where    ltrim(rtrim(T.Tag_value)) is not null
   and not exists (
   select 1
@@ -29,5 +29,7 @@ group by M.ID,
 order by M.ID,
          M.file_name,
          T.Tag_name
-;
 /
+
+select * from V_MEDIA_DISTINCTTAGS where id = 1442;
+select * from V_MEDIA_AUTOTAGGING;
