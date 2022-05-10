@@ -284,7 +284,7 @@ class MediaProvider {
         let viewContext = container.viewContext
         viewContext.perform {
             for transaction in history {
-                self.logger.debug("Merge...")
+//                self.logger.debug("Merge...")
                 viewContext.mergeChanges(fromContextDidSave: transaction.objectIDNotification())
                 self.lastToken = transaction.token
             }

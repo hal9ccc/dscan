@@ -155,18 +155,16 @@ class MediaProcessor: ObservableObject {
 
         do {
             media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
-            logger.info("Got \(media2Process.count) documents")
+            logger.debug("Got \(media2Process.count) documents")
 
             let f = media2Process.map {
-//                if $0.imageData != nil {
-                    return processImage($0)
-//                }
+                return processImage($0)
             }
 
             logger.info("processed \(String.init(describing: f))")
 
         } catch {
-            print("Fetch failed")
+            logger.critical("Fetch failed")
         }
     }
     
@@ -233,6 +231,10 @@ class MediaProcessor: ObservableObject {
         self.uploadGroup.notify (queue: .main) {
             
             print ("uploads for \(media.filename) completed, deleting original...")
+//            media.imageData = nil
+            MediaProvider.shared.container.viewContext.delete(media)
+            try? MediaProvider.shared.container.viewContext.save()
+
 //            withAnimation { self.mediaProvider.deleteMedia(identifiedBy: [media.objectID]) }
 //
 //            // refresh from server

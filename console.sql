@@ -22,7 +22,8 @@ where owner = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
 order by 1,2,3
 ;
 
-update media set hidden = 1 where id <= 1571;
+update media set hidden = 1 where id <= 1605;
+commit;
 
 
 

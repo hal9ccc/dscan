@@ -28,10 +28,8 @@ struct MediaList: View {
 
     @FetchRequest(
         entity: Media.entity(),
-        sortDescriptors: [
-            NSSortDescriptor(keyPath: \Media.time, ascending: true),
-            NSSortDescriptor(keyPath: \Media.idx,  ascending: true)
-        ]
+        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
+        predicate:          NSPredicate(format: "imageData != nil")
      ) var newMedia: FetchedResults<Media>
 
     @State private var mediaSelection: Set<String> = []
@@ -293,6 +291,7 @@ struct MediaList: View {
                 }
             }
             
+            Text("new: \(newMedia.count)")
         }
     }
 
