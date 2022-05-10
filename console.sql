@@ -4,7 +4,9 @@ select * from TRACE where ts > systimestamp - numtodsinterval(200, 'minute') ord
 
 truncate table trace;
 
-update media set status = 'scanned';
+update media set status = 'scanned', cid = 0;
+
+commit;
 
 select * from media order by file_name desc;
 select * from media_details order by timestamp desc;
@@ -19,6 +21,8 @@ from sys.all_errors
 where owner = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
 order by 1,2,3
 ;
+
+update media set hidden = 1 where id <= 1571;
 
 
 

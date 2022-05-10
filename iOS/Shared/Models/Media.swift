@@ -102,6 +102,10 @@ class Media: NSManagedObject {
 
 extension Media {
 
+    @nonobjc public class func createFetchRequest() -> NSFetchRequest<Media> {
+        return NSFetchRequest<Media>(entityName: "Media")
+    }
+
     override var description: String {
         return  "id:\(id.description       ), "
         +      "set:\(set.description      ), "
@@ -352,7 +356,7 @@ struct MediaProperties: Decodable {
         let raw_set        = try? values.decode (String.self,   forKey: .set        )
         let raw_idx        = try? values.decode (Int.self,      forKey: .idx        )
         let raw_cid        = try? values.decode (Int.self,      forKey: .cid        )
-        let raw_hidden     = try? values.decode (Bool.self,     forKey: .hidden     )
+        let raw_hidden     = try? values.decode (Int.self,      forKey: .hidden     )
         let raw_status     = try? values.decode (String.self,   forKey: .status     )
         let raw_type       = try? values.decode (String.self,   forKey: .type       )
         let raw_title      = try? values.decode (String.self,   forKey: .title      )
@@ -374,7 +378,9 @@ struct MediaProperties: Decodable {
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
 
-        let hidden              = raw_hidden ?? false
+        print("hidden: \(String(describing: raw_hidden)) file: \(raw_filename)")
+        
+        let hidden              = raw_hidden == 1 ? true : false
         let status              = raw_status ?? ""
         let code                = raw_code
         let person              = raw_person

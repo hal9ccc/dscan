@@ -138,7 +138,6 @@ class MediaProvider {
             logger.debug("Received \(mediaPropertiesList.count) records.")
 
             // Import the JSON into Core Data.
-            print (mediaPropertiesList)
             logger.debug("Start importing data to the store...")
             try await importMedia(from: mediaPropertiesList)
             logger.debug("Finished importing data.")
@@ -155,8 +154,6 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-
-        //print (propertiesList)
 
         /// - Tag: performAndWait
         try await taskContext.perform {

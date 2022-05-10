@@ -14,9 +14,10 @@ struct MediaSectionList: View {
     let mediaProvider:      MediaProvider   = .shared
     
     @SectionedFetchRequest (
-        sectionIdentifier: MediaSort.default.section,
-        sortDescriptors: MediaSort.default.descriptors,
-        animation: .default
+        sectionIdentifier:  MediaSort.default.section,
+        sortDescriptors:    MediaSort.default.descriptors,
+        predicate:          NSPredicate(format: "hidden == false"),
+        animation:          .default
     )
     private var media: SectionedFetchResults<String, Media>
 
@@ -33,8 +34,7 @@ struct MediaSectionList: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
-//    @AppStorage("lastSelectedSort")
-    @State
+    @AppStorage("lastSelectedSort")
     private var lastSelectedSort = MediaSort.default.id
 
     @AppStorage("lastSelectedSection")

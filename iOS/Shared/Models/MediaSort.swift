@@ -20,7 +20,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "all",
             descriptors:[
                 SortDescriptor (\Media.set),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.set
@@ -30,7 +30,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Status",
             descriptors:[
                 SortDescriptor (\Media.status),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.status
@@ -40,7 +40,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Type",
             descriptors:[
                 SortDescriptor (\Media.type),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.type
@@ -50,7 +50,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Person",
             descriptors:[
                 SortDescriptor (\Media.person),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.person
@@ -60,7 +60,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Company",
             descriptors:[
                 SortDescriptor (\Media.company),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.company
@@ -70,7 +70,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Carrier",
             descriptors:[
                 SortDescriptor (\Media.carrier),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.carrier
@@ -80,7 +80,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Location",
             descriptors:[
                 SortDescriptor (\Media.location),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.location
@@ -90,7 +90,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Device",
             descriptors:[
                 SortDescriptor (\Media.device),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.device
@@ -100,7 +100,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             name:       "by Code",
             descriptors:[
                 SortDescriptor (\Media.code),
-                SortDescriptor (\Media.time),
+                SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
             section:    \Media.code
