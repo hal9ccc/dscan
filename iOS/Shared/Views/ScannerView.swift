@@ -36,10 +36,10 @@ struct ScannerView: UIViewControllerRepresentable {
 
     final class Coordinator: NSObject, VNDocumentCameraViewControllerDelegate {
         var mediaProvider:  MediaProvider  = .shared
-        
+
         @AppStorage("CompressionQuality")
         private var compressionQuality: Double = 0.5
-        
+
         private let completionHandler: ([MediaProperties]?) -> Void
 
         init(completion: @escaping ([MediaProperties]?) -> Void) {
@@ -84,8 +84,8 @@ struct ScannerView: UIViewControllerRepresentable {
                   img:                    "␀",
                   recognizedCodesJson:    "␀",
                   recognizedTextJson:     "␀",
-                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 0.1) ?? Data(),
-                  uiImage:                scan.imageOfPage(at: pageNumber)
+                  imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 1) ?? Data()
+//                  uiImage:                scan.imageOfPage(at: pageNumber)
                 )
 
                 mediaPropertiesList.append(m)

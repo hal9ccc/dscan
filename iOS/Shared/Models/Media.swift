@@ -283,7 +283,7 @@ struct MediaProperties: Decodable {
     let recognizedCodesJson:    String
     let recognizedTextJson:     String
     let imageData:              Data
-    let uiImage:                UIImage?
+//    let uiImage:                UIImage?
 
     init (
         id:                     String,
@@ -309,8 +309,8 @@ struct MediaProperties: Decodable {
         img:                    String,
         recognizedCodesJson:    String,
         recognizedTextJson:     String,
-        imageData:              Data,
-        uiImage:                UIImage
+        imageData:              Data
+//        uiImage:                UIImage
     ) {
         self.id                     = id
         self.set                    = set
@@ -336,7 +336,7 @@ struct MediaProperties: Decodable {
         self.recognizedCodesJson    = recognizedCodesJson
         self.recognizedTextJson     = recognizedTextJson
         self.imageData              = imageData
-        self.uiImage                = uiImage
+//        self.uiImage                = uiImage
     }
 
 
@@ -449,7 +449,7 @@ struct MediaProperties: Decodable {
         self.recognizedCodesJson    = recoginzedCodesJson ?? "␀"
         self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
         self.imageData              = imageData ?? Data()
-        self.uiImage                = nil
+        //self.uiImage                = nil
     }
 
     // The keys must have the same name as the attributes of the Media entity.
