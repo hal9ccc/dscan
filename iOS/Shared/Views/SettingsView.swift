@@ -13,6 +13,9 @@ struct SettingsView: View {
     @AppStorage("ServerURL")
     private var serverurl = "http://localhost"
     
+    @State
+    private var serverurlOrig = ""
+    
     @AppStorage("CacheSize")
     private var cachesize: Double = 50
     
@@ -26,7 +29,13 @@ struct SettingsView: View {
     var body: some View {
  
         Form {
-            Section (header:Text("Server address")) {
+            Section (
+                header:Text("Server address"),
+                footer:Text("Änderung wird erst durch Neustart der App wirksam!")
+                    .font(.caption)
+                    .foregroundColor(Color.red)
+                    .opacity(serverurlOrig == serverurl ? 0 : 1)
+            ) {
                 
                 Text("Server URL")
                     .font(.headline)
@@ -72,6 +81,9 @@ struct SettingsView: View {
         }
         .onAppear {
             cachesizeOrig = cachesize
+        }
+        .onAppear {
+            serverurlOrig = serverurl
         }
     }
 }
