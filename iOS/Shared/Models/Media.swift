@@ -37,11 +37,11 @@ class Media: NSManagedObject {
     @NSManaged var img:             String
     @NSManaged var imageData:       Data?
 
-    
+
     /// Updates a Media instance with the values from a MediaProperties.
     func update(from mediaProperties: MediaProperties) throws {
         let dictionary = mediaProperties.dictionaryValue
-        
+
         guard
             let new_id          = dictionary["id"]         as? String,
             let new_setName     = dictionary["setName"]    as? String,
@@ -65,7 +65,7 @@ class Media: NSManagedObject {
             let new_location    = dictionary["location"]   as? String,
             let new_img         = dictionary["img"]        as? String,
             let new_imageData   = dictionary["imgageData"] as? Data
-                
+
         else {
             throw DscanError.missingData
         }
@@ -93,7 +93,7 @@ class Media: NSManagedObject {
         location       = new_location
         img            = new_img
         imageData      = new_imageData
-        
+
         print ("#\(id) \(set).\(idx): '\(code)' carrier:\(carrier) person:\(person) data:\(String(describing: imageData?.count))")
     }
 }
@@ -101,7 +101,7 @@ class Media: NSManagedObject {
 // MARK: - SwiftUI
 
 extension Media {
-    
+
     override var description: String {
         return  "id:\(id.description       ), "
         +      "set:\(set.description      ), "
@@ -125,7 +125,7 @@ extension Media {
         + "location:\(location.description ), "
         +      "img:\(img.description      )"
     }
-    
+
     /// An earthmedia for use with canvas previews.
     static var preview: Media {
         let media = Media.makePreviews(count: 1)
@@ -190,20 +190,20 @@ extension Media {
 /// Stores an array of decoded QuakeProperties for later use in
 /// creating or updating Quake instances.
 struct MediaJSON: Decodable {
-    
+
     private enum RootCodingKeys: String, CodingKey {
         case items
     }
-    
-  
+
+
     private(set) var mediaPropertiesList = [MediaProperties]()
-    
+
     private struct AlwaysDecodable: Decodable {}
-    
+
     init(from decoder: Decoder) throws {
         let rootContainer  = try decoder.container(keyedBy: RootCodingKeys.self)
         var itemsContainer = try rootContainer.nestedUnkeyedContainer(forKey: .items)
-        
+
         while !itemsContainer.isAtEnd {
             // from https://medium.com/mobimeo-technology/safely-decoding-enums-in-swift-1df532af9f42
             //let mediaContainer = try itemsContainer.nestedContainer(keyedBy: MediaProperties.CodingKeys.self)
@@ -215,8 +215,8 @@ struct MediaJSON: Decodable {
             catch {
                 let _ = try itemsContainer.decode(AlwaysDecodable.self)
             }
-            
-            
+
+
 //            // Decodes a single media entry from the data, and appends it to the array, ignoring invalid data.
 //            if let properties = try? itemsContainer.decode(MediaProperties.self) {
 //                mediaPropertiesList.append(properties)
@@ -231,7 +231,7 @@ struct MediaJSON: Decodable {
 struct MediaProperties: Decodable {
 
     // MARK: Codable
-    
+
     enum CodingKeys: String, CodingKey {
         case id
         case set         = "set_name"
@@ -258,7 +258,7 @@ struct MediaProperties: Decodable {
         case recognizedTextJson
         case imageData
     }
-    
+
     let id:                     String
     let set:                    String
     let idx:                    Int
@@ -345,9 +345,9 @@ struct MediaProperties: Decodable {
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMddHHmmssSSS"
-        
+
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         let raw_id         = try? values.decode (Int.self,      forKey: .id         )
         let raw_set        = try? values.decode (String.self,   forKey: .set        )
         let raw_idx        = try? values.decode (Int.self,      forKey: .idx        )
@@ -401,7 +401,7 @@ struct MediaProperties: Decodable {
             let title           = raw_title,
             let device          = raw_device,
             let filename        = raw_filename
-                
+
         else {
             let values =    "id:\(String(describing: raw_id       )), "
               +            "set:\(String(describing: raw_set      )), "
@@ -418,13 +418,13 @@ struct MediaProperties: Decodable {
               +        "carrier:\(String(describing: raw_carrier  )), "
               +         "person:\(String(describing: raw_person   )), "
               +            "img:\(String(describing: raw_img      ))"
-            
+
             let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "parsing")
             logger.debug("Ignored: \(values)")
 
             throw DscanError.missingData
         }
-        
+
         self.id                     = id.formatted()
         self.set                    = set
         self.idx                    = idx
@@ -451,15 +451,23 @@ struct MediaProperties: Decodable {
         self.imageData              = imageData ?? Data()
         self.uiImage                = nil
     }
-    
+
     // The keys must have the same name as the attributes of the Media entity.
     var dictionaryValue: [String: Any] {
        ["id":                   id,
         "set":                  set,
         "idx":                  idx,
+        "cid":                  cid,
+        "hidden":               hidden,
+        "status":               status,
+        "type":                 type,
         "time":                 time,
         "title":                title,
         "device":               device,
+        "info1":                info1,
+        "info2":                info2,
+        "info3":                info3,
+        "info4":                info4,
         "filename":             filename,
         "code":                 code,
         "person":               person,
@@ -472,7 +480,7 @@ struct MediaProperties: Decodable {
         "imageData":            imageData
        ]
     }
-    
-    
-    
+
+
+
 }

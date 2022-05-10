@@ -30,12 +30,17 @@ struct MediaDetail: View {
     var media: Media
     
     @EnvironmentObject var mp: MediaProcessor
+
+    @AppStorage("ServerURL")
+    var serverurl = "http://localhost"
     
     var body: some View {
         ScrollView {
             VStack {
                 ZStack {
-                    LazyImage(source: media.img, resizingMode: .aspectFit)
+                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
+                              resizingMode: .aspectFit
+                    )
                         .frame(height: 500)
                         .opacity(media.img == "␀" ? 0 : 1)
 
