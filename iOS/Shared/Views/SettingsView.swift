@@ -17,7 +17,7 @@ struct SettingsView: View {
     private var serverurlOrig = ""
     
     @AppStorage("CacheSize")
-    private var cachesize: Double = 50
+    private var cachesize: Double = 100 * 1024 * 1024
     
     @State
     private var cachesizeOrig: Double = 0
@@ -78,6 +78,13 @@ struct SettingsView: View {
                 
             }
 
+            Section (
+                header:Text("Approximate Number of images"),
+                footer:Text("Actual number may vary, based on color or size of the Image")
+            ) {
+                Text("\(Int((cachesize/1024)/(comprQual * 1024)))")
+
+            }
         }
         .onAppear {
             cachesizeOrig = cachesize
