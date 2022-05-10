@@ -35,6 +35,7 @@ struct MediaSectionList: View {
     @State private var texts:[ScanDataOrig] = []
     
 
+//    @State
     @AppStorage("lastSelectedSort")
     private var lastSelectedSort = MediaSort.default.id
 
@@ -91,7 +92,7 @@ struct MediaSectionList: View {
         }
         .alert(isPresented: $hasError, error: error) { }
         
-//        MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
+//        return MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
 
     }
     
