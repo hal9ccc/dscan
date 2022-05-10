@@ -23,8 +23,16 @@ order by 1,2,3
 ;
 
 update media set hidden = 1 where id <= 1605;
+select count(*) from media where nvl(hidden,0) = 0;
+select count(*) from media_details where nvl(hidden,0) = 0;
 commit;
 
+delete media_details;
+
+begin
+  update_media_details;
+  commit;
+end;
 
 
 /*

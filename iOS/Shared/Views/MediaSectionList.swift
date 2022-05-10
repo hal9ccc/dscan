@@ -34,6 +34,7 @@ struct MediaSectionList: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
+
     @AppStorage("lastSelectedSort")
     private var lastSelectedSort = MediaSort.default.id
 
@@ -46,7 +47,12 @@ struct MediaSectionList: View {
 
     var body: some View {
 
-        NavigationView {
+        let request = media
+        request.sectionIdentifier = MediaSort.sorts[lastSelectedSort].section
+        request.sortDescriptors   = MediaSort.sorts[lastSelectedSort].descriptors
+        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
+
+        return NavigationView {
             
             ZStack {
                 
@@ -84,6 +90,8 @@ struct MediaSectionList: View {
             selectedMediaSort = MediaSort.sorts[lastSelectedSort]
         }
         .alert(isPresented: $hasError, error: error) { }
+        
+//        MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
 
     }
     

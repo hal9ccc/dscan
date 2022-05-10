@@ -378,7 +378,7 @@ struct MediaProperties: Decodable {
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
 
-//        print("hidden: \(String(describing: raw_hidden)) file: \(raw_filename)")
+        print("hidden: \(String(describing: raw_hidden)) file: \(raw_filename)")
         
         let hidden              = raw_hidden == 1 ? true : false
         let status              = raw_status ?? ""

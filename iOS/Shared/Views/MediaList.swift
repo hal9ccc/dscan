@@ -211,6 +211,7 @@ struct MediaList: View {
     */
     private func processAllMedia() async {
         mp.processAllImages()
+        await fetchMedia()
     }
     
 
