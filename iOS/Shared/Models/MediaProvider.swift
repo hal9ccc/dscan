@@ -38,7 +38,7 @@ class MediaProvider {
 
         self.inMemory = inMemory
         self.url = URL(string: "\(serverurl)/media/list")!
-        
+
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
             self.logger.debug("Received a persistent store remote change notification.")
@@ -138,6 +138,7 @@ class MediaProvider {
             logger.debug("Received \(mediaPropertiesList.count) records.")
 
             // Import the JSON into Core Data.
+            print (mediaPropertiesList)
             logger.debug("Start importing data to the store...")
             try await importMedia(from: mediaPropertiesList)
             logger.debug("Finished importing data.")
@@ -162,18 +163,37 @@ class MediaProvider {
             // Execute the batch insert.
             /// - Tag: batchInsertRequest
             let batchInsertRequest = self.newBatchInsertRequest(with: propertiesList)
-            if let fetchResult = try? taskContext.execute(batchInsertRequest),
-               let batchInsertResult = fetchResult as? NSBatchInsertResult,
-               let success = batchInsertResult.result as? Bool, success {
-                return
+
+            //            if let fetchResult          = try? taskContext.execute(batchInsertRequest),
+            //               let batchInsertResult    = fetchResult as? NSBatchInsertResult,
+            //               let success              = batchInsertResult.result as? Bool,
+            //               success {
+            //                return
+            //            }
+
+
+            if let fetchResult              = try? taskContext.execute(batchInsertRequest) {
+                if let batchInsertResult    = fetchResult as? NSBatchInsertResult {
+                    if let success          = batchInsertResult.result as? Bool {
+                        if success {
+                            self.logger.info("Successfully inserted data.")
+                            return
+                        }
+                    }
+                    else {
+                        self.logger.debug("Failed to execute batch insert request.")
+                        self.logger.critical("\(String(describing: batchInsertResult))")
+                    }
+                    self.logger.critical("batchInsertResult: \(String(describing: batchInsertResult))")
+                }
+                self.logger.critical("fetchResult: \(String(describing: fetchResult))")
             }
-
-
-            self.logger.debug("Failed to execute batch insert request.")
+            self.logger.critical("batchInsertRequest: \(String(describing: batchInsertRequest))")
+            self.logger.critical("Failed to execute batch insert request (2).")
             throw DscanError.batchInsertError
         }
 
-        logger.debug("Successfully inserted data.")
+        logger.debug("Successfully inserted data 2.")
     }
 
     private func newBatchInsertRequest(with propertyList: [MediaProperties]) -> NSBatchInsertRequest {

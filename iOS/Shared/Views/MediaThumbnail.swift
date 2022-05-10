@@ -16,8 +16,7 @@ struct MediaThumbnail: View {
     var serverurl = "http://localhost"
     
     var body: some View {
-        print ("img: \(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)")
-        return RoundedRectangle(cornerRadius: 4)
+        RoundedRectangle(cornerRadius: 4)
             .fill(.thinMaterial)
             .frame(width: 150, height: 250)
             .overlay {
