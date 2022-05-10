@@ -17,16 +17,16 @@ import VisionKit
 
 class MediaProcessor: ObservableObject {
 //    @Published var mediaPropertiesList = [MediaProperties]()
-    
+
     @AppStorage("ServerURL")
     private var serverurl = "http://localhost"
-    
-    @AppStorage("jpegCompressionQuality")
-    private var compressionQuality = 0.9
-    
+
+    @AppStorage("CompressionQuality")
+    private var compressionQuality = 1
+
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var detectBarcodesRequest     = VNDetectBarcodesRequest()
-    
+
     @Published var isUploadingImage:        Bool        = false
     @Published var isDetectingBarcodes:     Bool        = false
     @Published var isRecognizingTexts:      Bool        = false
@@ -43,12 +43,12 @@ class MediaProcessor: ObservableObject {
 
     @Published var detectedBarcodes:        Int?        = nil
     @Published var detectedTexts:           Int?        = nil
-    
+
     // wait for two background requests to finish
     // see https://dev.to/nemecek_f/swift-easy-way-to-wait-for-multiple-background-tasks-to-finish-2jk1
     let group = DispatchGroup()
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "processing")
-    
+
     init () {
 
         textRecognitionRequest = VNRecognizeTextRequest ( completionHandler: { (request, error) in
@@ -72,7 +72,7 @@ class MediaProcessor: ObservableObject {
                                 w: Float((bb != nil) ? bb!.topRight.x : 0) - Float((bb != nil) ? bb!.topLeft.x    : 0),
                                 h: Float((bb != nil) ? bb!.topLeft.y  : 0) - Float((bb != nil) ? bb!.bottomLeft.y : 0)
                             )
-                            
+
                             self.metadata.recognizedText.append(T);
                         }
                     }
@@ -84,14 +84,14 @@ class MediaProcessor: ObservableObject {
         textRecognitionRequest.recognitionLevel = .accurate
         textRecognitionRequest.usesLanguageCorrection = true
 //        textRecognitionRequest.recognitionLanguages
-        
+
 
         detectBarcodesRequest = VNDetectBarcodesRequest(completionHandler: { (request, error) in
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNBarcodeObservation] {
                     DispatchQueue.main.async {
                         for observation in requestResults {
-                           
+
                             let C = MMDetectedBarcode (
                                 payload:   observation.payloadStringValue ?? "",
                                 symbology: observation.symbology.rawValue.replacingOccurrences(of: "VNBarcodeSymbology", with: "")
@@ -105,7 +105,7 @@ class MediaProcessor: ObservableObject {
 
                             self.metadata.detectedBarcodes.append(C);
                         }
-                        
+
                         self.detectedBarcodes = self.metadata.detectedBarcodes.count
 
                     }
@@ -120,7 +120,7 @@ class MediaProcessor: ObservableObject {
 //        detectBarcodesRequest.symbologies = [.code39, .code39Checksum, .code39FullASCII]
         detectBarcodesRequest.usesCPUOnly = true
     }
-        
+
     func reset () {
         isUploadingImage        = false
         isDetectingBarcodes     = false
@@ -144,25 +144,26 @@ class MediaProcessor: ObservableObject {
     /*
     ** ***********************************************************************************************
     */
-    func processImage(image: UIImage, filename: String, title: String, idx: Int, timestamp: Date) {
+    func processImage(imageJpegData: Data, filename: String, title: String, idx: Int, timestamp: Date) {
 
-        reset()
+//        reset()
         
-        guard let cgImage = image.cgImage else {
+        let uiImage = UIImage(data: imageJpegData)!
+        guard let cgImage = uiImage.cgImage else {
             print("Failed to get cgimage from input image")
             return
         }
-        
+
         self.filename   = filename
         self.title      = title
         self.idx        = idx
         self.timestamp  = timestamp
- 
-        uploadImage (image: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
+
+        uploadImage (image: uiImage, filename: filename, title: title, idx: idx, timestamp: timestamp)
 
         self.isRecognizingTexts = true
         self.isDetectingBarcodes = true
-        
+
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
         do {
@@ -198,9 +199,9 @@ class MediaProcessor: ObservableObject {
     ** ***********************************************************************************************
     */
     func uploadData (data: Data, filename: String, title: String, idx: Int, timestamp: Date) {
-        
+
         self.isUploadingData = true
-        
+
         let url = URL(string: "\(serverurl)/media/files/")!
         let headers: HTTPHeaders = [
             "Content-Type"   : "text/json",
@@ -211,7 +212,7 @@ class MediaProcessor: ObservableObject {
             "timestamp"      : timestamp.formatted(.iso8601),
             "device"         : UIDevice.current.name
         ]
-        
+
         let jsonRequest = Upload(data: data, to: url, with: headers, using:"POST")
 
         jsonRequest.upload { (result) in
@@ -219,7 +220,7 @@ class MediaProcessor: ObservableObject {
                 case .success(let value):
 //                    self.isUploadingData = false
                     assert(value.statusCode == 201)
-    
+
                 case .failure(let error):
 //                    self.isUploadingData = false
                     print(error.localizedDescription)
@@ -232,7 +233,7 @@ class MediaProcessor: ObservableObject {
     ** ***********************************************************************************************
     */
     func uploadImage (image: UIImage, filename: String, title: String, idx: Int, timestamp: Date) {
-        
+
         self.isUploadingImage = true
 
         let url = URL(string: "\(serverurl)/media/files/")!
@@ -245,9 +246,9 @@ class MediaProcessor: ObservableObject {
             "timestamp"      : timestamp.formatted(.iso8601),
             "device"         : UIDevice.current.name
         ]
-        
-        guard let imgData = image.jpegData(compressionQuality: compressionQuality) else { return }
-                
+
+        guard let imgData = image.jpegData(compressionQuality: CGFloat(compressionQuality)) else { return }
+
         let imgRequest = Upload(data: imgData, to: url, with: headers, using:"POST")
 
         imgRequest.upload { (result) in
@@ -255,7 +256,7 @@ class MediaProcessor: ObservableObject {
                 case .success(let value):
 //                    self.isUploadingImage = false
                     assert(value.statusCode == 201)
-    
+
                 case .failure(let error):
 //                    self.isUploadingImage = false
                     print(error.localizedDescription)
@@ -268,7 +269,7 @@ class MediaProcessor: ObservableObject {
 struct ScanDataOrig:Identifiable {
     var id = UUID()
     let content:String
-    
+
     init(content:String) {
         self.content = content
     }

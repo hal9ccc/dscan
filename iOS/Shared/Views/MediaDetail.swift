@@ -37,38 +37,40 @@ struct MediaDetail: View {
     var body: some View {
         ScrollView {
             VStack {
-                ZStack {
-                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
-                              resizingMode: .aspectFit
-                    )
-                        .frame(height: 500)
-                        .opacity(media.img == "␀" ? 0 : 1)
+                NavigationLink(destination: MediaZoom(media: media)) {
+               
+                    ZStack {
+                        LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
+                                  resizingMode: .aspectFit
+                        )
+                            .frame(height: 500)
+                            .opacity(media.img == "␀" ? 0 : 1)
 
-                    if media.imageData != nil {
-                        Image(UIImage(data: media.imageData!)!)
-                            .resizingMode(.aspectFit)
-                            .opacity(media.imageData == nil ? 0 : 1)
+                        if media.imageData != nil {
+                            Image(UIImage(data: media.imageData!)!)
+                                .resizingMode(.aspectFit)
+                                .opacity(media.imageData == nil ? 0 : 1)
+                        }
+                    
                     }
-                
+                    .frame(height: 500)
                 }
-                .frame(height: 500)
-                
-                
+
                 if media.imageData != nil {
                     Button(action: {
-                        processImage (
-                            image:      UIImage(data: media.imageData!)!,
-                            filename:   media.filename,
-                            title:      media.title,
-                            idx:        Int(media.idx),
-                            timestamp:  media.time
+                        mp.processImage (
+                            imageJpegData:  media.imageData ?? Data(),
+                            filename:       media.filename,
+                            title:          media.title,
+                            idx:            Int(media.idx),
+                            timestamp:      media.time
                         )
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
                     .buttonStyle(GrowingButton())
                 }
-                
+
 
                 Text(media.code)
                     .font(.title3)
@@ -90,9 +92,9 @@ struct MediaDetail: View {
         media.code == "␀" ? media.filename : "\(media.carrier) #\(media.code)"
     }
     
-    func processImage(image: UIImage, filename: String, title: String, idx: Int, timestamp: Date ) {
-        mp.processImage(image: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
-    }
+//    func processImage(image: Data, filename: String, title: String, idx: Int, timestamp: Date ) {
+//        mp.processImage(imageJpegData: image, filename: <#T##String#>, title: <#T##String#>, idx: <#T##Int#>, timestamp: <#T##Date#>: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
+//    }
 }
 
 
