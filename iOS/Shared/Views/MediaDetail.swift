@@ -60,7 +60,7 @@ struct MediaDetail: View {
 
                 if media.imageData != nil {
                     Button(action: {
-                        let _ = mp.processImage (media)
+                        let _ = mp.processImage (media, completion: { _ in return } )
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }

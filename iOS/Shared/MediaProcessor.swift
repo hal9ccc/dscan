@@ -52,6 +52,7 @@ class MediaProcessor: ObservableObject {
     
     var imageRequestGroup   = DispatchGroup()
     var uploadGroup         = DispatchGroup()
+    var refreshGroup        = DispatchGroup()
     
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "processing")
 
@@ -157,11 +158,23 @@ class MediaProcessor: ObservableObject {
             media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
             logger.debug("Got \(media2Process.count) documents")
 
-            let f = media2Process.map {
-                return processImage($0)
+
+            self.refreshGroup         = DispatchGroup()
+
+            _ = media2Process.map {
+                return processImage($0, completion: { _ in self.refreshGroup.leave() })
             }
 
-            logger.info("processed \(String.init(describing: f))")
+            self.refreshGroup.notify (queue: .main) { [self] in
+                Task {
+                    do {
+                        print ("all documemts processed, refreshing...")
+                        try await self.mediaProvider.fetchMedia()
+                    } catch {
+                        self.error = error as? DscanError ?? .unexpectedError(error: error)
+                    }
+                }
+            }
 
         } catch {
             logger.critical("Fetch failed")
@@ -171,7 +184,11 @@ class MediaProcessor: ObservableObject {
     /*
     ** ***********************************************************************************************
     */
-    func processImage(_ media: Media)  -> Media {
+//    init(completion: @escaping ([MediaProperties]?) -> Void) {
+//        self.completionHandler = completion
+//    }
+
+    func processImage(_ media: Media, completion: @escaping (Media?) -> Void) -> Media {
 
         reset()
         
@@ -190,6 +207,8 @@ class MediaProcessor: ObservableObject {
         self.isDetectingBarcodes = true
         self.imageRequestGroup   = DispatchGroup()
         self.uploadGroup         = DispatchGroup()
+
+        self.refreshGroup.enter()
 
         
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
@@ -234,7 +253,6 @@ class MediaProcessor: ObservableObject {
 //            media.imageData = nil
             MediaProvider.shared.container.viewContext.delete(media)
             try? MediaProvider.shared.container.viewContext.save()
-
 //            withAnimation { self.mediaProvider.deleteMedia(identifiedBy: [media.objectID]) }
 //
 //            // refresh from server
@@ -249,7 +267,8 @@ class MediaProcessor: ObservableObject {
 //                }
 //            }
         }
-        
+
+        completion (media)
         return media
     }
 
