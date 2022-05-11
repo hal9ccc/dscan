@@ -11,10 +11,6 @@ import SwiftUI
     
 struct MediaSectionList: View {
     
-    init(){
-            UITableView.appearance().backgroundColor = .clear
-    }
-    
     let mediaProvider:      MediaProvider   = .shared
     
     @SectionedFetchRequest (
@@ -48,7 +44,6 @@ struct MediaSectionList: View {
 
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
-    
 
     var body: some View {
 
@@ -88,9 +83,9 @@ struct MediaSectionList: View {
             }
             .background(
                 LinearGradient(
-                    stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0), SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 0.5), SwiftUI.Gradient.Stop(color: Color("Color-2"), location: 1.0)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
+                    stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),        SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
 

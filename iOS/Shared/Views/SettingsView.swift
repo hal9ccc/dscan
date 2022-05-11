@@ -96,9 +96,9 @@ struct SettingsView: View {
         }
         .background(
             LinearGradient(
-                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0), SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 0.5), SwiftUI.Gradient.Stop(color: Color("Color-2"), location: 1.0)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
+                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
         )
         //colors in assets https://thehappyprogrammer.com/lineargradient-swiftui
