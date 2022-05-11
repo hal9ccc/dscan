@@ -159,20 +159,15 @@ class MediaProcessor: ObservableObject {
         let mediaFetch = Media.createFetchRequest()
         mediaFetch.predicate = NSPredicate(format: "imageData != nil")
         
-        let sort = NSSortDescriptor(key: "time", ascending: false)
-        mediaFetch.sortDescriptors = [sort]
+        let sort_time = NSSortDescriptor(key: "time", ascending: true)
+        let sort_idx  = NSSortDescriptor(key: "idx",  ascending: true)
+        mediaFetch.sortDescriptors = [sort_time, sort_idx]
 
         do {
             media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
             logger.debug("Got \(media2Process.count) documents")
 
-
             self.refreshGroup         = DispatchGroup()
-
-            media2Process.forEach {
-                reset()
-                let _ = processImage($0, completion: { _ in self.refreshGroup.leave() })
-            }
 
             self.refreshGroup.notify (queue: .main) { [self] in
                 Task {
@@ -184,6 +179,12 @@ class MediaProcessor: ObservableObject {
                     }
                 }
             }
+
+            media2Process.forEach {
+//                reset()
+                let _ = processImage($0, completion: { _ in self.refreshGroup.leave() })
+            }
+
 
         } catch {
             logger.critical("Fetch failed")
@@ -227,38 +228,26 @@ class MediaProcessor: ObservableObject {
         
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
-        do {
-            self.imageRequestGroup.enter()
-            self.imageRequestGroup.enter()
-            try handler.perform([detectBarcodesRequest, textRecognitionRequest])
-            print ("handler.perform returned")
-            logger.info("after Barcodes: \(self.metadata.detectedBarcodes)")
-            logger.info("after Texts: \(self.metadata.recognizedText)")
-            
-        } catch {
-            self.error = error
-        }
-
         // called when both image-requests complete
         self.imageRequestGroup.notify (queue: .main) {
 
             self.logger.debug("imagerequests completed, uploading data...")
-            self.isRecognizingTexts = false
-            self.isDetectingBarcodes = false
-            
-            do {
-                self.isUploadingData = true
-                let data = try JSONEncoder().encode(self.metadata)
-//                print(String(data: data, encoding: .utf8)!)
-
-                self.uploadGroup.enter()
-                self.uploadGroup.enter()
-                self.uploadData  (data:  data,    filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
-                self.uploadImage (image: uiImage, filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
-                
-            } catch {
-                self.error = error
-            }
+//            self.isRecognizingTexts = false
+//            self.isDetectingBarcodes = false
+//
+//            do {
+//                self.isUploadingData = true
+//                let data = try JSONEncoder().encode(self.metadata)
+//                //print(String(data: data, encoding: .utf8)!)
+//
+//                self.uploadGroup.enter()
+//                self.uploadGroup.enter()
+//                self.uploadData  (data:  data,    filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+//                self.uploadImage (image: uiImage, filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+//
+//            } catch {
+//                self.error = error
+//            }
         }
 
 
@@ -288,6 +277,25 @@ class MediaProcessor: ObservableObject {
 //                }
 //            }
         }
+
+        do {
+            self.imageRequestGroup.enter()
+            self.imageRequestGroup.enter()
+            try handler.perform([detectBarcodesRequest, textRecognitionRequest])
+            print ("handler.perform returned")
+            logger.info("after Barcodes: \(self.metadata.detectedBarcodes)")
+            logger.info("after Texts: \(self.metadata.recognizedText)")
+
+            let data = try JSONEncoder().encode(self.metadata)
+//                print(String(data: data, encoding: .utf8)!)
+            
+            self.uploadData  (data:  data,    filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+            self.uploadImage (image: uiImage, filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+
+        } catch {
+            self.error = error
+        }
+
 
 //        completion (media)
         return media
