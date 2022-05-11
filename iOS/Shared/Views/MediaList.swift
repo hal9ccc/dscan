@@ -74,7 +74,7 @@ struct MediaList: View {
                         ForEach(sect, id: \.filename) { media in
                             NavigationLink(destination: MediaDetail(media: media)) {
                                 MediaRow(media: media)
-                            }
+                            }.listRowBackground(Color.clear)
                         }
                         .onDelete { indexSet in
                             withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
@@ -99,6 +99,13 @@ struct MediaList: View {
                 .hidden()
 
         }
+        .background(
+            LinearGradient(
+                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0), SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 0.5), SwiftUI.Gradient.Stop(color: Color("Color-2"), location: 1.0)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+            )
+        )
         .alert(isPresented: $hasError, error: error) { }
         .sheet(isPresented: $showScannerSheet, content: {
             self.makeScannerView()
