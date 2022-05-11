@@ -59,10 +59,12 @@ class MediaProcessor: ObservableObject {
     init () {
 
         textRecognitionRequest = VNRecognizeTextRequest ( completionHandler: { (request, error) in
-
+            
+//            var f = [MMRecognizedText]()
+            
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNRecognizedTextObservation] {
-                    DispatchQueue.main.async {
+//                    DispatchQueue.main.async {
                         let maximumCandidates = 1
 
                         for observation in requestResults {
@@ -80,10 +82,12 @@ class MediaProcessor: ObservableObject {
 
                             self.metadata.recognizedText.append(T);
                         }
-                    }
+
+//                    }
                 }
             }
-
+            self.logger.debug ("f(Text): \(String(describing: self.metadata.recognizedText))")
+//            self.metadata.recognizedText = f;
             self.imageRequestGroup.leave()
         })
 
@@ -93,9 +97,12 @@ class MediaProcessor: ObservableObject {
 
 
         detectBarcodesRequest = VNDetectBarcodesRequest(completionHandler: { (request, error) in
+
+//            let f = [MMDetectedBarcode]()
+            
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNBarcodeObservation] {
-                    DispatchQueue.main.async {
+//                    DispatchQueue.main.async {
                         for observation in requestResults {
 
                             let C = MMDetectedBarcode (
@@ -108,15 +115,16 @@ class MediaProcessor: ObservableObject {
 
                         self.detectedBarcodes = self.metadata.detectedBarcodes.count
 
-                    }
+//                    }
                 }
             }
-            print ("Barcoderesults", self.metadata.detectedBarcodes)
+            self.logger.debug ("f(Barcodes): \(String(describing: self.metadata.detectedBarcodes))")
+//            self.metadata.detectedBarcodes = f;
             self.imageRequestGroup.leave()
         })
         detectBarcodesRequest.revision    = VNDetectBarcodesRequestRevision2
         detectBarcodesRequest.symbologies = [.code128, .code39, .code39Checksum, .dataMatrix, .pdf417, .qr, .aztec, .ean13, .i2of5, .upce ]
-        detectBarcodesRequest.usesCPUOnly = true
+//        detectBarcodesRequest.usesCPUOnly = true
     }
 
     func reset () {
@@ -161,8 +169,9 @@ class MediaProcessor: ObservableObject {
 
             self.refreshGroup         = DispatchGroup()
 
-            _ = media2Process.map {
-                return processImage($0, completion: { _ in self.refreshGroup.leave() })
+            media2Process.forEach {
+                reset()
+                let _ = processImage($0, completion: { _ in self.refreshGroup.leave() })
             }
 
             self.refreshGroup.notify (queue: .main) { [self] in
@@ -189,9 +198,14 @@ class MediaProcessor: ObservableObject {
 //    }
 
     func processImage(_ media: Media, completion: @escaping (Media?) -> Void) -> Media {
+        
+        logger.info("analyzing \(media.filename)...")
 
         reset()
         
+        logger.info("before Barcodes: \(self.metadata.detectedBarcodes)")
+        logger.info("before Texts: \(self.metadata.recognizedText)")
+
         let uiImage = UIImage(data: media.imageData ?? Data())!
         guard let cgImage = uiImage.cgImage else {
             print("Failed to get cgimage from input image")
@@ -217,23 +231,25 @@ class MediaProcessor: ObservableObject {
             self.imageRequestGroup.enter()
             self.imageRequestGroup.enter()
             try handler.perform([detectBarcodesRequest, textRecognitionRequest])
-
+            print ("handler.perform returned")
+            logger.info("after Barcodes: \(self.metadata.detectedBarcodes)")
+            logger.info("after Texts: \(self.metadata.recognizedText)")
+            
         } catch {
             self.error = error
         }
 
-
         // called when both image-requests complete
         self.imageRequestGroup.notify (queue: .main) {
 
-            print ("imagerequests completed, uploading data...")
+            self.logger.debug("imagerequests completed, uploading data...")
             self.isRecognizingTexts = false
             self.isDetectingBarcodes = false
             
             do {
                 self.isUploadingData = true
                 let data = try JSONEncoder().encode(self.metadata)
-                print(String(data: data, encoding: .utf8)!)
+//                print(String(data: data, encoding: .utf8)!)
 
                 self.uploadGroup.enter()
                 self.uploadGroup.enter()
@@ -253,6 +269,11 @@ class MediaProcessor: ObservableObject {
 //            media.imageData = nil
             MediaProvider.shared.container.viewContext.delete(media)
             try? MediaProvider.shared.container.viewContext.save()
+
+            
+            completion (media)
+//            return media
+
 //            withAnimation { self.mediaProvider.deleteMedia(identifiedBy: [media.objectID]) }
 //
 //            // refresh from server
@@ -268,7 +289,7 @@ class MediaProcessor: ObservableObject {
 //            }
         }
 
-        completion (media)
+//        completion (media)
         return media
     }
 

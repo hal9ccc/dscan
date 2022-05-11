@@ -181,11 +181,11 @@ class MediaProvider {
                         self.logger.debug("Failed to execute batch insert request.")
                         self.logger.critical("\(String(describing: batchInsertResult))")
                     }
-                    self.logger.critical("batchInsertResult: \(String(describing: batchInsertResult))")
+//                    self.logger.critical("batchInsertResult: \(String(describing: batchInsertResult))")
                 }
-                self.logger.critical("fetchResult: \(String(describing: fetchResult))")
+//                self.logger.critical("fetchResult: \(String(describing: fetchResult))")
             }
-            self.logger.critical("batchInsertRequest: \(String(describing: batchInsertRequest))")
+//            self.logger.critical("batchInsertRequest: \(String(describing: batchInsertRequest))")
             self.logger.critical("Failed to execute batch insert request (2).")
             throw DscanError.batchInsertError
         }

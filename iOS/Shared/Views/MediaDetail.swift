@@ -65,7 +65,17 @@ struct MediaDetail: View {
 
                 if media.imageData != nil {
                     Button(action: {
-                        let _ = mp.processImage (media, completion: { _ in return } )
+                        let _ = mp.processImage (media, completion: { media in
+                            Task {
+                                do {
+                                    print ("refreshing \(media?.description ?? "")")
+                                    let mediaProvider: MediaProvider = .shared
+                                    try await mediaProvider.fetchMedia()
+                                } catch {
+                                    return
+                                }
+                            }
+                        })
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
