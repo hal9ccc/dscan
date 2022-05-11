@@ -89,8 +89,9 @@ struct ScannerView: UIViewControllerRepresentable {
                   carrier:                "␀",
                   location:               "␀",
                   img:                    "␀",
-                  recognizedCodesJson:    "␀",
-                  recognizedTextJson:     "␀",
+                  fulltext:               "",
+//                  recognizedCodesJson:    "␀",
+//                  recognizedTextJson:     "␀",
                   imageData:              scan.imageOfPage(at: pageNumber).jpegData(compressionQuality: 1) ?? Data()
 //                  uiImage:                scan.imageOfPage(at: pageNumber)
                 )
