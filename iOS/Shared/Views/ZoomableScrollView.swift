@@ -1,5 +1,8 @@
 //
 //  ZoomableScrollView.swift
+//
+//  from https://stackoverflow.com/questions/58341820/isnt-there-an-easy-way-to-pinch-to-zoom-in-an-image-in-swiftui
+//
 //  dscan
 //
 //  Created by Matthias Schulze on 10.05.22.

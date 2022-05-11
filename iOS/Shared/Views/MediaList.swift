@@ -13,14 +13,24 @@ struct MediaList: View {
     let sortId:  Int
     let section: String
 
+
+    @EnvironmentObject var mp: MediaProcessor
+
     var mediaProvider:      MediaProvider   = .shared
 
     @SectionedFetchRequest (
-        sectionIdentifier: MediaSort.default.section,
-        sortDescriptors:   MediaSort.default.descriptors,
-        animation: .default
+        sectionIdentifier:  MediaSort.default.section,
+        sortDescriptors:    MediaSort.default.descriptors,
+        predicate:          NSPredicate(format: "hidden == false"),
+        animation:          .default
     )
     private var media: SectionedFetchResults<String, Media>
+
+    @FetchRequest(
+        entity: Media.entity(),
+        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
+        predicate:          NSPredicate(format: "imageData != nil")
+     ) var newMedia: FetchedResults<Media>
 
     @State private var mediaSelection: Set<String> = []
 
@@ -43,6 +53,9 @@ struct MediaList: View {
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
 
 
+    /*
+    ** ********************************************************************************************
+    */
     var body: some View {
 
         let request = media
@@ -101,6 +114,9 @@ struct MediaList: View {
     }
 
 
+    /*
+    ** ********************************************************************************************
+    */
     var title: String {
         #if os(iOS)
 //        if selectMode.isActive || mediaSelection.isEmpty {
@@ -113,6 +129,9 @@ struct MediaList: View {
         #endif
     }
 
+    /*
+    ** ********************************************************************************************
+    */
     var mediaSearchQuery: Binding<String> {
 
         let f = Binding {
@@ -140,6 +159,9 @@ struct MediaList: View {
     }
 
 
+    /*
+    ** ********************************************************************************************
+    */
     private func makeScannerView()-> some View {
         ScannerView(completion: { scanData in
             mediaProvider.importSet(scanData)
@@ -148,12 +170,18 @@ struct MediaList: View {
     }
 
 
+    /*
+    ** ********************************************************************************************
+    */
     private func deleteMediaByOffsets(from section: SectionedFetchResults<String, Media>.Element, at offsets: IndexSet) {
         let objectIDs = offsets.map { section[$0].objectID }
         mediaProvider.deleteMedia(identifiedBy: objectIDs)
         mediaSelection.removeAll()
     }
 
+    /*
+    ** ********************************************************************************************
+    */
     private func deleteMedia(for codes: Set<String>) async {
         do {
             let mediaToDelete = media.joined().filter { codes.contains($0.filename) }
@@ -170,6 +198,9 @@ struct MediaList: View {
         #endif
     }
 
+    /*
+    ** ********************************************************************************************
+    */
     private func fetchMedia() async {
         isLoading = true
         do {
@@ -182,7 +213,18 @@ struct MediaList: View {
         isLoading = false
     }
 
+    /*
+    ** ********************************************************************************************
+    */
+    private func processAllMedia() async {
+        mp.processAllImages()
+        await fetchMedia()
+    }
+    
 
+    /*
+    ** ********************************************************************************************
+    */
     @ToolbarContentBuilder
     private func toolbarContent() -> some ToolbarContent {
         #if os(iOS)
@@ -250,6 +292,14 @@ struct MediaList: View {
             }
             .disabled(isLoading || mediaSelection.isEmpty)
             .opacity (editMode == .active ? 1 : 0)
+            
+            AnalyzeButton {
+                Task {
+                    await processAllMedia()
+                }
+            }
+            
+            Text("new: \(newMedia.count)")
         }
     }
 

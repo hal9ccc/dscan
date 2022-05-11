@@ -18,9 +18,10 @@ struct MediaSectionList: View {
     let mediaProvider:      MediaProvider   = .shared
     
     @SectionedFetchRequest (
-        sectionIdentifier: MediaSort.default.section,
-        sortDescriptors: MediaSort.default.descriptors,
-        animation: .default
+        sectionIdentifier:  MediaSort.default.section,
+        sortDescriptors:    MediaSort.default.descriptors,
+        predicate:          NSPredicate(format: "hidden == false"),
+        animation:          .default
     )
     private var media: SectionedFetchResults<String, Media>
 
@@ -37,8 +38,9 @@ struct MediaSectionList: View {
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
     
-//    @AppStorage("lastSelectedSort")
-    @State
+
+//    @State
+    @AppStorage("lastSelectedSort")
     private var lastSelectedSort = MediaSort.default.id
 
     @AppStorage("lastSelectedSection")
@@ -50,7 +52,12 @@ struct MediaSectionList: View {
 
     var body: some View {
 
-        NavigationView {
+        let request = media
+        request.sectionIdentifier = MediaSort.sorts[lastSelectedSort].section
+        request.sortDescriptors   = MediaSort.sorts[lastSelectedSort].descriptors
+        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
+
+        return NavigationView {
             
             ZStack {
                 
@@ -96,6 +103,8 @@ struct MediaSectionList: View {
             selectedMediaSort = MediaSort.sorts[lastSelectedSort]
         }
         .alert(isPresented: $hasError, error: error) { }
+        
+//        return MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
 
     }
     

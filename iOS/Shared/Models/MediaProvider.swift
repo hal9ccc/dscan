@@ -138,7 +138,6 @@ class MediaProvider {
             logger.debug("Received \(mediaPropertiesList.count) records.")
 
             // Import the JSON into Core Data.
-            print (mediaPropertiesList)
             logger.debug("Start importing data to the store...")
             try await importMedia(from: mediaPropertiesList)
             logger.debug("Finished importing data.")
@@ -155,8 +154,6 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-
-        //print (propertiesList)
 
         /// - Tag: performAndWait
         try await taskContext.perform {
@@ -287,7 +284,7 @@ class MediaProvider {
         let viewContext = container.viewContext
         viewContext.perform {
             for transaction in history {
-                self.logger.debug("Merge...")
+//                self.logger.debug("Merge...")
                 viewContext.mergeChanges(fromContextDidSave: transaction.objectIDNotification())
                 self.lastToken = transaction.token
             }

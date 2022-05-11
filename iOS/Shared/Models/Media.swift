@@ -34,6 +34,7 @@ class Media: NSManagedObject {
     @NSManaged var company:         String
     @NSManaged var carrier:         String
     @NSManaged var location:        String
+    @NSManaged var day:             String
     @NSManaged var img:             String
     @NSManaged var imageData:       Data?
 
@@ -102,11 +103,16 @@ class Media: NSManagedObject {
 
 extension Media {
 
+    @nonobjc public class func createFetchRequest() -> NSFetchRequest<Media> {
+        return NSFetchRequest<Media>(entityName: "Media")
+    }
+
     override var description: String {
         return  "id:\(id.description       ), "
         +      "set:\(set.description      ), "
         +      "idx:\(idx.description      ), "
         +      "cid:\(cid.description      ), "
+        +      "day:\(day.description      ), "
         +   "hidden:\(hidden.description   ), "
         +   "status:\(status.description   ), "
         +     "type:\(type.description     ), "
@@ -263,6 +269,7 @@ struct MediaProperties: Decodable {
     let set:                    String
     let idx:                    Int
     let cid:                    Int
+    let day:                    String
     let hidden:                 Bool
     let status:                 String
     let type:                   String
@@ -290,6 +297,7 @@ struct MediaProperties: Decodable {
         set:                    String,
         idx:                    Int,
         cid:                    Int,
+        day:                    String,
         hidden:                 Bool,
         status:                 String,
         type:                   String,
@@ -316,6 +324,7 @@ struct MediaProperties: Decodable {
         self.set                    = set
         self.idx                    = idx
         self.cid                    = cid
+        self.day                    = day
         self.hidden                 = hidden
         self.status                 = status
         self.type                   = type
@@ -343,8 +352,15 @@ struct MediaProperties: Decodable {
 
     init(from decoder: Decoder) throws {
 
+        // for reading the Date from JSON
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMddHHmmssSSS"
+        
+        // for displaying a day in local format
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateStyle = .full
+        dayFormatter.timeStyle = .none
+        dayFormatter.locale = Locale.current
 
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -352,7 +368,7 @@ struct MediaProperties: Decodable {
         let raw_set        = try? values.decode (String.self,   forKey: .set        )
         let raw_idx        = try? values.decode (Int.self,      forKey: .idx        )
         let raw_cid        = try? values.decode (Int.self,      forKey: .cid        )
-        let raw_hidden     = try? values.decode (Bool.self,     forKey: .hidden     )
+        let raw_hidden     = try? values.decode (Int.self,      forKey: .hidden     )
         let raw_status     = try? values.decode (String.self,   forKey: .status     )
         let raw_type       = try? values.decode (String.self,   forKey: .type       )
         let raw_title      = try? values.decode (String.self,   forKey: .title      )
@@ -373,8 +389,12 @@ struct MediaProperties: Decodable {
         let raw_ID         = try? values.decode (Data.self,     forKey: .imageData            )
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
+        let day            = dayFormatter.string(from: raw_time ?? .distantPast)
 
-        let hidden              = raw_hidden ?? false
+//        print("day: \(String(describing: day)) file: \(raw_filename)")
+//        print("hidden: \(String(describing: raw_hidden)) file: \(raw_filename)")
+        
+        let hidden              = raw_hidden == 1 ? true : false
         let status              = raw_status ?? ""
         let code                = raw_code
         let person              = raw_person
@@ -429,6 +449,7 @@ struct MediaProperties: Decodable {
         self.set                    = set
         self.idx                    = idx
         self.cid                    = cid
+        self.day                    = day
         self.hidden                 = hidden
         self.status                 = status
         self.type                   = type
@@ -458,6 +479,7 @@ struct MediaProperties: Decodable {
         "set":                  set,
         "idx":                  idx,
         "cid":                  cid,
+        "day":                  day,
         "hidden":               hidden,
         "status":               status,
         "type":                 type,

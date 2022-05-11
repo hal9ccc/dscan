@@ -28,43 +28,39 @@ struct GrowingButton: ButtonStyle {
 
 struct MediaDetail: View {
     var media: Media
-    
-    @EnvironmentObject var mp: MediaProcessor
 
+    @EnvironmentObject var mp: MediaProcessor
+    
     @AppStorage("ServerURL")
     var serverurl = "http://localhost"
+    
+    @State private var isPresented = false
     
     var body: some View {
         ScrollView {
             VStack {
-                NavigationLink(destination: MediaZoom(media: media)) {
-               
-                    ZStack {
-                        LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
-                                  resizingMode: .aspectFit
-                        )
-                            .frame(height: 500)
-                            .opacity(media.img == "␀" ? 0 : 1)
+                ZStack {
+                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
+                              resizingMode: .aspectFit
+                    )
+                        .frame(height: 500)
+                        .opacity(media.img == "␀" ? 0 : 1)
 
-                        if media.imageData != nil {
-                            Image(UIImage(data: media.imageData!)!)
-                                .resizingMode(.aspectFit)
-                                .opacity(media.imageData == nil ? 0 : 1)
-                        }
-                    
+                    if media.imageData != nil {
+                        Image(UIImage(data: media.imageData!)!)
+                            .resizingMode(.aspectFit)
+                            .opacity(media.imageData == nil ? 0 : 1)
                     }
-                    .frame(height: 500)
+
                 }
+                .onTapGesture() {
+                    isPresented.toggle()
+                }
+                .frame(height: 500)
 
                 if media.imageData != nil {
                     Button(action: {
-                        mp.processImage (
-                            imageJpegData:  media.imageData ?? Data(),
-                            filename:       media.filename,
-                            title:          media.title,
-                            idx:            Int(media.idx),
-                            timestamp:      media.time
-                        )
+                        let _ = mp.processImage (media, completion: { _ in return } )
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
@@ -76,6 +72,9 @@ struct MediaDetail: View {
                     .font(.title3)
                     .bold()
 
+                Text("\(media.day)")
+                    .foregroundStyle(Color.primary)
+
                 Text("\(media.carrier)")
                     .foregroundStyle(Color.primary)
 
@@ -86,6 +85,7 @@ struct MediaDetail: View {
             }
         }
         .navigationTitle(title)
+        .fullScreenCover(isPresented: $isPresented, content: { FullScreenModalView(media: media) } )
     }
     
     var title: String {
@@ -95,6 +95,56 @@ struct MediaDetail: View {
 //    func processImage(image: Data, filename: String, title: String, idx: Int, timestamp: Date ) {
 //        mp.processImage(imageJpegData: image, filename: <#T##String#>, title: <#T##String#>, idx: <#T##Int#>, timestamp: <#T##Date#>: image, filename: filename, title: title, idx: idx, timestamp: timestamp)
 //    }
+}
+
+
+struct FullScreenModalView: View {
+    
+    var media: Media
+    
+    @AppStorage("ServerURL")
+    var serverurl = ""
+    
+    @Environment(\.presentationMode) var presentationMode
+
+    var body: some View {
+        ZStack {
+            ZoomableScrollView {
+                ZStack {
+                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
+                        resizingMode: .aspectFit
+                    )
+
+                    if media.imageData != nil {
+                        Image(UIImage(data: media.imageData!)!)
+                            .resizingMode(.aspectFit)
+                            .opacity(media.imageData == nil ? 0 : 1)
+                    }
+                }
+            }
+            .edgesIgnoringSafeArea(.all)
+            .gesture(DragGesture(minimumDistance: 3.0, coordinateSpace: .local)
+                .onEnded { value in
+                    // swipe down gesture from https://stackoverflow.com/questions/60885532/how-to-detect-swiping-up-down-left-and-right-with-swiftui-on-a-view
+                    switch(value.translation.width, value.translation.height) {
+                        case (-100...100, 0...):
+                            // down swipe
+                            presentationMode.wrappedValue.dismiss()
+                        default: break
+                    }
+                }
+            )
+
+            VStack {
+                Button("Dismiss Modal") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                
+                Spacer()
+            }
+            .frame(maxHeight: .infinity, alignment: .leading)
+        }
+    }
 }
 
 

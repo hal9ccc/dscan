@@ -49,8 +49,32 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
 
     exception when no_data_found then
       v_id := media_seq.NEXTVAL;
-      INSERT INTO media (id, content, content_type, file_name, "TYPE", title, timestamp, idx, device)
-      VALUES (v_id, p_content, p_content_type, v_file_name, p_type, v_title, v_timestamp, p_idx, p_device);
+      INSERT INTO media (
+        id,
+        content,
+        content_type,
+        file_name,
+        "TYPE",
+        title,
+        timestamp,
+        idx,
+        cid,
+        status,
+        device
+      )
+      VALUES (
+        v_id,
+        p_content,
+        p_content_type,
+        v_file_name,
+        p_type,
+        v_title,
+        v_timestamp,
+        p_idx,
+        0,
+        'new',
+        p_device
+      );
       trc.MSG('inserted MEDIA record #'||v_id);
     end;
 

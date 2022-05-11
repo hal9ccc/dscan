@@ -26,7 +26,7 @@ select M.*,
        to_char(M.TIMESTAMP, 'yyyymmdd-hh24:mi:ss')
 --           || decode(count(*) OVER (PARTITION BY T.TIMESTAMP), 1, '', ' ['||count(*) OVER (PARTITION BY T.TIMESTAMP)||']')
          as SET_NAME,
-       UTL_URL.escape(REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg')) as IMG
+       REGEXP_REPLACE(M.FILE_NAME, '.json$', '.jpg') as IMG
 from   MEDIA M
 left outer join  V_MEDIA_TAGS         T on T.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')
 left outer join  V_MEDIA_FULLTEXT     F on F.ID = M.ID -- FILE_NAME = REGEXP_REPLACE(M.FILE_NAME, '.jpg$|.jpeg$', '.json')

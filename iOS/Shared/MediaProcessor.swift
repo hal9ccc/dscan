@@ -10,6 +10,7 @@
 //
 
 import OSLog
+import CoreData
 import SwiftUI
 import Vision
 import VisionKit
@@ -17,6 +18,8 @@ import VisionKit
 
 class MediaProcessor: ObservableObject {
 //    @Published var mediaPropertiesList = [MediaProperties]()
+    
+    var mediaProvider: MediaProvider = .shared
 
     @AppStorage("ServerURL")
     private var serverurl = "http://localhost"
@@ -46,7 +49,11 @@ class MediaProcessor: ObservableObject {
 
     // wait for two background requests to finish
     // see https://dev.to/nemecek_f/swift-easy-way-to-wait-for-multiple-background-tasks-to-finish-2jk1
-    let group = DispatchGroup()
+    
+    var imageRequestGroup   = DispatchGroup()
+    var uploadGroup         = DispatchGroup()
+    var refreshGroup        = DispatchGroup()
+    
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "processing")
 
     init () {
@@ -56,13 +63,11 @@ class MediaProcessor: ObservableObject {
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNRecognizedTextObservation] {
                     DispatchQueue.main.async {
-//                        print ("Textresults", requestResults)
                         let maximumCandidates = 1
 
                         for observation in requestResults {
                             guard let candidate = observation.topCandidates(maximumCandidates).first else { continue }
                             let bb = try? candidate.boundingBox(for: candidate.string.startIndex..<candidate.string.endIndex)
-                            print(bb.debugDescription)
 
                             let T = MMRecognizedText (
                                 text:       candidate.string,
@@ -78,12 +83,13 @@ class MediaProcessor: ObservableObject {
                     }
                 }
             }
-//            print ("Textresults", self.metadata.recognizedText)
-            self.group.leave()
+
+            self.imageRequestGroup.leave()
         })
+
         textRecognitionRequest.recognitionLevel = .accurate
         textRecognitionRequest.usesLanguageCorrection = true
-//        textRecognitionRequest.recognitionLanguages
+        //textRecognitionRequest.recognitionLanguages
 
 
         detectBarcodesRequest = VNDetectBarcodesRequest(completionHandler: { (request, error) in
@@ -97,12 +103,6 @@ class MediaProcessor: ObservableObject {
                                 symbology: observation.symbology.rawValue.replacingOccurrences(of: "VNBarcodeSymbology", with: "")
                             )
 
-//                            let existingCode = self.metadata.detectedBarcodes.filter({$0.payload.contains(C.payload)})
-//                            if existingCode != nil {
-//                                print("existingcode:", existingCode)
-//                            }
-//                            print(C)
-
                             self.metadata.detectedBarcodes.append(C);
                         }
 
@@ -112,12 +112,10 @@ class MediaProcessor: ObservableObject {
                 }
             }
             print ("Barcoderesults", self.metadata.detectedBarcodes)
-            self.group.leave()
+            self.imageRequestGroup.leave()
         })
         detectBarcodesRequest.revision    = VNDetectBarcodesRequestRevision2
         detectBarcodesRequest.symbologies = [.code128, .code39, .code39Checksum, .dataMatrix, .pdf417, .qr, .aztec, .ean13, .i2of5, .upce ]
-//        detectBarcodesRequest.symbologies = [.code39]
-//        detectBarcodesRequest.symbologies = [.code39, .code39Checksum, .code39FullASCII]
         detectBarcodesRequest.usesCPUOnly = true
     }
 
@@ -127,7 +125,7 @@ class MediaProcessor: ObservableObject {
         isRecognizingTexts      = false
         isUploadingData         = false
 
-        metadata                     = MMImage()
+        metadata                = MMImage()
         idx                     = 0
         filename                = ""
         title                   = ""
@@ -144,14 +142,60 @@ class MediaProcessor: ObservableObject {
     /*
     ** ***********************************************************************************************
     */
-    func processImage(imageJpegData: Data, filename: String, title: String, idx: Int, timestamp: Date) {
-
-//        reset()
+    func processAllImages() {
+        logger.info("processing all images")
         
-        let uiImage = UIImage(data: imageJpegData)!
+        var media2Process = [Media]()
+        
+        //        let moc = MediaProvider.shared.container.viewContext
+        let mediaFetch = Media.createFetchRequest()
+        mediaFetch.predicate = NSPredicate(format: "imageData != nil")
+        
+        let sort = NSSortDescriptor(key: "time", ascending: false)
+        mediaFetch.sortDescriptors = [sort]
+
+        do {
+            media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
+            logger.debug("Got \(media2Process.count) documents")
+
+
+            self.refreshGroup         = DispatchGroup()
+
+            _ = media2Process.map {
+                return processImage($0, completion: { _ in self.refreshGroup.leave() })
+            }
+
+            self.refreshGroup.notify (queue: .main) { [self] in
+                Task {
+                    do {
+                        print ("all documemts processed, refreshing...")
+                        try await self.mediaProvider.fetchMedia()
+                    } catch {
+                        self.error = error as? DscanError ?? .unexpectedError(error: error)
+                    }
+                }
+            }
+
+        } catch {
+            logger.critical("Fetch failed")
+        }
+    }
+    
+    /*
+    ** ***********************************************************************************************
+    */
+//    init(completion: @escaping ([MediaProperties]?) -> Void) {
+//        self.completionHandler = completion
+//    }
+
+    func processImage(_ media: Media, completion: @escaping (Media?) -> Void) -> Media {
+
+        reset()
+        
+        let uiImage = UIImage(data: media.imageData ?? Data())!
         guard let cgImage = uiImage.cgImage else {
             print("Failed to get cgimage from input image")
-            return
+            return media
         }
 
         self.filename   = filename
@@ -159,16 +203,19 @@ class MediaProcessor: ObservableObject {
         self.idx        = idx
         self.timestamp  = timestamp
 
-        uploadImage (image: uiImage, filename: filename, title: title, idx: idx, timestamp: timestamp)
-
-        self.isRecognizingTexts = true
+        self.isRecognizingTexts  = true
         self.isDetectingBarcodes = true
+        self.imageRequestGroup   = DispatchGroup()
+        self.uploadGroup         = DispatchGroup()
 
+        self.refreshGroup.enter()
+
+        
         let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
 
         do {
-            self.group.enter()
-            self.group.enter()
+            self.imageRequestGroup.enter()
+            self.imageRequestGroup.enter()
             try handler.perform([detectBarcodesRequest, textRecognitionRequest])
 
         } catch {
@@ -176,23 +223,53 @@ class MediaProcessor: ObservableObject {
         }
 
 
-        self.group.notify (queue: .main) {
-            // all data available, continue
+        // called when both image-requests complete
+        self.imageRequestGroup.notify (queue: .main) {
+
             print ("imagerequests completed, uploading data...")
             self.isRecognizingTexts = false
             self.isDetectingBarcodes = false
-
+            
             do {
                 self.isUploadingData = true
                 let data = try JSONEncoder().encode(self.metadata)
                 print(String(data: data, encoding: .utf8)!)
-                self.uploadData(data: data, filename: filename, title: title, idx: idx, timestamp: timestamp)
+
+                self.uploadGroup.enter()
+                self.uploadGroup.enter()
+                self.uploadData  (data:  data,    filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+                self.uploadImage (image: uiImage, filename: media.filename, title: media.title, idx: Int(media.idx), timestamp: media.time)
+                
             } catch {
                 self.error = error
             }
-
         }
 
+
+        // called when both uploads complete
+        self.uploadGroup.notify (queue: .main) {
+            
+            print ("uploads for \(media.filename) completed, deleting original...")
+//            media.imageData = nil
+            MediaProvider.shared.container.viewContext.delete(media)
+            try? MediaProvider.shared.container.viewContext.save()
+//            withAnimation { self.mediaProvider.deleteMedia(identifiedBy: [media.objectID]) }
+//
+//            // refresh from server
+//            Task {
+//                do {
+//                    print ("refreshing from server...")
+//                    try await self.mediaProvider.fetchMedia()
+//                    // lastUpdated = Date().timeIntervalSince1970
+//                } catch {
+//                    self.error = error as? DscanError ?? .unexpectedError(error: error)
+//                    //  self.hasError = true
+//                }
+//            }
+        }
+
+        completion (media)
+        return media
     }
 
     /*
