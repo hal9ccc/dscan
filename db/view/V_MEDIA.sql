@@ -11,7 +11,7 @@ select M.*,
        nvl(F.Fulltext,      '')   as FullText,
        nvl(C.Codelist,      '')   as CodeList,
        nvl(T.TagList,       '')   as TagList,
-      substr(''    || '<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
+      substr(''   || --'<strong style="font-size:125%;">'      || M.title || '</strong>' || '<br><br>' ||
       '🗓' || ' ' || to_char(M.TIMESTAMP, 'dd.mm.yyyy hh24:mi:ss') || ' - ' || M.idx || '<br>' ||
       '📷' || ' ' || M.device || '<br>' ||
       '📎' || ' <a href="' || 'dscan/media/files/'|| M.FILE_NAME || '">' || M.FILE_NAME || '</a>' || '<br>' ||

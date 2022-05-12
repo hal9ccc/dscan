@@ -8,6 +8,7 @@
         <attribute name="day" optional="YES" attributeType="String"/>
         <attribute name="device" optional="YES" attributeType="String"/>
         <attribute name="filename" optional="YES" attributeType="String"/>
+        <attribute name="fulltext" optional="YES" attributeType="String"/>
         <attribute name="hidden" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="idx" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
@@ -52,7 +53,7 @@
         </uniquenessConstraints>
     </entity>
     <elements>
-        <element name="Media" positionX="-63" positionY="-18" width="128" height="404"/>
+        <element name="Media" positionX="-63" positionY="-18" width="128" height="419"/>
         <element name="Person" positionX="-63" positionY="63" width="128" height="74"/>
     </elements>
 </model>

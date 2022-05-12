@@ -151,7 +151,8 @@ struct MediaList: View {
                     NSPredicate (format: "person contains[cd] %@", newValue),
                     NSPredicate (format: "company contains[cd] %@", newValue),
                     NSPredicate (format: "carrier contains[cd] %@", newValue),
-                    NSPredicate (format: "location contains[cd] %@", newValue)
+                    NSPredicate (format: "location contains[cd] %@", newValue),
+                    NSPredicate (format: "fulltext contains[cd] %@", newValue)
             ])
         }
 
@@ -218,7 +219,7 @@ struct MediaList: View {
     */
     private func processAllMedia() async {
         mp.processAllImages()
-        await fetchMedia()
+//        await fetchMedia()
     }
     
 

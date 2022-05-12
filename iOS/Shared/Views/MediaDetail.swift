@@ -39,28 +39,43 @@ struct MediaDetail: View {
     var body: some View {
         ScrollView {
             VStack {
-                ZStack {
-                    LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
-                              resizingMode: .aspectFit
-                    )
-                        .frame(height: 500)
-                        .opacity(media.img == "␀" ? 0 : 1)
+                HStack {
+                    ZStack {
+                        LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
+                                  resizingMode: .aspectFit
+                        )
+                            .frame(height: 500)
+                            .opacity(media.img == "␀" ? 0 : 1)
 
-                    if media.imageData != nil {
-                        Image(UIImage(data: media.imageData!)!)
-                            .resizingMode(.aspectFit)
-                            .opacity(media.imageData == nil ? 0 : 1)
+                        if media.imageData != nil {
+                            Image(UIImage(data: media.imageData!)!)
+                                .resizingMode(.aspectFit)
+                                .opacity(media.imageData == nil ? 0 : 1)
+                        }
+
                     }
-
+                    .onTapGesture() {
+                        isPresented.toggle()
+                    }
+                    .frame(height: 500)
+                
+                    Text("\(media.fulltext)")
+                        .padding()
                 }
-                .onTapGesture() {
-                    isPresented.toggle()
-                }
-                .frame(height: 500)
 
                 if media.imageData != nil {
                     Button(action: {
-                        let _ = mp.processImage (media, completion: { _ in return } )
+                        let _ = mp.processImage (media, completion: { media in
+                            Task {
+                                do {
+                                    print ("refreshing \(media?.description ?? "")")
+                                    let mediaProvider: MediaProvider = .shared
+                                    try await mediaProvider.fetchMedia()
+                                } catch {
+                                    return
+                                }
+                            }
+                        })
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }

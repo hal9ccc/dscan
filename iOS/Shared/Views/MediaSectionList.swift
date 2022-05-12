@@ -50,7 +50,7 @@ struct MediaSectionList: View {
         let request = media
         request.sectionIdentifier = MediaSort.sorts[lastSelectedSort].section
         request.sortDescriptors   = MediaSort.sorts[lastSelectedSort].descriptors
-        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
+//        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
 
         return NavigationView {
             
@@ -66,7 +66,7 @@ struct MediaSectionList: View {
                     }
                 } // List
                 .listStyle(SidebarListStyle())
-                .searchable(text: mediaSearchQuery)
+//                .searchable(text: mediaSearchQuery)
                 .navigationTitle (title)
                 .toolbar (content: toolbarContent)
 
@@ -125,7 +125,8 @@ struct MediaSectionList: View {
                 NSPredicate (format: "person contains[cd] %@", newValue),
                 NSPredicate (format: "company contains[cd] %@", newValue),
                 NSPredicate (format: "carrier contains[cd] %@", newValue),
-                NSPredicate (format: "location contains[cd] %@", newValue)
+                NSPredicate (format: "location contains[cd] %@", newValue),
+                NSPredicate (format: "fulltext contains[cd] %@", newValue)
         ])
       }
     }
@@ -220,8 +221,8 @@ struct MediaSectionList: View {
 
             onChange(of: selectedSort) { _ in
                 //let config = media
-                print (selectedSort.descriptors)
-                print (selectedSort.section)
+//                print (selectedSort.descriptors)
+//                print (selectedSort.section)
                 media.sortDescriptors = selectedSort.descriptors
                 media.sectionIdentifier = selectedSort.section
             }

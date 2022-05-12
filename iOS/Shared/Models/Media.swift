@@ -36,6 +36,7 @@ class Media: NSManagedObject {
     @NSManaged var location:        String
     @NSManaged var day:             String
     @NSManaged var img:             String
+    @NSManaged var fulltext:        String
     @NSManaged var imageData:       Data?
 
 
@@ -65,6 +66,7 @@ class Media: NSManagedObject {
             let new_carrier     = dictionary["carrier"]    as? String,
             let new_location    = dictionary["location"]   as? String,
             let new_img         = dictionary["img"]        as? String,
+            let new_fulltext    = dictionary["fulltext"]   as? String,
             let new_imageData   = dictionary["imgageData"] as? Data
 
         else {
@@ -93,6 +95,7 @@ class Media: NSManagedObject {
         company        = new_company
         location       = new_location
         img            = new_img
+        fulltext       = new_fulltext
         imageData      = new_imageData
 
         print ("#\(id) \(set).\(idx): '\(code)' carrier:\(carrier) person:\(person) data:\(String(describing: imageData?.count))")
@@ -156,6 +159,7 @@ extension Media {
             med.carrier = "DHL"
             med.code = "003783687638762"
             med.img = "http://localhost/ords/dscan/media/files/20210312_10:04:19.2890_5.jpg"
+            med.fulltext = "nothing here"
             media.append(med)
         }
         return media
@@ -260,8 +264,9 @@ struct MediaProperties: Decodable {
         case location
         case carrier
         case img
-        case recognizedCodesJson
-        case recognizedTextJson
+        case fulltext
+//        case recognizedCodesJson
+//        case recognizedTextJson
         case imageData
     }
 
@@ -287,8 +292,9 @@ struct MediaProperties: Decodable {
     let carrier:                String
     let location:               String
     let img:                    String
-    let recognizedCodesJson:    String
-    let recognizedTextJson:     String
+    let fulltext:               String
+//    let recognizedCodesJson:    String
+//    let recognizedTextJson:     String
     let imageData:              Data
 //    let uiImage:                UIImage?
 
@@ -315,8 +321,9 @@ struct MediaProperties: Decodable {
         carrier:                String,
         location:               String,
         img:                    String,
-        recognizedCodesJson:    String,
-        recognizedTextJson:     String,
+        fulltext:               String,
+//        recognizedCodesJson:    String,
+//        recognizedTextJson:     String,
         imageData:              Data
 //        uiImage:                UIImage
     ) {
@@ -342,8 +349,9 @@ struct MediaProperties: Decodable {
         self.carrier                = carrier
         self.location               = location
         self.img                    = img
-        self.recognizedCodesJson    = recognizedCodesJson
-        self.recognizedTextJson     = recognizedTextJson
+        self.fulltext               = fulltext
+//        self.recognizedCodesJson    = recognizedCodesJson
+//        self.recognizedTextJson     = recognizedTextJson
         self.imageData              = imageData
 //        self.uiImage                = uiImage
     }
@@ -384,8 +392,10 @@ struct MediaProperties: Decodable {
         let raw_carrier    = try? values.decode (String.self,   forKey: .carrier    )
         let raw_location   = try? values.decode (String.self,   forKey: .location   )
         let raw_img        = try? values.decode (String.self,   forKey: .img        )
-        let raw_RCJ        = try? values.decode (String.self,   forKey: .recognizedCodesJson  )
-        let raw_RTJ        = try? values.decode (String.self,   forKey: .recognizedTextJson   )
+        let raw_fulltext   = try? values.decode (String.self,   forKey: .fulltext   )
+
+//      let raw_RCJ        = try? values.decode (String.self,   forKey: .recognizedCodesJson  )
+//      let raw_RTJ        = try? values.decode (String.self,   forKey: .recognizedTextJson   )
         let raw_ID         = try? values.decode (Data.self,     forKey: .imageData            )
 
         let raw_time       = try? formatter.date(from: values.decode (String.self,   forKey: .time ))
@@ -406,8 +416,9 @@ struct MediaProperties: Decodable {
         let info2               = raw_info2
         let info3               = raw_info3
         let info4               = raw_info4
-        let recoginzedCodesJson = raw_RCJ
-        let recoginzedTextJson  = raw_RTJ
+        let fulltext            = raw_fulltext
+//        let recoginzedCodesJson = raw_RCJ
+//        let recoginzedTextJson  = raw_RTJ
         let imageData           = raw_ID
 
         // Ignore instances with missing data.
@@ -467,8 +478,9 @@ struct MediaProperties: Decodable {
         self.carrier                = carrier  ?? "␀"
         self.location               = location ?? "␀"
         self.img                    = img      ?? "␀"
-        self.recognizedCodesJson    = recoginzedCodesJson ?? "␀"
-        self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
+        self.fulltext               = fulltext ?? ""
+//        self.recognizedCodesJson    = recoginzedCodesJson ?? "␀"
+//        self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
         self.imageData              = imageData ?? Data()
         //self.uiImage                = nil
     }
@@ -497,8 +509,9 @@ struct MediaProperties: Decodable {
         "carrier":              carrier,
         "location":             location,
         "img":                  img,
-        "recognizedCodesJson":  recognizedCodesJson,
-        "recognizedTextJson":   recognizedTextJson,
+        "fulltext":             fulltext,
+//        "recognizedCodesJson":  recognizedCodesJson,
+//        "recognizedTextJson":   recognizedTextJson,
         "imageData":            imageData
        ]
     }
