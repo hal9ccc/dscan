@@ -11,7 +11,7 @@ import SwiftUI
 
 class MediaProvider {
 
-    let url: URL
+//    var url: URL
 
     // MARK: Logging
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
@@ -31,13 +31,17 @@ class MediaProvider {
 
     private let inMemory: Bool
     private var notificationToken: NSObjectProtocol?
+    
+    @AppStorage("DataSyncHours")
+    private var syncRange: Int = 48
+    
 
     private init(inMemory: Bool = false) {
-        @AppStorage("ServerURL")
-        var serverurl = "http://localhost"
+//        @AppStorage("ServerURL")
+//        var serverurl = "http://localhost"
 
         self.inMemory = inMemory
-        self.url = URL(string: "\(serverurl)/media/list")!
+//        self.url = URL(string: "\(serverurl)/media/list")!
 
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
@@ -112,6 +116,12 @@ class MediaProvider {
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
     func fetchMedia() async throws {
         let session = URLSession.shared
+        
+        @AppStorage("ServerURL")
+        var serverurl = "http://localhost"
+        
+        let url = URL(string: "\(serverurl)/media/list?hours=\(syncRange)")!
+
 
         guard let (data, response) = try? await session.data(from: url)
         else {

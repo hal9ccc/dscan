@@ -6,11 +6,12 @@
 //  Copyright © 2022 Apple. All rights reserved.
 //
 
+import Foundation
 import SwiftUI
 
 struct SettingsView: View {
     
-    init(){
+    init() {
             UITableView.appearance().backgroundColor = .clear
     }
     
@@ -29,8 +30,18 @@ struct SettingsView: View {
     @AppStorage("CompressionQuality")
     private var comprQual: Double = 0.5
     
+    @AppStorage("DataSyncHours")
+    private var syncRange: Double = 48
+    
+    @State
+    private var syncRange_str = ""
+    
+    let currentDate = Date()
+    
     var body: some View {
+        
         Form {
+            
             Section (
                 header:Text("Server address"),
                 footer:Text("Änderung wird erst durch Neustart der App wirksam!")
@@ -46,6 +57,22 @@ struct SettingsView: View {
                     .disableAutocorrection(true)
                     .font(.subheadline)
                 
+            }
+            
+            Section (
+                header:Text("Data sync range"),
+                footer:Text("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.")
+            ) {
+                Slider (
+                    value: $syncRange,
+                    in: 1...8760,
+                    step: 1,
+                    label: { Text("Time") }
+                )
+                let futureDate = Calendar.current.date(byAdding: DateComponents(hour:Int(syncRange * -1)), to: currentDate) ?? .now
+                
+                Text("\(futureDate.formatted(.relative(presentation: .named)))")
+                    .font(.subheadline)
             }
 
             Section (
@@ -104,7 +131,6 @@ struct SettingsView: View {
         //colors in assets https://thehappyprogrammer.com/lineargradient-swiftui
     }
 }
-
 
 
 struct SettingsView_Previews: PreviewProvider {
