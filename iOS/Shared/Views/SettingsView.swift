@@ -2,7 +2,7 @@
 //  SettingsView.swift
 //  dscan
 //
-//  Created by tizian on 05.05.22.
+//  Created by Tizian Frank on 05.05.22.
 //  Copyright © 2022 Apple. All rights reserved.
 //
 
@@ -61,7 +61,7 @@ struct SettingsView: View {
             
             Section (
                 header:Text("Data sync range"),
-                footer:Text("Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut.")
+                footer:Text("Period form which documents are loaded")
             ) {
                 Slider (
                     value: $syncRange,
