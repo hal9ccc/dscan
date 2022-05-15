@@ -11,3 +11,15 @@ select * from V_MEDIA_DETAILS;
 
 update media set file_name = replace(FILE_NAME, ' ', '_');
 
+
+create type DSCAN_QUERY_PARAMETERS force as object
+ (numWaitSec        number,
+  numPeriod         number,
+  tsFrom            timestamp with time zone,
+  tsTo              timestamp with time zone
+ )
+/
+
+-- auto-generated definition
+create type DSCAN_QUERY_PARAMETERS_TABLE as table of DSCAN_QUERY_PARAMETERS
+/

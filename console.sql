@@ -1,12 +1,14 @@
 select t.*, t.rowid from media t order by timestamp desc, content_type;
 
-select * from TRACE where ts > systimestamp - numtodsinterval(200, 'minute') order by ts, nr;
+select * from TRACE where ts > systimestamp - numtodsinterval(1, 'minute') order by ts, nr;
 
 truncate table trace;
 
 update media set status = 'scanned', cid = 0;
 
 commit;
+
+drop package body DSCAN_TASK_API;
 
 select * from media order by file_name desc;
 select * from media_details order by timestamp desc;
