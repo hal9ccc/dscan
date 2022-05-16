@@ -77,6 +77,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     p_cid            in  Number
   ) is
   begin
+    trc.msg('id:'||p_id||' cid:'||p_cid);
     g_msg := DSCAN_Q_API.msg(p_id, p_cid);
 
     -- remove all older messages from queue
@@ -87,7 +88,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
       loop
         -- loop until the queue is emptied
         DBMS_AQ.dequeue (
-          queue_name          => c_Queue_Name,
+          queue_name          => ''||SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')||'.'||c_Queue_Name,
           dequeue_options     => g_dequeue_options,
           message_properties  => g_message_properties,
           payload             => g_msg,
@@ -101,7 +102,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
 
     -- post our new message
     DBMS_AQ.enqueue (
-      queue_name          => c_QUEUE_NAME,
+      queue_name          => ''||SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')||'.'||c_QUEUE_NAME,
       enqueue_options     => g_enqueue_options,
       message_properties  => g_message_properties,
       payload             => g_msg,
@@ -229,8 +230,32 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     end if;
 
     OPEN p_result_cursor FOR
-      SELECT   *
-      FROM     V_MEDIA_DETAILS
+      select  ID,
+              FILE_NAME,
+              SET_NAME,
+              IDX,
+              CID,
+              HIDDEN,
+              STATUS,
+              TYPE,
+              CODE,
+              CARRIER,
+              COMPANY,
+              CONTENT_SIZE,
+              CONTENT_TYPE,
+              DAY,
+              DEVICE,
+              FILE_NAME_IMG,
+              FULLTEXT,
+              IMG,
+              LOCATION,
+              MONTH,
+              NAME,
+              PERSON,
+              TIMESTAMP_STR as TIMESTAMP,
+              TITLE,
+              TRACKINGNR
+      from    V_MEDIA_DETAILS
  		  WHERE    timestamp  > systimestamp - numtodsinterval(p_hours, 'hour')
  		    and    cid > nvl(p_last_cid, -1)
       ORDER BY CID

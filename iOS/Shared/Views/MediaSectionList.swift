@@ -50,7 +50,7 @@ struct MediaSectionList: View {
         let request = media
         request.sectionIdentifier = MediaSort.sorts[lastSelectedSort].section
         request.sortDescriptors   = MediaSort.sorts[lastSelectedSort].descriptors
-//        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
+        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
 
         return NavigationView {
             
@@ -68,10 +68,11 @@ struct MediaSectionList: View {
                 .listStyle(SidebarListStyle())
 //                .searchable(text: mediaSearchQuery)
                 .navigationTitle (title)
+                .navigationBarTitleDisplayMode(.inline)
                 .toolbar (content: toolbarContent)
 
         #if os(iOS)
-                .refreshable { await fetchMedia() }
+                .refreshable { await fetchMedia(complete: true) }
         #else
                 .frame(minWidth: 320)
         #endif
@@ -140,10 +141,10 @@ struct MediaSectionList: View {
     }
     
 
-    private func fetchMedia() async {
+    private func fetchMedia(complete: Bool = false) async {
         isLoading = true
         do {
-            try await mediaProvider.fetchMedia()
+            try await mediaProvider.fetchMedia(pollingFor: 0, complete: complete)
             lastUpdated = Date().timeIntervalSince1970
         } catch {
             self.error = error as? DscanError ?? .unexpectedError(error: error)

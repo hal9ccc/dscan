@@ -35,6 +35,12 @@ class MediaProvider {
     @AppStorage("DataSyncHours")
     private var syncRange: Int = 48
     
+    @AppStorage("MaxCID")
+    private var maxCID: Int = -1
+    
+    @AppStorage("lastMediaChange")
+    private var lastMediaChange = Date.distantFuture.timeIntervalSince1970
+
 
     private init(inMemory: Bool = false) {
 //        @AppStorage("ServerURL")
@@ -114,16 +120,22 @@ class MediaProvider {
     }
 
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
-    func fetchMedia() async throws {
+    func fetchMedia(pollingFor pollSeconds: Int, complete: Bool = false) async throws {
         let session = URLSession.shared
         
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
         
-        let url = URL(string: "\(serverurl)/media/list?hours=\(syncRange)")!
+        if complete { maxCID = -1 }
+        
+        let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
+                + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
+                + (maxCID       > -1 ? "&cid=\(maxCID)"         : "")
+        )
 
+        logger.info("\(String(describing:url))")
 
-        guard let (data, response) = try? await session.data(from: url)
+        guard let (data, response) = try? await session.data(from: url!)
         else {
             logger.debug("Failed to fetch data from the server.")
             throw DscanError.missingData
@@ -145,12 +157,17 @@ class MediaProvider {
             //jsonDecoder.dateDecodingStrategy = .iso8601
             let mediaJSON = try jsonDecoder.decode(MediaJSON.self, from: data)
             let mediaPropertiesList = mediaJSON.mediaPropertiesList
-            logger.debug("Received \(mediaPropertiesList.count) records.")
 
-            // Import the JSON into Core Data.
-            logger.debug("Start importing data to the store...")
-            try await importMedia(from: mediaPropertiesList)
-            logger.debug("Finished importing data.")
+            if mediaPropertiesList.count > 0 {
+                lastMediaChange = Date().timeIntervalSince1970
+                logger.debug("Importing\(mediaPropertiesList.count) records...")
+                try await importMedia(from: mediaPropertiesList)
+                logger.debug("Finished importing data.")
+            }
+            else {
+                
+            }
+
         } catch {
             throw DscanError.wrongDataFormat(error: error)
         }
@@ -164,7 +181,13 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-
+        
+        let maxCidFromData = propertiesList.map{ $0.cid }.max()
+        if maxCidFromData != nil && maxCidFromData! > maxCID {
+            logger.info("maxCID: \(self.maxCID) -> \(String(describing:maxCidFromData))")
+            maxCID = maxCidFromData!
+        }
+        
         /// - Tag: performAndWait
         try await taskContext.perform {
             // Execute the batch insert.
@@ -215,6 +238,13 @@ class MediaProvider {
             return false
         })
         return batchInsertRequest
+    }
+
+    /// Synchronously deletes given records in the Core Data store with the specified object IDs.
+    func suggestPoll() -> Int {
+        let f = Date().timeIntervalSince1970 - lastMediaChange
+//        logger.debug("f:\(f)")
+        return f > 60 ? 0 : 10
     }
 
     /// Synchronously deletes given records in the Core Data store with the specified object IDs.

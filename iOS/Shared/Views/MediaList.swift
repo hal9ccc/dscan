@@ -43,8 +43,16 @@ struct MediaList: View {
     @State private var hasError = false
 
     @State private var mediaSearchTerm = ""
-    @State private var isLoading = false
+    @State private var isLoading       = false
     @State private var lastSortChange: Date = Date()
+
+    let polltimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State private var longPollMode   = true
+    @State private var maxCid         = -1   // last known Change-ID
+    @State private var pollSec        = 10
+    @State private var isPolling      = false
+    @State private var nextPollIn     = 10
+    @State private var pollFailure    = false
 
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
@@ -61,7 +69,7 @@ struct MediaList: View {
         let request = media
         request.sectionIdentifier = MediaSort.sorts[sortId].section
         request.sortDescriptors   = MediaSort.sorts[sortId].descriptors
-//        print("rendering section \(MediaSort.sorts[sortId].name) -> \(section)")
+        print("MediaList \(MediaSort.sorts[sortId].name) -> \(section)")
 
         return ZStack {
 
@@ -85,11 +93,12 @@ struct MediaList: View {
             .listStyle(PlainListStyle())
             .searchable(text: mediaSearchQuery)
             .navigationTitle (title)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar (content: toolbarContent)
 
     #if os(iOS)
             .environment(\.editMode, $editMode)
-            .refreshable { await fetchMedia() }
+            .refreshable { await fetchMedia(complete: true) }
     #else
             .frame(minWidth: 320)
     #endif
@@ -110,6 +119,27 @@ struct MediaList: View {
         .sheet(isPresented: $showScannerSheet, content: {
             self.makeScannerView()
         })
+        .onReceive(polltimer) { input in
+            // longPollMode   = true
+            // pollSec        = 10
+            // isPolling      = false
+            // nextPollIn     = 10
+            // pollFailure    = false
+            if longPollMode && !isPolling {
+                nextPollIn = nextPollIn - 1
+                
+                if nextPollIn <= 0 {
+                    
+                    Task {
+                        await pollMedia()
+                    }
+                    
+                    nextPollIn = 10
+                }
+                
+            }
+            
+        }
 
     }
 
@@ -202,10 +232,10 @@ struct MediaList: View {
     /*
     ** ********************************************************************************************
     */
-    private func fetchMedia() async {
+    private func fetchMedia(complete: Bool = false) async {
         isLoading = true
         do {
-            try await mediaProvider.fetchMedia()
+            try await mediaProvider.fetchMedia(pollingFor: 0, complete: complete)
             lastUpdated = Date().timeIntervalSince1970
         } catch {
             self.error = error as? DscanError ?? .unexpectedError(error: error)
@@ -213,6 +243,23 @@ struct MediaList: View {
         }
         isLoading = false
     }
+
+    /*
+    ** ********************************************************************************************
+    */
+    private func pollMedia() async {
+        isPolling = true
+        let p = mediaProvider.suggestPoll()
+        do {
+            try await mediaProvider.fetchMedia(pollingFor: p)
+            lastUpdated = Date().timeIntervalSince1970
+        } catch {
+            self.error = error as? DscanError ?? .unexpectedError(error: error)
+            self.hasError = true
+        }
+        isPolling = false
+    }
+
 
     /*
     ** ********************************************************************************************

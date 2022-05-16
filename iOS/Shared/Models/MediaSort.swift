@@ -29,6 +29,7 @@ struct MediaSort: Hashable, Identifiable, Equatable {
             id:         1,
             name:       "by Day",
             descriptors:[
+                SortDescriptor (\Media.day, order: .reverse),
                 SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],

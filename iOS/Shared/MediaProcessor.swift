@@ -173,7 +173,7 @@ class MediaProcessor: ObservableObject {
                 Task {
                     do {
                         print ("all documemts processed, refreshing...")
-                        try await self.mediaProvider.fetchMedia()
+                        try await self.mediaProvider.fetchMedia(pollingFor: 0)
                     } catch {
                         self.error = error as? DscanError ?? .unexpectedError(error: error)
                     }

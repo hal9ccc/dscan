@@ -7,9 +7,11 @@ as
   --where  id = 581
  );
 
-select * from V_MEDIA_DETAILS;
+select * from V_MEDIA_DETAILS where carrier = 'asdfs';
 
 update media set file_name = replace(FILE_NAME, ' ', '_');
+
+delete MEDIA_DETAILS;
 
 
 create type DSCAN_QUERY_PARAMETERS force as object

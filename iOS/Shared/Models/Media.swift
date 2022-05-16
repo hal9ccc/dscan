@@ -215,23 +215,12 @@ struct MediaJSON: Decodable {
         var itemsContainer = try rootContainer.nestedUnkeyedContainer(forKey: .items)
 
         while !itemsContainer.isAtEnd {
-            // from https://medium.com/mobimeo-technology/safely-decoding-enums-in-swift-1df532af9f42
-            //let mediaContainer = try itemsContainer.nestedContainer(keyedBy: MediaProperties.CodingKeys.self)
-
             do {
                 try mediaPropertiesList.append(itemsContainer.decode(MediaProperties.self))
-                    //result.append(container.decode(T.self))
             }
             catch {
                 let _ = try itemsContainer.decode(AlwaysDecodable.self)
             }
-
-
-//            // Decodes a single media entry from the data, and appends it to the array, ignoring invalid data.
-//            if let properties = try? itemsContainer.decode(MediaProperties.self) {
-//                mediaPropertiesList.append(properties)
-//            }
-            //else itemsContainer.decode(MediaProperties.self)
         }
     }
 }
@@ -483,6 +472,8 @@ struct MediaProperties: Decodable {
 //        self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
         self.imageData              = imageData ?? Data()
         //self.uiImage                = nil
+        
+        print("load JSON: filename: \(self.filename) carrier: \(self.carrier)")
     }
 
     // The keys must have the same name as the attributes of the Media entity.

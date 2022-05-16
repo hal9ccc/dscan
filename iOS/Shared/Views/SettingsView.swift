@@ -61,7 +61,7 @@ struct SettingsView: View {
             
             Section (
                 header:Text("Data sync range"),
-                footer:Text("Period form which documents are loaded")
+                footer:Text("Period for which documents are loaded")
             ) {
                 Slider (
                     value: $syncRange,

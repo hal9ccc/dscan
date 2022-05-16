@@ -27,7 +27,7 @@ struct GrowingButton: ButtonStyle {
 }
 
 struct MediaDetail: View {
-    var media: Media
+    @ObservedObject var media: Media
 
     @EnvironmentObject var mp: MediaProcessor
     
@@ -37,7 +37,9 @@ struct MediaDetail: View {
     @State private var isPresented = false
     
     var body: some View {
-        ScrollView {
+        print("MediaDetail \(media.filename)")
+        
+        return ScrollView {
             VStack {
                 HStack {
                     ZStack {
@@ -70,7 +72,7 @@ struct MediaDetail: View {
                                 do {
                                     print ("refreshing \(media?.description ?? "")")
                                     let mediaProvider: MediaProvider = .shared
-                                    try await mediaProvider.fetchMedia()
+                                    try await mediaProvider.fetchMedia(pollingFor: 0)
                                 } catch {
                                     return
                                 }
@@ -100,6 +102,7 @@ struct MediaDetail: View {
             }
         }
         .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $isPresented, content: { FullScreenModalView(media: media) } )
     }
     
