@@ -28,7 +28,7 @@ struct SectionList: View {
                 }
             }
             
-            Divider()
+             Spacer()
             
             NavigationLink(destination: SettingsView()) {
                 SectionHeader(name: "Settings", icon:"gear")
@@ -44,7 +44,7 @@ struct SectionList: View {
             )
         )
         .navigationTitle ("dScan")
-        .navigationBarTitleDisplayMode(.automatic)
+        .navigationBarTitleDisplayMode(.inline)
 
         #if os(iOS)
 

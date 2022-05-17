@@ -140,11 +140,11 @@ struct ContentView: View {
 
             Spacer()
 
-//            Button(action: {
-//                self.showScannerSheet = true
-//            }, label: {
-//                Image(systemName: "doc.text.viewfinder")
-//            })
+            Button(action: {
+                self.showScannerSheet = true
+            }, label: {
+                Image(systemName: "doc.text.viewfinder")
+            })
 
         }
     }

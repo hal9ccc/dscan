@@ -18,7 +18,7 @@ struct MediaSection: Hashable, Identifiable, Equatable {
     static let sorts: [MediaSection] = [
         MediaSection (
             id:         0,
-            name:       "all",
+            name:       "Alle",
             icon:       "doc.text.image",
             descriptors:[
                 SortDescriptor (\Media.set),
@@ -29,7 +29,7 @@ struct MediaSection: Hashable, Identifiable, Equatable {
         ),
         MediaSection (
             id:         1,
-            name:       "by Day",
+            name:       "Tag",
             icon:       "calendar",
             descriptors:[
                 SortDescriptor (\Media.day, order: .reverse),
@@ -40,7 +40,7 @@ struct MediaSection: Hashable, Identifiable, Equatable {
         ),
         MediaSection (
             id:         2,
-            name:       "by Status",
+            name:       "Status",
             icon:       "checkmark.seal",
             descriptors:[
                 SortDescriptor (\Media.status),
@@ -51,18 +51,7 @@ struct MediaSection: Hashable, Identifiable, Equatable {
         ),
         MediaSection (
             id:         3,
-            name:       "by Type",
-            icon:       "list.bullet.circle",
-            descriptors:[
-                SortDescriptor (\Media.type),
-                SortDescriptor (\Media.time, order: .reverse),
-                SortDescriptor (\Media.idx)
-            ],
-            section:    \Media.type
-        ),
-        MediaSection (
-            id:         4,
-            name:       "by Person",
+            name:       "Person",
             icon:       "person",
             descriptors:[
                 SortDescriptor (\Media.person),
@@ -72,8 +61,8 @@ struct MediaSection: Hashable, Identifiable, Equatable {
             section:    \Media.person
         ),
         MediaSection (
-            id:         5,
-            name:       "by Company",
+            id:         4,
+            name:       "Firma",
             icon:       "building.2.crop.circle",
             descriptors:[
                 SortDescriptor (\Media.company),
@@ -82,20 +71,9 @@ struct MediaSection: Hashable, Identifiable, Equatable {
             ],
             section:    \Media.company
         ),
-        MediaSection(
-            id:         6,
-            name:       "by Carrier",
-            icon:       "shippingbox",
-            descriptors:[
-                SortDescriptor (\Media.carrier),
-                SortDescriptor (\Media.time, order: .reverse),
-                SortDescriptor (\Media.idx)
-            ],
-            section:    \Media.carrier
-        ),
         MediaSection (
-            id:         7,
-            name:       "by Location",
+            id:         5,
+            name:       "Ort",
             icon:       "mappin.and.ellipse",
             descriptors:[
                 SortDescriptor (\Media.location),
@@ -104,9 +82,20 @@ struct MediaSection: Hashable, Identifiable, Equatable {
             ],
             section:    \Media.location
         ),
+        MediaSection (
+            id:         6,
+            name:       "Typ",
+            icon:       "list.bullet.circle",
+            descriptors:[
+                SortDescriptor (\Media.type),
+                SortDescriptor (\Media.time, order: .reverse),
+                SortDescriptor (\Media.idx)
+            ],
+            section:    \Media.type
+        ),
         MediaSection(
-            id:         8,
-            name:       "by Device",
+            id:         7,
+            name:       "Gerät",
             icon:       "iphone.homebutton",
             descriptors:[
                 SortDescriptor (\Media.device),
@@ -116,8 +105,19 @@ struct MediaSection: Hashable, Identifiable, Equatable {
             section:    \Media.device
         ),
         MediaSection(
+            id:         8,
+            name:       "Spedition",
+            icon:       "shippingbox",
+            descriptors:[
+                SortDescriptor (\Media.carrier),
+                SortDescriptor (\Media.time, order: .reverse),
+                SortDescriptor (\Media.idx)
+            ],
+            section:    \Media.carrier
+        ),
+        MediaSection(
             id:         9,
-            name:       "by Code",
+            name:       "Tracking-Nr.",
             icon:       "number.circle",
             descriptors:[
                 SortDescriptor (\Media.code),
@@ -128,6 +128,8 @@ struct MediaSection: Hashable, Identifiable, Equatable {
         )
     ]
 
-    static var `default`: MediaSection { sorts[0] }
+    static var `default`    : MediaSection { sorts[0] }
+    static var `day`        : MediaSection { sorts[1] }
+    static var `status`     : MediaSection { sorts[2] }
 }
 

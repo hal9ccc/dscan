@@ -49,6 +49,7 @@ struct MediaSectionList: View {
 
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
+    
 
     var body: some View {
 
@@ -59,59 +60,54 @@ struct MediaSectionList: View {
         request.sortDescriptors   = MediaSection.sorts[section.id].descriptors
         print("MediaSectionList \(MediaSection.sorts[section.id].name) -> \(lastSelectedSection)")
 
-        return NavigationView {
-            
-            VStack {
-                
-                List() {
+        let dateParser = DateFormatter()
+        dateParser.dateFormat = "yyyyMMdd"
+
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateStyle = .full
+        dayFormatter.timeStyle = .none
+        dayFormatter.locale = Locale.current
+
+        return List() {
                     
-                    ForEach(media) { mediaSection in
-                        
-                        NavigationLink(destination: MediaList(sortId: section.id, section: mediaSection.id)) {
-                            SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
-                        }
+            ForEach(media) { mediaSection in
+                
+                NavigationLink(destination: MediaList(sortId: section.id, section: mediaSection.id)) {
+                    if section == MediaSection.day {
+                        SectionHeader (
+                            name: dayFormatter.string(from: dateParser.date(from:mediaSection.id) ?? Date.now),
+//                            name: mediaSection.id,
+                            pill:mediaSection.count
+                        )
                     }
-                } // List
-                .listStyle(SidebarListStyle())
-//                .searchable(text: mediaSearchQuery)
-//                .navigationBarTitleDisplayMode(.inline)
-//                .toolbar (content: toolbarContent)
+                    else {
+                        SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
+                    }
+                }
+            }
+        } // List
+        .listStyle(SidebarListStyle())
 
         #if os(iOS)
-                .refreshable { await fetchMedia(complete: true) }
+        .refreshable { await fetchMedia(complete: true) }
         #else
-                .frame(minWidth: 320)
+        .frame(minWidth: 320)
         #endif
-
-                Spacer()
-                
-                // so that the view refreshes when the sort is changed
-                Text("\(lastSortChange)")
-                    .hidden()
-
-            }
-            .background(
-                LinearGradient(
-                    stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),        SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        .background(
+            LinearGradient(
+                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),        SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
             )
+        )
 
-            .sheet(isPresented: $showScannerSheet, content: {
-                self.makeScannerView()
-            })
-
-        }
         .navigationTitle (title)
         .navigationBarTitleDisplayMode(.automatic)
-//        .onAppear {
-//            selectedMediaSort = MediaSection.sorts[lastSelectedSort]
-//        }
         .alert(isPresented: $hasError, error: error) { }
+        .sheet(isPresented: $showScannerSheet, content: {
+            self.makeScannerView()
+        })
         
-//        return MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
-
     }
     
     var title: String {

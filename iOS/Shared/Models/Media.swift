@@ -355,9 +355,10 @@ struct MediaProperties: Decodable {
         
         // for displaying a day in local format
         let dayFormatter = DateFormatter()
-        dayFormatter.dateStyle = .full
-        dayFormatter.timeStyle = .none
-        dayFormatter.locale = Locale.current
+        dayFormatter.dateFormat = "yyyyMMdd"
+//        dayFormatter.dateStyle = .full
+//        dayFormatter.timeStyle = .none
+//        dayFormatter.locale = Locale.current
 
         let values = try decoder.container(keyedBy: CodingKeys.self)
 
