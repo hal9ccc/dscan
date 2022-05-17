@@ -24,7 +24,7 @@ where owner = SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')
 order by 1,2,3
 ;
 
-update media set hidden = 0 where id <= 1663;
+update media_details set hidden = 0 where hidden is null;
 select count(*) from media where nvl(hidden,0) = 0;
 select count(*) from media_details where nvl(hidden,0) = 0;
 commit;

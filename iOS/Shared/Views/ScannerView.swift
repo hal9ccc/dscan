@@ -59,9 +59,11 @@ struct ScannerView: UIViewControllerRepresentable {
             
             // for displaying a day in local format
             let dayFormatter = DateFormatter()
-            dayFormatter.dateStyle = .full
-            dayFormatter.timeStyle = .none
-            dayFormatter.locale = Locale.current
+            dayFormatter.dateFormat = "yyyyMMdd"
+
+//            dayFormatter.dateStyle = .full
+//            dayFormatter.timeStyle = .none
+//            dayFormatter.locale = Locale.current
 
             var mediaPropertiesList = [MediaProperties]()
 
@@ -71,7 +73,7 @@ struct ScannerView: UIViewControllerRepresentable {
                   set:                    "\(df.string(from: d))",
                   idx:                    pageNumber,
                   cid:                    0,
-                  day:                    dayFormatter.string(from: .now),
+                  day:                    dayFormatter.string(from: d),
                   hidden:                 false,
                   status:                 "scanned",
                   type:                   "scan",

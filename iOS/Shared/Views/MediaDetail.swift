@@ -67,17 +67,21 @@ struct MediaDetail: View {
 
                 if media.imageData != nil {
                     Button(action: {
-                        let _ = mp.processImage (media, completion: { media in
-                            Task {
-                                do {
-                                    print ("refreshing \(media?.description ?? "")")
-                                    let mediaProvider: MediaProvider = .shared
-                                    try await mediaProvider.fetchMedia(pollingFor: 0)
-                                } catch {
-                                    return
-                                }
-                            }
-                        })
+                        DispatchQueue.main.async {
+                            mp.processImage (media, completion: {
+                                print ("Done.")
+    //                            Task {
+    //                                do {
+    //                                    print ("refreshing \(media?.description ?? "")")
+    //                                    let mediaProvider: MediaProvider = .shared
+    //                                    try await mediaProvider.fetchMedia(pollingFor: 0)
+    //                                } catch {
+    //                                    return
+    //                                }
+    //                            }
+                            })
+
+                        }
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
@@ -95,10 +99,10 @@ struct MediaDetail: View {
                 Text("\(media.carrier)")
                     .foregroundStyle(Color.primary)
 
-                Text("\(media.time.formatted())")
-                    .foregroundStyle(Color.secondary)
+//                Text("\(media.time.formatted())")
+//                    .foregroundStyle(Color.secondary)
                 
-                Text(media.description)
+//                Text(media.description)
             }
         }
         .navigationTitle(title)

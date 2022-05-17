@@ -10,9 +10,12 @@ import SwiftUI
 
 
 struct MediaList: View {
-    let sortId:  Int
-    let section: String
+//    let sortId:  Int
 
+    let section:         MediaSection
+    let startWithKey:    String
+
+    @State private var key: String = ""
 
     @EnvironmentObject var mp: MediaProcessor
 
@@ -42,12 +45,14 @@ struct MediaList: View {
     @State private var error: DscanError?
     @State private var hasError = false
 
-    @State private var mediaSearchTerm = ""
+    @AppStorage("searchTerm")
+    private var mediaSearchTerm = ""
+    
     @State private var isLoading       = false
     @State private var lastSortChange: Date = Date()
 
     let polltimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var longPollMode   = true
+    @State private var longPollMode   = false
     @State private var maxCid         = -1   // last known Change-ID
     @State private var pollSec        = 10
     @State private var isPolling      = false
@@ -59,6 +64,8 @@ struct MediaList: View {
 
     @AppStorage("lastUpdatedMedia")
     private var lastUpdated = Date.distantFuture.timeIntervalSince1970
+    
+    private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
 
     /*
@@ -67,22 +74,65 @@ struct MediaList: View {
     var body: some View {
 
         let request = media
-        request.sectionIdentifier = MediaSection.sorts[sortId].section
-        request.sortDescriptors   = MediaSection.sorts[sortId].descriptors
-        print("MediaList \(MediaSection.sorts[sortId].name) -> \(section)")
+        request.sectionIdentifier = section.section
+        request.sortDescriptors   = section.descriptors
+        print("MediaList \(section.name) -> \(key)")
 
-        return ZStack {
+        @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
+        @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
+        
+     
+    return HStack {
+            
+        if idiom == .pad {
+                        
+            ScrollView {
+                            
+                ForEach(media) { mediaSection in
+                    VStack {
+                        
+                        if self.key == mediaSection.id {
+                            Button(action: { self.key = mediaSection.id } )
+                            {
+                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
+                            }
+                            .buttonStyle( .borderedProminent)
+                        }
+                        else {
+                            Button(action: { self.key = mediaSection.id } )
+                            {
+                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
+                            }
+                            .buttonStyle( .bordered)
+                        }}
+                        
+                    }
+                } // List
+                .padding()
+                .frame(width: 320)
+            }
 
             List(selection: $mediaSelection) {
-
+                
+                if newMedia.count > 0 {
+                    AnalyzeButton(count: newMedia.count) {
+                        DispatchQueue.main.async {
+                            processAllMedia()
+                        }
+                    }
+                    .listRowBackground(Color.clear)
+                }
+                
                 ForEach(media) { sect in
 
-                    if sect.id == section {
+                    if sect.id == key || section == MediaSection.all {
 
                         ForEach(sect, id: \.filename) { media in
-                            NavigationLink(destination: MediaDetail(media: media)) {
-                                MediaRow(media: media)
-                            }.listRowBackground(Color.clear)
+                            if media.filename > "" {
+                                NavigationLink(destination: MediaDetail(media: media)) {
+                                    MediaRow(media: media)
+                                }.listRowBackground(Color.clear)
+                            }
                         }
                         .onDelete { indexSet in
                             withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
@@ -91,22 +141,6 @@ struct MediaList: View {
                 }
             }
             .listStyle(PlainListStyle())
-            .searchable(text: mediaSearchQuery)
-            .navigationTitle (title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar (content: toolbarContent)
-
-    #if os(iOS)
-            .environment(\.editMode, $editMode)
-            .refreshable { await fetchMedia(complete: true) }
-    #else
-            .frame(minWidth: 320)
-    #endif
-
-            // so that the view refreshes when the sort is changed
-            Text("\(lastSortChange)")
-                .hidden()
-
         }
         .background(
             LinearGradient(
@@ -115,10 +149,26 @@ struct MediaList: View {
                 endPoint: .bottomTrailing
             )
         )
+        .searchable(text: mediaSearchQuery)
+        .navigationTitle (title)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(!mediaSelection.isEmpty)
+        .toolbar (content: toolbarContent)
+
+#if os(iOS)
+        .environment(\.editMode, $editMode)
+        .refreshable { await fetchMedia(complete: true) }
+#else
+        .frame(minWidth: 320)
+#endif
+
         .alert(isPresented: $hasError, error: error) { }
         .sheet(isPresented: $showScannerSheet, content: {
             self.makeScannerView()
         })
+        .onAppear() {
+            key = startWithKey
+        }
         .onReceive(polltimer) { input in
             // longPollMode   = true
             // pollSec        = 10
@@ -150,7 +200,7 @@ struct MediaList: View {
     var title: String {
         #if os(iOS)
 //        if selectMode.isActive || mediaSelection.isEmpty {
-            return "\(section != "␀" ? section : " unbekannt")"
+            return "\(key != "␀" ? key : " unbekannt")"
 //        } else {
 //            return "\(mediaSelection.count) Selected"
 //        }
@@ -264,7 +314,7 @@ struct MediaList: View {
     /*
     ** ********************************************************************************************
     */
-    private func processAllMedia() async {
+    private func processAllMedia()  {
         mp.processAllImages()
 //        await fetchMedia()
     }
@@ -285,17 +335,31 @@ struct MediaList: View {
     #if os(iOS)
     @ToolbarContentBuilder
     private func toolbarContent_iOS() -> some ToolbarContent {
-        ToolbarItemGroup(placement: .navigationBarTrailing) {
-            SelectButton(mode: $selectMode) {
-                let A = media.first(where: { $0.id == section })
-                if selectMode.isActive && A != nil {
-                    mediaSelection = Set(A!.map { $0.filename })
-                } else {
-                    mediaSelection = []
+        ToolbarItemGroup(placement: .navigationBarLeading) {
+            DeleteButton {
+                Task {
+                    await deleteMedia(for: mediaSelection)
+                    selectMode = .inactive
                 }
             }
-            .disabled(editMode != .active)
-            .opacity (editMode != .active ? 0 : 1)
+            .disabled(isLoading || mediaSelection.isEmpty)
+            .opacity (mediaSelection.isEmpty ? 0 : 1)
+        }
+
+
+        ToolbarItemGroup(placement: .navigationBarTrailing) {
+            if editMode == .active {
+                SelectButton(mode: $selectMode) {
+                    let A = media.first(where: { $0.id == key })
+                    if selectMode.isActive && A != nil {
+                        mediaSelection = Set(A!.map { $0.filename })
+                    } else {
+                        mediaSelection = []
+                    }
+                }
+                .disabled(editMode != .active)
+                .opacity (editMode != .active ? 0 : 1)
+            }
 
             EditButton(editMode: $editMode) {
                 mediaSelection.removeAll()
@@ -305,50 +369,41 @@ struct MediaList: View {
 
         }
         
-        ToolbarItemGroup(placement: .bottomBar) {
-            let n = media.first(where: { $0.id == section })?.count ?? 0
-            
-            if (isLoading) {
-                ProgressView()
-            }
-            else {
-                RefreshButton {
-                    Task {
-                        await fetchMedia()
-                    }
-                }
-                .disabled(isLoading || editMode == .active)
-            }
-
-            Spacer()
-
-            ToolbarStatus(
-                itemCount: n,
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                sectionCount: 0,
-                selectedCount: mediaSelection.count
-            )
-
-            Spacer()
-
-            DeleteButton {
-                Task {
-                    await deleteMedia(for: mediaSelection)
-                    selectMode = .inactive
-                }
-            }
-            .disabled(isLoading || mediaSelection.isEmpty)
-            .opacity (editMode == .active ? 1 : 0)
-            
-            AnalyzeButton {
-                Task {
-                    await processAllMedia()
-                }
-            }
-            
-            Text("new: \(newMedia.count)")
-        }
+//        ToolbarItemGroup(placement: .bottomBar) {
+//            let n = media.first(where: { $0.id == key })?.count ?? 0
+//
+//            if (isLoading) {
+//                ProgressView()
+//            }
+//            else {
+//                RefreshButton {
+//                    Task {
+//                        await fetchMedia()
+//                    }
+//                }
+//                .disabled(isLoading || editMode == .active)
+//            }
+//
+//            Spacer()
+//
+//            ToolbarStatus(
+//                itemCount: n,
+//                isLoading: isLoading,
+//                lastUpdated: lastUpdated,
+//                sectionCount: 0,
+//                selectedCount: mediaSelection.count
+//            )
+//
+//            Spacer()
+//
+////            AnalyzeButton {
+////                Task {
+////                    await processAllMedia()
+////                }
+////            }
+////
+////            Text("new: \(newMedia.count)")
+//        }
     }
 
     #else

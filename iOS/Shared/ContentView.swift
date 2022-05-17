@@ -34,29 +34,7 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 SectionList()
-//                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-
-                
-                //            ScannerView(completion: { scanData in
-    //                mediaProvider.importSet(scanData)
-    //            })
-    //            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-    //            .tabItem {
-    //                Label("scan", systemImage: "doc.text.viewfinder")
-    //            }
-
-
-    //            QuakeView()
-    //                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
-    //                .tabItem {
-    //                    Label("Quakes", systemImage: "globe")
-    //                }
-    //
-    //            SettingsView()
-    //                .tabItem {
-    //                    Label("Settings", systemImage: "gear")
-    //                }
-
+                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             }
             
         }

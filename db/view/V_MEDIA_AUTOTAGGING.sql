@@ -7,7 +7,7 @@ create or replace view V_MEDIA_AUTOTAGGING as
         MRC.payload   as matchcode2,
         ''            as matchcode3,
         MAT.tag_name,
-        REGEXP_SUBSTR(MRC.Payload, MAT.re_result_substr) as tag_value,
+        nvl(REGEXP_SUBSTR(MRC.Payload, MAT.re_result_substr), MAT.re_result_substr) as tag_value,
         MAT.re_pattern1,
         MAT.re_pattern2,
         MAT.re_pattern3
@@ -25,7 +25,7 @@ create or replace view V_MEDIA_AUTOTAGGING as
         '',       -- matchcode2
         '',       -- matchcode3
         MAT.tag_name,
-        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), '') as tag_value,
+        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), MAT.re_result_substr) as tag_value,
       --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,
         MAT.re_pattern1,
         MAT.re_pattern2,

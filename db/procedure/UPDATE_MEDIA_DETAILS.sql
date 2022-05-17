@@ -36,35 +36,28 @@ begin
       ) Q
       ON (T.ID = Q.ID)
       WHEN MATCHED THEN UPDATE
-      SET CONTENT_TYPE  = Q.CONTENT_TYPE,
-          TYPE          = Q.TYPE,
-          TITLE         = Q.TITLE,
-          TIMESTAMP     = Q.TIMESTAMP,
-          IDX           = Q.IDX,
-          CID           = Q.CID,
-          HIDDEN        = Q.HIDDEN,
-          STATUS        = Q.STATUS,
-          CONTENT_SIZE  = Q.CONTENT_SIZE,
-          CODE          = Q.CODE,
-          CARRIER       = Q.CARRIER,
-          TRACKINGNR    = Q.TRACKINGNR,
-          NAME          = Q.NAME,
-          PERSON        = Q.PERSON,
-          COMPANY       = Q.COMPANY,
-          LOCATION      = Q.LOCATION,
-          DEVICE        = Q.DEVICE,
-          INFO1         = Q.INFO1,
-          INFO2         = Q.INFO2,
-          INFO3         = Q.INFO3,
-          INFO4         = Q.INFO4,
-          FULLTEXT      = Q.FULLTEXT,
-          CODELIST      = Q.CODELIST,
-          TAGLIST       = Q.TAGLIST,
-          HTML_DETAILS  = Q.HTML_DETAILS,
-          MONTH         = Q.MONTH,
-          DAY           = Q.DAY,
-          SET_NAME      = Q.SET_NAME,
-          IMG           = Q.IMG
+      SET TYPE          = nvl(TYPE,           Q.TYPE),
+          TITLE         = nvl(TITLE,          Q.TITLE),
+          CODE          = nvl(CODE,           Q.CODE),
+          CARRIER       = nvl(CARRIER,        Q.CARRIER),
+          TRACKINGNR    = nvl(TRACKINGNR,     Q.TRACKINGNR),
+          NAME          = nvl(NAME,           Q.NAME),
+          PERSON        = nvl(PERSON,         Q.PERSON),
+          COMPANY       = nvl(COMPANY,        Q.COMPANY),
+          LOCATION      = nvl(LOCATION,       Q.LOCATION),
+          DEVICE        = nvl(DEVICE,         Q.DEVICE),
+          INFO1         = nvl(INFO1,          Q.INFO1),
+          INFO2         = nvl(INFO2,          Q.INFO2),
+          INFO3         = nvl(INFO3,          Q.INFO3),
+          INFO4         = nvl(INFO4,          Q.INFO4),
+          FULLTEXT      = nvl(FULLTEXT,       Q.FULLTEXT),
+          CODELIST      = nvl(CODELIST,       Q.CODELIST),
+          TAGLIST       = nvl(TAGLIST,        Q.TAGLIST),
+          HTML_DETAILS  = nvl(HTML_DETAILS,   Q.HTML_DETAILS),
+          MONTH         = nvl(MONTH,          Q.MONTH),
+          DAY           = nvl(DAY,            Q.DAY),
+          SET_NAME      = nvl(SET_NAME,       Q.SET_NAME),
+          IMG           = nvl(IMG,            Q.IMG)
       WHEN NOT MATCHED THEN INSERT VALUES (
           Q.ID,
           Q.CONTENT_TYPE,
@@ -196,5 +189,5 @@ end;
 delete MEDIA_DETAILS;
 
 select   * from     v_media        where   ID = 1442
-select   * from     V_MEDIA_DETAILS--  where   cid is null
+select   * from     V_MEDIA_DETAILS order by id desc--  where   cid is null
 ;

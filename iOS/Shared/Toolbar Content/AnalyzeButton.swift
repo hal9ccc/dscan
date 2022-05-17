@@ -11,17 +11,20 @@ import SwiftUI
 import SwiftUI
 
 struct AnalyzeButton: View {
+    let count: Int;
     var action: () -> Void = {}
     var body: some View {
         Button(action: action) {
-            Label("Analyze all", systemImage: "wand.and.stars")
+            Label("Analyze \(count) new scans", systemImage: "wand.and.stars")
         }
+        .buttonStyle(GrowingButton())
+        .padding()
 //        .keyboardShortcut(.delete, modifiers: [])
     }
 }
 
 struct AnalyzeButton_Previews: PreviewProvider {
     static var previews: some View {
-        AnalyzeButton()
+        AnalyzeButton(count: 2)
     }
 }

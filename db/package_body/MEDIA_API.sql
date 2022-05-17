@@ -60,7 +60,8 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
         idx,
         cid,
         status,
-        device
+        device,
+        hidden
       )
       VALUES (
         v_id,
@@ -73,7 +74,8 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
         p_idx,
         0,
         'new',
-        p_device
+        p_device,
+        0
       );
       trc.MSG('inserted MEDIA record #'||v_id);
     end;

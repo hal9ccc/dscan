@@ -38,13 +38,13 @@ struct ToolbarStatus: View {
 
         }
         .font(.caption)
-        .onReceive(timer) { input in
-            currentDate = input
-            let lastUpdatedDate = Date(timeIntervalSince1970: lastUpdated)
-            lastUpdate_str = "\(lastUpdatedDate.formatted(.relative(presentation: .named)))"
-            //print("currentDate=\(currentDate)")
-            //print("lastUpdated=\(lastUpdated)")
-        }
+//        .onReceive(timer) { input in
+//            currentDate = input
+//            let lastUpdatedDate = Date(timeIntervalSince1970: lastUpdated)
+//            lastUpdate_str = "\(lastUpdatedDate.formatted(.relative(presentation: .named)))"
+//            //print("currentDate=\(currentDate)")
+//            //print("lastUpdated=\(lastUpdated)")
+//        }
     }
 }
 

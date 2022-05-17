@@ -13,6 +13,8 @@ struct MediaRow: View {
     
     var body: some View {
         print("MediaRow file: \(media.filename) carrier: \(media.carrier)")
+        print(String(describing: media.time))
+
         return HStack (alignment: .top) {
             MediaThumbnail(media: media)
             
@@ -26,7 +28,7 @@ struct MediaRow: View {
                 }
 
                 Spacer()
-
+                
                 Label("\(media.time.formatted())", systemImage: "clock")
                     .font(.caption)
                     .foregroundStyle(.secondary)

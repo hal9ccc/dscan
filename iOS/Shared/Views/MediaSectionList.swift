@@ -32,7 +32,8 @@ struct MediaSectionList: View {
     @State private var hasError = false
     
 //    @State private var selectedMediaSort: MediaSection = MediaSection.default
-    @State private var mediaSearchTerm = ""
+    @AppStorage("searchTerm")
+    private var mediaSearchTerm = ""
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
     
@@ -72,7 +73,7 @@ struct MediaSectionList: View {
                     
             ForEach(media) { mediaSection in
                 
-                NavigationLink(destination: MediaList(sortId: section.id, section: mediaSection.id)) {
+                NavigationLink(destination: MediaList(section: section, startWithKey:mediaSection.id)) {
                     if section == MediaSection.day {
                         SectionHeader (
                             name: dayFormatter.string(from: dateParser.date(from:mediaSection.id) ?? Date.now),
@@ -87,6 +88,7 @@ struct MediaSectionList: View {
             }
         } // List
         .listStyle(SidebarListStyle())
+//        .searchable(text: mediaSearchQuery)
 
         #if os(iOS)
         .refreshable { await fetchMedia(complete: true) }
@@ -104,9 +106,7 @@ struct MediaSectionList: View {
         .navigationTitle (title)
         .navigationBarTitleDisplayMode(.automatic)
         .alert(isPresented: $hasError, error: error) { }
-        .sheet(isPresented: $showScannerSheet, content: {
-            self.makeScannerView()
-        })
+
         
     }
     

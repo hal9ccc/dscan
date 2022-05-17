@@ -65,7 +65,7 @@ struct SettingsView: View {
             ) {
                 Slider (
                     value: $syncRange,
-                    in: 1...8760,
+                    in: 1...26280,
                     step: 1,
                     label: { Text("Time") }
                 )
