@@ -10,21 +10,28 @@ import SwiftUI
 
 struct SectionHeader: View {
     var name: String
-    var pill: Int
+    var icon: String = ""
+    var pill: Int = 0
 
     var body: some View {
         HStack {
-            Text("\(name)")
+            if icon > "" {
+                Label("\(name)", systemImage: icon).labelStyle(.automatic)
+            } else {
+                Label("\(name)", systemImage: icon).labelStyle(.titleOnly)
+            }
             Spacer()
             Text("\(pill)")
                 .font(.caption)
                 .foregroundStyle(Color.secondary)
+                .opacity(pill > 0 ? 1 : 0)
+                    
         }
     }
 }
 
 struct SectionHeader_Previews: PreviewProvider {
     static var previews: some View {
-        SectionHeader(name:"Earthquakes", pill:3333)
+        SectionHeader(name:"Earthquakes", icon:"mappin.and.ellipse", pill:3333)
     }
 }

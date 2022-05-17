@@ -10,9 +10,9 @@ import SwiftUI
 
 struct MediaSortSelection: View {
 
-    @Binding var selectedSortItem: MediaSort
+    @Binding var selectedSortItem: MediaSection
 
-    let sorts: [MediaSort]
+    let sorts: [MediaSection]
     
     var body: some View {
         Menu {
@@ -32,12 +32,12 @@ struct MediaSortSelection: View {
 
 
 struct MediaSortSelection_Previews: PreviewProvider {
-    @State static var sort = MediaSort.default
+    @State static var sort = MediaSection.default
     
     static var previews: some View {
         MediaSortSelection (
             selectedSortItem: $sort,
-            sorts: MediaSort.sorts
+            sorts: MediaSection.sorts
         )
     }
 }

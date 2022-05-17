@@ -23,38 +23,45 @@ struct ContentView: View {
     
     @AppStorage("CacheSize")
     private var cachesize: Double = 50
+    
+    @State private var primaryViewSelection: String? = nil
+    @State private var showScannerSheet = false
+
+    @State private var isLoading = false
 
     var body: some View {
 
-        TabView {
+        NavigationView {
+            VStack {
+                SectionList()
+//                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
 
-            MediaSectionList()
-                .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-                .tabItem {
-                    Label("Documents", systemImage: "doc.on.doc")
-                }
+                
+                //            ScannerView(completion: { scanData in
+    //                mediaProvider.importSet(scanData)
+    //            })
+    //            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
+    //            .tabItem {
+    //                Label("scan", systemImage: "doc.text.viewfinder")
+    //            }
 
-            ScannerView(completion: { scanData in
-                mediaProvider.importSet(scanData)
-            })
-            .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
-            .tabItem {
-                Label("scan", systemImage: "doc.text.viewfinder")
+
+    //            QuakeView()
+    //                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
+    //                .tabItem {
+    //                    Label("Quakes", systemImage: "globe")
+    //                }
+    //
+    //            SettingsView()
+    //                .tabItem {
+    //                    Label("Settings", systemImage: "gear")
+    //                }
+
             }
-
-            QuakeView()
-                .environment(\.managedObjectContext, QuakesProvider.shared.container.viewContext)
-                .tabItem {
-                    Label("Quakes", systemImage: "globe")
-                }
-
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-
-
+            
         }
+        .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
+        .toolbar (content: toolbarContent)
         .environmentObject(mediaProcessor)
         .onAppear() {
 
@@ -82,8 +89,115 @@ struct ContentView: View {
             }
             ImagePipeline.shared = pipeline
         }
+        .sheet(isPresented: $showScannerSheet, content: {
+            self.makeScannerView()
+        })
 
+   }
+
+   private func makeScannerView()-> some View {
+       ScannerView(completion: { scanData in
+           mediaProvider.importSet(scanData)
+           self.showScannerSheet = false
+       })
+   }
+
+    @ToolbarContentBuilder
+    private func toolbarContent() -> some ToolbarContent {
+        #if os(iOS)
+        toolbarContent_iOS()
+        #else
+        toolbarContent_macOS()
+        #endif
     }
+
+    #if os(iOS)
+    @ToolbarContentBuilder
+    private func toolbarContent_iOS() -> some ToolbarContent {
+
+        ToolbarItemGroup(placement: .bottomBar) {
+            if (isLoading) {
+                ProgressView()
+            }
+            else {
+                RefreshButton {
+                    Task {
+                        //await fetchMedia()
+                    }
+                }
+                .disabled(isLoading)
+            }
+
+            Spacer()
+
+            ToolbarStatus(
+                itemCount: 0,
+                isLoading: isLoading,
+                lastUpdated: 4,
+                sectionCount: 23,
+                selectedCount: 0
+            )
+
+            Spacer()
+
+//            Button(action: {
+//                self.showScannerSheet = true
+//            }, label: {
+//                Image(systemName: "doc.text.viewfinder")
+//            })
+
+        }
+    }
+    #else
+    @ToolbarContentBuilder
+    private func toolbarContent_macOS() -> some ToolbarContent {
+
+        ToolbarItemGroup(placement: .status) {
+            SortSelectionView (selectedSortItem: $selectedSort, sorts: MediaSort.sorts)
+
+            onChange(of: selectedSort) { _ in
+                //let config = media
+//                print (selectedSort.descriptors)
+//                print (selectedSort.section)
+                media.sortDescriptors = selectedSort.descriptors
+                media.sectionIdentifier = selectedSort.section
+            }
+
+            ToolbarStatus(
+                isLoading: isLoading,
+                lastUpdated: lastUpdated,
+                sectionCount: media.count,
+                itemCount: media.joined().count
+            )
+        }
+
+        ToolbarItemGroup(placement: .navigation) {
+            HStack {
+                ProgressView()
+
+                RefreshButton {
+                    Task {
+                        await fetchMedia()
+                    }
+                }
+                .hidden(isLoading)
+                
+                Spacer()
+                
+                DeleteButton {
+                    Task {
+                        await deleteMedia(for: selection)
+                    }
+                }
+                .disabled(isLoading || selection.isEmpty)
+                
+                Spacer()
+            }
+        }
+    }
+    #endif
+
+               
 }
 
 // MARK: Toolbar Content

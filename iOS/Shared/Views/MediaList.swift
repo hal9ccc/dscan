@@ -19,8 +19,8 @@ struct MediaList: View {
     var mediaProvider:      MediaProvider   = .shared
 
     @SectionedFetchRequest (
-        sectionIdentifier:  MediaSort.default.section,
-        sortDescriptors:    MediaSort.default.descriptors,
+        sectionIdentifier:  MediaSection.default.section,
+        sortDescriptors:    MediaSection.default.descriptors,
         predicate:          NSPredicate(format: "hidden == false"),
         animation:          .default
     )
@@ -67,9 +67,9 @@ struct MediaList: View {
     var body: some View {
 
         let request = media
-        request.sectionIdentifier = MediaSort.sorts[sortId].section
-        request.sortDescriptors   = MediaSort.sorts[sortId].descriptors
-        print("MediaList \(MediaSort.sorts[sortId].name) -> \(section)")
+        request.sectionIdentifier = MediaSection.sorts[sortId].section
+        request.sortDescriptors   = MediaSection.sorts[sortId].descriptors
+        print("MediaList \(MediaSection.sorts[sortId].name) -> \(section)")
 
         return ZStack {
 

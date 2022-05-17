@@ -102,9 +102,10 @@ struct ScannerView: UIViewControllerRepresentable {
 
             print("Received \(mediaPropertiesList.count) records.")
 
+            controller.dismiss(animated: false, completion: nil)
+            
             completionHandler(mediaPropertiesList)
 
-            controller.dismiss(animated: true, completion: nil)
 
         }
 

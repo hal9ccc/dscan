@@ -11,22 +11,27 @@ import SwiftUI
     
 struct MediaSectionList: View {
     
+    var section:  MediaSection    = .default
+
     let mediaProvider:      MediaProvider   = .shared
     
     @SectionedFetchRequest (
-        sectionIdentifier:  MediaSort.default.section,
-        sortDescriptors:    MediaSort.default.descriptors,
+        sectionIdentifier:  MediaSection.default.section,
+        sortDescriptors:    MediaSection.default.descriptors,
         predicate:          NSPredicate(format: "hidden == false"),
         animation:          .default
     )
     private var media: SectionedFetchResults<String, Media>
+
+
+//    @State private var selectedMediaSort:  MediaSection    = .default
 
     @State private var mediaSelection: Set<String> = []
 
     @State private var error: DscanError?
     @State private var hasError = false
     
-    @State private var selectedMediaSort: MediaSort = MediaSort.default
+//    @State private var selectedMediaSort: MediaSection = MediaSection.default
     @State private var mediaSearchTerm = ""
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
@@ -37,7 +42,7 @@ struct MediaSectionList: View {
 
 //    @State
     @AppStorage("lastSelectedSort")
-    private var lastSelectedSort = MediaSort.default.id
+    private var lastSelectedSort = MediaSection.default.id
 
     @AppStorage("lastSelectedSection")
     private var lastSelectedSection = ""
@@ -47,29 +52,30 @@ struct MediaSectionList: View {
 
     var body: some View {
 
+        //lastSelectedSort = section.id
+        
         let request = media
-        request.sectionIdentifier = MediaSort.sorts[lastSelectedSort].section
-        request.sortDescriptors   = MediaSort.sorts[lastSelectedSort].descriptors
-        print("MediaSectionList \(MediaSort.sorts[lastSelectedSort].name) -> \(lastSelectedSection)")
+        request.sectionIdentifier = MediaSection.sorts[section.id].section
+        request.sortDescriptors   = MediaSection.sorts[section.id].descriptors
+        print("MediaSectionList \(MediaSection.sorts[section.id].name) -> \(lastSelectedSection)")
 
         return NavigationView {
             
-            ZStack {
+            VStack {
                 
                 List() {
                     
-                    ForEach(media) { section in
+                    ForEach(media) { mediaSection in
                         
-                        NavigationLink(destination: MediaList(sortId: selectedMediaSort.id, section: section.id)) {
-                            SectionHeader(name: "\(section.id != "␀" ? section.id : " unbekannt ")", pill:section.count)
+                        NavigationLink(destination: MediaList(sortId: section.id, section: mediaSection.id)) {
+                            SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
                         }
                     }
                 } // List
                 .listStyle(SidebarListStyle())
 //                .searchable(text: mediaSearchQuery)
-                .navigationTitle (title)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar (content: toolbarContent)
+//                .navigationBarTitleDisplayMode(.inline)
+//                .toolbar (content: toolbarContent)
 
         #if os(iOS)
                 .refreshable { await fetchMedia(complete: true) }
@@ -77,6 +83,8 @@ struct MediaSectionList: View {
                 .frame(minWidth: 320)
         #endif
 
+                Spacer()
+                
                 // so that the view refreshes when the sort is changed
                 Text("\(lastSortChange)")
                     .hidden()
@@ -95,9 +103,11 @@ struct MediaSectionList: View {
             })
 
         }
-        .onAppear {
-            selectedMediaSort = MediaSort.sorts[lastSelectedSort]
-        }
+        .navigationTitle (title)
+        .navigationBarTitleDisplayMode(.automatic)
+//        .onAppear {
+//            selectedMediaSort = MediaSection.sorts[lastSelectedSort]
+//        }
         .alert(isPresented: $hasError, error: error) { }
         
 //        return MediaList(sortId: selectedMediaSort.id, section: lastSelectedSection)
@@ -105,7 +115,7 @@ struct MediaSectionList: View {
     }
     
     var title: String {
-        return selectedMediaSort.name
+        return section.name
     }
 
     var mediaSearchQuery: Binding<String> {
@@ -166,19 +176,19 @@ struct MediaSectionList: View {
     #if os(iOS)
     @ToolbarContentBuilder
     private func toolbarContent_iOS() -> some ToolbarContent {
-        ToolbarItem(placement: .primaryAction) {
-            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSort.sorts)
-            onChange(of: selectedMediaSort) { _ in
-                // that let is there for a reason!
-                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
-                let request = media
-                request.sectionIdentifier = selectedMediaSort.section
-                request.sortDescriptors   = selectedMediaSort.descriptors
-                lastSelectedSort = selectedMediaSort.id
-                lastSortChange = Date()
-                print("sort \(selectedMediaSort.name) was selected")
-            }
-        }
+//        ToolbarItem(placement: .primaryAction) {
+//            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSection.sorts)
+//            onChange(of: selectedMediaSort) { _ in
+//                // that let is there for a reason!
+//                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
+//                let request = media
+//                request.sectionIdentifier = selectedMediaSort.section
+//                request.sortDescriptors   = selectedMediaSort.descriptors
+//                lastSelectedSort = selectedMediaSort.id
+//                lastSortChange = Date()
+//                print("sort \(selectedMediaSort.name) was selected")
+//            }
+//        }
 
         ToolbarItemGroup(placement: .bottomBar) {
             if (isLoading) {
