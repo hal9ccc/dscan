@@ -69,24 +69,28 @@ struct MediaSectionList: View {
         dayFormatter.timeStyle = .none
         dayFormatter.locale = Locale.current
 
-        return List() {
+        return VStack {
+
+            AnalyzeButtonAuto()
+
+            List() {
+                ForEach(media) { mediaSection in
                     
-            ForEach(media) { mediaSection in
-                
-                NavigationLink(destination: MediaList(section: section, startWithKey:mediaSection.id)) {
-                    if section == MediaSection.day {
-                        SectionHeader (
-                            name: dayFormatter.string(from: dateParser.date(from:mediaSection.id) ?? Date.now),
-//                            name: mediaSection.id,
-                            pill:mediaSection.count
-                        )
-                    }
-                    else {
-                        SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
+                    NavigationLink(destination: MediaList(section: section, startWithKey:mediaSection.id)) {
+                        if section == MediaSection.day {
+                            SectionHeader (
+                                name: dayFormatter.string(from: dateParser.date(from:mediaSection.id) ?? Date.now),
+    //                            name: mediaSection.id,
+                                pill:mediaSection.count
+                            )
+                        }
+                        else {
+                            SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
+                        }
                     }
                 }
-            }
-        } // List
+            } // List
+        }
         .listStyle(SidebarListStyle())
 //        .searchable(text: mediaSearchQuery)
 

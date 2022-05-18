@@ -18,7 +18,7 @@ struct AnalyzeButton: View {
             Label("Analyze \(count) new scans", systemImage: "wand.and.stars")
         }
         .buttonStyle(GrowingButton())
-        .padding()
+//        .padding()
 //        .keyboardShortcut(.delete, modifiers: [])
     }
 }

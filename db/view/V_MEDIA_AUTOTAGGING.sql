@@ -54,7 +54,9 @@ UNION ALL
 /
 
 select * from MEDIA_AUTOTAGGING order by 1;
-select * from V_MEDIA_AUTOTAGGING where id = 1442;
+select * from V_MEDIA_AUTOTAGGING where id = 2132;
+
+
 
 select * from V_MEDIA_AUTOTAGGING where TAG_SOURCE_ID = 'Carrier_DHL_Text';
 select * from V_MEDIA_AUTOTAGGING where TAG_SOURCE_ID = 'Email_Text_001';

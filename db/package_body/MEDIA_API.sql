@@ -85,7 +85,7 @@ CREATE OR REPLACE PACKAGE BODY media_api AS
     if p_content_type = 'text/json' then
       begin
         DBMS_SCHEDULER.CREATE_JOB (
-          job_name   => 'update_media_details_'||v_id,
+          job_name   => 'update_media_details_'||v_id||'_'||to_char(SYSTIMESTAMP, 'yyyymmddhh24miss'),
           job_type   => 'PLSQL_BLOCK',
           job_action => 'BEGIN  update_media_details('||v_id||'); END;',
           start_date => SYSTIMESTAMP, -- - NUMTODSINTERVAL(1, 'day'),

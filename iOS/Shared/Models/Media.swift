@@ -407,8 +407,6 @@ struct MediaProperties: Decodable {
         let info3               = raw_info3
         let info4               = raw_info4
         let fulltext            = raw_fulltext
-//        let recoginzedCodesJson = raw_RCJ
-//        let recoginzedTextJson  = raw_RTJ
         let imageData           = raw_ID
 
         // Ignore instances with missing data.
@@ -469,12 +467,10 @@ struct MediaProperties: Decodable {
         self.location               = location ?? "␀"
         self.img                    = img      ?? "␀"
         self.fulltext               = fulltext ?? ""
-//        self.recognizedCodesJson    = recoginzedCodesJson ?? "␀"
-//        self.recognizedTextJson     = recoginzedTextJson  ?? "␀"
         self.imageData              = imageData ?? Data()
         //self.uiImage                = nil
         
-        print("load JSON: filename: \(self.filename) carrier: \(self.carrier)")
+//        print("load JSON: filename: \(self.filename) carrier: \(self.carrier)")
     }
 
     // The keys must have the same name as the attributes of the Media entity.
@@ -502,8 +498,6 @@ struct MediaProperties: Decodable {
         "location":             location,
         "img":                  img,
         "fulltext":             fulltext,
-//        "recognizedCodesJson":  recognizedCodesJson,
-//        "recognizedTextJson":   recognizedTextJson,
         "imageData":            imageData
        ]
     }

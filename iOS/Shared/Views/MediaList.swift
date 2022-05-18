@@ -29,11 +29,11 @@ struct MediaList: View {
     )
     private var media: SectionedFetchResults<String, Media>
 
-    @FetchRequest(
-        entity: Media.entity(),
-        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
-        predicate:          NSPredicate(format: "imageData != nil")
-     ) var newMedia: FetchedResults<Media>
+//    @FetchRequest(
+//        entity: Media.entity(),
+//        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
+//        predicate:          NSPredicate(format: "imageData != nil")
+//     ) var newMedia: FetchedResults<Media>
 
     @State private var mediaSelection: Set<String> = []
 
@@ -84,7 +84,7 @@ struct MediaList: View {
      
     return HStack {
         
-        if idiom == .pad {
+        if idiom == .pad && section != MediaSection.all {
                         
             ScrollView {
                             
@@ -104,43 +104,35 @@ struct MediaList: View {
                                 SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
                             }
                             .buttonStyle( .bordered)
-                        }}
-                        
-                    }
-                } // List
-                .padding()
-                .frame(width: 320)
-            }
-
-            List(selection: $mediaSelection) {
-                
-                if newMedia.count > 0 {
-                    AnalyzeButton(count: newMedia.count) {
-                        DispatchQueue.main.async {
-                            processAllMedia()
-                        }
-                    }
-                    .listRowBackground(Color.clear)
-                }
-                
-                ForEach(media) { sect in
-
-                    if sect.id == key || section == MediaSection.all {
-
-                        ForEach(sect, id: \.filename) { media in
-                            if media.filename > "" {
-                                NavigationLink(destination: MediaDetail(media: media)) {
-                                    MediaRow(media: media)
-                                }.listRowBackground(Color.clear)
-                            }
-                        }
-                        .onDelete { indexSet in
-                            withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
                         }
                     }
                 }
+            } // List
+            .padding()
+            .frame(width: 320)
+        }
+
+        List(selection: $mediaSelection) {
+            
+            AnalyzeButtonAuto()
+            
+            ForEach(media) { sect in
+
+                if sect.id == key || section == MediaSection.all {
+
+                    ForEach(sect, id: \.filename) { media in
+                        if media.filename > "" {
+                            NavigationLink(destination: MediaDetail(media: media)) {
+                                MediaRow(media: media)
+                            }.listRowBackground(Color.clear)
+                        }
+                    }
+                    .onDelete { indexSet in
+                        withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
+                    }
+                }
             }
-            .listStyle(PlainListStyle())
+            }
         }
         .background(
             LinearGradient(
@@ -150,6 +142,7 @@ struct MediaList: View {
             )
         )
         .searchable(text: mediaSearchQuery)
+        .listStyle(PlainListStyle())
         .navigationTitle (title)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(!mediaSelection.isEmpty)
@@ -170,7 +163,7 @@ struct MediaList: View {
             if key == "" { key = startWithKey }
             let n = media.first(where: { $0.id == key })?.count ?? 0
             if n == 0 {
-                key = media[0].id
+                key = media.count > 0 ? media[0].id : ""
             }
         }
         .onReceive(polltimer) { input in
@@ -319,11 +312,22 @@ struct MediaList: View {
     ** ********************************************************************************************
     */
     private func processAllMedia()  {
-        mp.processAllImages()
-//        await fetchMedia()
+        mp.processAllImages( completion: { fetchMediaTask() } )
     }
     
 
+    /*
+    ** ********************************************************************************************
+    */
+    private func fetchMediaTask()  {
+        Task {
+            print("FÄTSCHING!!!!!!!!!!!!!!!!!!!!!!!!")
+            await fetchMedia()
+        }
+    }
+    
+
+    
     /*
     ** ********************************************************************************************
     */

@@ -10,10 +10,10 @@ import SwiftUI
 
 struct MediaRow: View {
     @ObservedObject var media: Media
-    
+
     var body: some View {
-        print("MediaRow file: \(media.filename) carrier: \(media.carrier)")
-        print(String(describing: media.time))
+//        print("MediaRow file: \(media.filename) carrier: \(media.carrier)")
+//        print(String(describing: media.time))
 
         return HStack (alignment: .top) {
             MediaThumbnail(media: media)

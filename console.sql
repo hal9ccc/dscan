@@ -1,6 +1,6 @@
 select t.*, t.rowid from media t order by timestamp desc, content_type;
 
-select * from TRACE where ts > systimestamp - numtodsinterval(1, 'minute') order by ts, nr;
+select * from TRACE where ts > systimestamp - numtodsinterval(13, 'minute') order by ts, nr;
 
 truncate table trace;
 
@@ -10,9 +10,11 @@ commit;
 
 drop package body DSCAN_TASK_API;
 
-select * from media order by file_name desc;
-select * from media_details order by timestamp desc;
+select * from media where id > 2067 order by file_name desc;
+select * from media_details order by file_name desc;
 
+select * from dba_SCHEDULER_JOBS where job_name = 'UPDATE_MEDIA_DETAILS_2115';
+select * from dba_SCHEDULER_JOBS order by start_date desc;
 
 begin DBMS_UTILITY.compile_schema(SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA')); end;
 /

@@ -22,58 +22,57 @@ struct SectionList: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
     
     private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
-    
-    @State private var mediaSelection: Set<String> = []
 
-    
-//    var mediaProvider:      MediaProvider   = .shared
-//    
-//    @FetchRequest(
-//        entity:             Media.entity(),
-//        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
-//        predicate:          NSPredicate(format: "imageData != nil")
-//     ) var newMedia: FetchedResults<Media>
-    
+
     var body: some View {
 
-        print("hor \(String(describing: horizontalSizeClass))")
-        print("ver \(String(describing: verticalSizeClass))")
+        return VStack {
 
-        
-        return List() {
+            AnalyzeButtonAuto()
 
-//            if newMedia.count > 0 {
-//                AnalyzeButton(count: newMedia.count) {
-//                    Task {
-//                        await processAllMedia()
-//                    }
-//                }
-//            }
-//            
-            ForEach(MediaSection.sorts) { sort in
+            List() {
                 
+                ForEach(MediaSection.sorts) { sort in
+                    
+                    VStack {
+                        if idiom == .pad {
+                            NavigationLink(destination: MediaList(section: sort, startWithKey: "")) {
+                                SectionHeader(name: "\(sort.name)", icon:sort.icon)
+                            }
+                        }
+                        else if sort == MediaSection.all {
+                            NavigationLink(destination: MediaList(section: sort, startWithKey: "")) {
+                                SectionHeader(name: "\(sort.name)", icon:sort.icon)
+                            }
+                        }
+                        else {
+                            NavigationLink(destination: MediaSectionList(section: sort)) {
+                                SectionHeader(name: "\(sort.name)", icon:sort.icon)
+                            }
+                        }
+                        
+                        if sort == MediaSection.all {
+                            Spacer()
+                            Spacer()
+                        }
 
-                if idiom == .pad {
-                    NavigationLink(destination: MediaList(section: sort, startWithKey: "")) {
-                        SectionHeader(name: "\(sort.name)", icon:sort.icon)
                     }
-                    .padding( .bottom, sort == MediaSection.all ? 10 : 0)
-                }
-                else {
-                    NavigationLink(destination: MediaSectionList(section: sort)) {
-                        SectionHeader(name: "\(sort.name)", icon:sort.icon)
-                    }
-                    .padding( sort == MediaSection.all ? 1 : 0)
+                   
                 }
 
-            }
-            
-            NavigationLink(destination: SettingsView()) {
-                SectionHeader(name: "Settings", icon:"gear")
-            }
-            .padding(.top)
-            
-        } // List
+                VStack {
+                    Spacer()
+                    Spacer()
+
+                    NavigationLink(destination: SettingsView()) {
+                        SectionHeader(name: "Settings", icon:"gear")
+                    }
+                }
+            } // List
+
+        }
+        
+
         .listStyle(SidebarListStyle())
         .background(
             LinearGradient(
@@ -94,14 +93,7 @@ struct SectionList: View {
 
     }
 
-    /*
-    ** ********************************************************************************************
-    */
-    private func processAllMedia() async {
-        mp.processAllImages()
-//        await fetchMedia()
-    }
-    
+
 
 
 }

@@ -142,14 +142,10 @@ class MediaProvider {
         }
 
 
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200
-        else {
-            logger.debug("Failed to receive valid response and/or data.")
-            print(response)
-            throw DscanError.missingData
-        }
-
+        
+        
+        
+        
 
         do {
             // Decode the JSON into a data model.
@@ -163,30 +159,9 @@ class MediaProvider {
                 logger.debug("Importing \(mediaPropertiesList.count) records...")
                 try await importMedia(from: mediaPropertiesList)
                 
-
                 let generator = await UIImpactFeedbackGenerator(style: .rigid)
-                    await generator.impactOccurred()
+                await generator.impactOccurred()
 
-//                private var selectedStyle: UIImpactFeedbackGenerator.FeedbackStyle = .light
-//
-//                var body: some View {
-//                    func playFeedbackHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
-//                        let generator = UIImpactFeedbackGenerator(style: style)
-//                        generator.impactOccurred()
-//                    }
-//
-//                    Button(action: {
-//                        playFeedbackHaptic(selectedStyle)
-//                    }) {
-//                        Text("Play Haptic")
-//                    }
-//                }
-//
-                
-                
-                
-                
-                
                 logger.debug("Finished importing data.")
             }
             else {

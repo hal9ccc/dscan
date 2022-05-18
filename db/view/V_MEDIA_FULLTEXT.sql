@@ -7,4 +7,4 @@ from      MEDIA Q
 group by  Q.ID,
           Q.file_name
 /
-
+select * from V_MEDIA_FULLTEXT where id = 2132;

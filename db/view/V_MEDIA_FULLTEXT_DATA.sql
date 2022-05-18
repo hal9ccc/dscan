@@ -5,8 +5,8 @@ create or replace view V_MEDIA_FULLTEXT_DATA as
            ||Q2.TEXT||
            case when line = lead(line) over (partition by file_name order by line, col, y, x) then ''  else  chr(10) end  as textline
   from
-   (select   12 - (round (y * 12)) as line,
-             round (x*12) as col,
+   (select   40 - (round (y * 40)) as line,
+             round (x*80) as col,
              T.*
     from     V_MEDIA_RECOGNIZED_TEXT T
 --    where    file_name = '20210313_11:05:35.6630_1.json'
@@ -18,3 +18,4 @@ create or replace view V_MEDIA_FULLTEXT_DATA as
  )
 /
 
+select * from V_MEDIA_FULLTEXT_DATA where id = 2154;

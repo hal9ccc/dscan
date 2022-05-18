@@ -38,3 +38,7 @@ ALTER TABLE media ADD (
 );
 
 CREATE SEQUENCE media_seq;
+
+
+--create index media_ui_file_name on media (file_name);
+create index media_i_timestamp on media (timestamp);

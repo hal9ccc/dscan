@@ -17,7 +17,7 @@ import NukeUI
 struct GrowingButton: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .padding()
+            .padding(10)
             .background(Color.blue)
             .foregroundColor(.white)
             .clipShape(Capsule())
@@ -31,6 +31,9 @@ struct MediaDetail: View {
 
     @EnvironmentObject var mp: MediaProcessor
     
+
+    var mediaProvider:      MediaProvider   = .shared
+
     @AppStorage("ServerURL")
     var serverurl = "http://localhost"
     
@@ -41,7 +44,6 @@ struct MediaDetail: View {
         
         return ScrollView {
             VStack {
-                HStack {
                     ZStack {
                         LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)",
                                   resizingMode: .aspectFit
@@ -67,21 +69,17 @@ struct MediaDetail: View {
 
                 if media.imageData != nil {
                     Button(action: {
-                        DispatchQueue.main.async {
-                            mp.processImage (media, completion: {
+                        mp.processImage (media, completion: {
+                            Task {
+                                do {
+                                    try await mediaProvider.fetchMedia(pollingFor: 0)
+                                } catch {
+                                    print (error)
+                                }
                                 print ("Done.")
-    //                            Task {
-    //                                do {
-    //                                    print ("refreshing \(media?.description ?? "")")
-    //                                    let mediaProvider: MediaProvider = .shared
-    //                                    try await mediaProvider.fetchMedia(pollingFor: 0)
-    //                                } catch {
-    //                                    return
-    //                                }
-    //                            }
-                            })
-
-                        }
+                            }
+                        })
+                                
                     }) {
                         Label("analyze & upload", systemImage: "mail.and.text.magnifyingglass")
                     }
@@ -102,8 +100,8 @@ struct MediaDetail: View {
 //                Text("\(media.time.formatted())")
 //                    .foregroundStyle(Color.secondary)
                 
-//                Text(media.description)
-            }
+                Text(media.description)
+
         }
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
