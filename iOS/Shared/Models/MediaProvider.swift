@@ -160,8 +160,33 @@ class MediaProvider {
 
             if mediaPropertiesList.count > 0 {
                 lastMediaChange = Date().timeIntervalSince1970
-                logger.debug("Importing\(mediaPropertiesList.count) records...")
+                logger.debug("Importing \(mediaPropertiesList.count) records...")
                 try await importMedia(from: mediaPropertiesList)
+                
+
+                let generator = await UIImpactFeedbackGenerator(style: .rigid)
+                    await generator.impactOccurred()
+
+//                private var selectedStyle: UIImpactFeedbackGenerator.FeedbackStyle = .light
+//
+//                var body: some View {
+//                    func playFeedbackHaptic(_ style: UIImpactFeedbackGenerator.FeedbackStyle) {
+//                        let generator = UIImpactFeedbackGenerator(style: style)
+//                        generator.impactOccurred()
+//                    }
+//
+//                    Button(action: {
+//                        playFeedbackHaptic(selectedStyle)
+//                    }) {
+//                        Text("Play Haptic")
+//                    }
+//                }
+//
+                
+                
+                
+                
+                
                 logger.debug("Finished importing data.")
             }
             else {

@@ -83,7 +83,7 @@ struct MediaList: View {
         
      
     return HStack {
-            
+        
         if idiom == .pad {
                         
             ScrollView {
@@ -167,7 +167,11 @@ struct MediaList: View {
             self.makeScannerView()
         })
         .onAppear() {
-            key = startWithKey
+            if key == "" { key = startWithKey }
+            let n = media.first(where: { $0.id == key })?.count ?? 0
+            if n == 0 {
+                key = media[0].id
+            }
         }
         .onReceive(polltimer) { input in
             // longPollMode   = true
