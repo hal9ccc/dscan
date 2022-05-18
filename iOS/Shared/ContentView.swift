@@ -34,7 +34,7 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 SectionList()
-                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
+//                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             }
             
         }

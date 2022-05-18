@@ -23,8 +23,11 @@ struct SectionList: View {
     
     private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
     
-    var mediaProvider:      MediaProvider   = .shared
+    @State private var mediaSelection: Set<String> = []
+
     
+//    var mediaProvider:      MediaProvider   = .shared
+//    
 //    @FetchRequest(
 //        entity:             Media.entity(),
 //        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
@@ -38,7 +41,7 @@ struct SectionList: View {
 
         
         return List() {
-//
+
 //            if newMedia.count > 0 {
 //                AnalyzeButton(count: newMedia.count) {
 //                    Task {
@@ -46,7 +49,7 @@ struct SectionList: View {
 //                    }
 //                }
 //            }
-            
+//            
             ForEach(MediaSection.sorts) { sort in
                 
 
