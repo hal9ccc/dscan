@@ -9,32 +9,36 @@ import Foundation
 import SwiftUI
 
 struct ToolbarStatus: View {
-    var itemCount: Int
-    var isLoading: Bool
-    var lastUpdated: TimeInterval
-    var sectionCount: Int
+    var lastUpdated:   Date
+    var section:       MediaSection
+    var sectionKey:    String
+    var itemCount:     Int
+    var isLoading:     Bool
+    var sectionCount:  Int
+    var showingCount:  Int
     var selectedCount: Int
 
     @State var currentDate = Date()
     @State var lastUpdate_str = ""
-    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
         VStack {
-            if isLoading {
-                Text("Updating...")
-            }
-            else if lastUpdated == Date.distantFuture.timeIntervalSince1970 {
+            Text("Updated \(lastUpdated.formatted(.relative(presentation: .named)))")
+                .if (lastUpdated == Date.distantFuture) { v in v.hidden() }
+            
+            HStack {
+                Spacer()
+
+                Text ( (selectedCount > 0 ? "\(selectedCount) von " : "")
+                     + (showingCount  > 0 && sectionKey > "" ? "\(showingCount) in \(section.name) '\(sectionKey)' " : "")
+                     + (showingCount == 0 ? "in \(sectionCount) Kategorien " : "")
+                     + (selectedCount > 0 ? "ausgewählt" : "")
+                )
+
                 Spacer()
             }
-            else {
-                Text("Updated \(lastUpdate_str)")
-            }
-            Text((selectedCount > 0 ? "\(selectedCount) of " : "")
-                 + "\(itemCount) documents"
-                 + (sectionCount > 0 ? " in \(sectionCount) sections" : "")
-                 + (selectedCount > 0 ? " selected" : ""))
-                .foregroundStyle(Color.secondary)
+            .foregroundStyle(Color.secondary)
 
         }
         .font(.caption)
@@ -50,36 +54,16 @@ struct ToolbarStatus: View {
 
 struct ToolbarStatus_Previews: PreviewProvider {
     static var previews: some View {
-        ToolbarStatus(
-            itemCount: 10_000,
-            isLoading: true,
-            lastUpdated: Date.distantPast.timeIntervalSince1970,
-            sectionCount: 5,
-            selectedCount: 88
+        ToolbarStatus (
+            lastUpdated:   Date.distantPast,
+            section:       MediaSection.default,
+            sectionKey:    "Hallo",
+            itemCount:     234,
+            isLoading:     true,
+            sectionCount:  5,
+            showingCount:  77,
+            selectedCount: 2
         )
 
-        ToolbarStatus(
-            itemCount: 10_000,
-            isLoading: false,
-            lastUpdated: Date.distantFuture.timeIntervalSince1970,
-            sectionCount: 5,
-            selectedCount: 0
-        )
-
-        ToolbarStatus(
-            itemCount: 10_000,
-            isLoading: false,
-            lastUpdated: Date.now.timeIntervalSince1970,
-            sectionCount: 5,
-            selectedCount: 777
-        )
-
-        ToolbarStatus(
-            itemCount: 10_000,
-            isLoading: false,
-            lastUpdated: Date.distantPast.timeIntervalSince1970,
-            sectionCount: 5,
-            selectedCount: 88
-        )
     }
 }

@@ -17,7 +17,7 @@ struct SectionList: View {
     @AppStorage("lastSelectedSection")
     private var lastSelectedSection = MediaSection.default.id
 
-    @EnvironmentObject var mp: MediaProcessor
+    @EnvironmentObject var mp: AppState
     @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
     
@@ -83,6 +83,7 @@ struct SectionList: View {
         )
         .navigationTitle ("dScan")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear() { publishInfo() }
 
         #if os(iOS)
 
@@ -94,6 +95,13 @@ struct SectionList: View {
     }
 
 
-
+    /*
+    ** ********************************************************************************************
+    */
+    func publishInfo() {
+        let _ = mp.publishInfo (
+            sections:   0
+        )
+    }
 
 }

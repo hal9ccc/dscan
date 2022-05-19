@@ -10,7 +10,7 @@ import SwiftUI
 
 struct AnalyzeButtonAuto: View {
     
-    @EnvironmentObject var mp: MediaProcessor
+    @EnvironmentObject var mp: AppState
     
     @FetchRequest(
         entity: Media.entity(),
@@ -20,18 +20,13 @@ struct AnalyzeButtonAuto: View {
 
     @State private var mediaSelection: Set<String> = []
 
-
     var body: some View {
-        ZStack {
-            if newMedia.count > 0 {
-                AnalyzeButton(count: newMedia.count) {
-                    mp.processAllImages(completion: {} )
-                }
-                .listRowBackground(Color.clear)
-            }
-        }.listRowBackground(Color.clear)
+        AnalyzeButton(count: newMedia.count) {
+            mp.processAllImages(completion: {} )
+        }
+        .listRowBackground(Color.clear)
+        .if(newMedia.count == 0) { v in v.hidden() }
     }
-
 
 }
 

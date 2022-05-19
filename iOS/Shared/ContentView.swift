@@ -15,19 +15,16 @@ import Nuke
 struct ContentView: View {
 
 //    let logger = Logger(subsystem: "com.example.apple-samplecode.Earthquakes", category: "view")
-    @StateObject var mediaProcessor = MediaProcessor()
+    @StateObject        var app: AppState
     let mediaProvider:      MediaProvider   = .shared
 
-//    @StateObject var settings = AppSettings()
-//    @StateObject var scanData = ScanData()
-    
     @AppStorage("CacheSize")
     private var cachesize: Double = 50
     
     @State private var primaryViewSelection: String? = nil
     @State private var showScannerSheet = false
 
-    @State private var isLoading = false
+//    @State private var isLoading = false
 
     var body: some View {
 
@@ -40,7 +37,7 @@ struct ContentView: View {
         }
         .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
         .toolbar (content: toolbarContent)
-        .environmentObject(mediaProcessor)
+        .environmentObject(app)
         .onAppear() {
 
 
@@ -94,26 +91,33 @@ struct ContentView: View {
     private func toolbarContent_iOS() -> some ToolbarContent {
 
         ToolbarItemGroup(placement: .bottomBar) {
-            if (isLoading) {
+            if (app.isLoading) {
                 ProgressView()
             }
             else {
                 RefreshButton {
                     Task {
-                        //await fetchMedia()
+                        do {
+                            try await mediaProvider.fetchMedia(pollingFor: 0)
+                        } catch {
+                            print("fetch failed")
+                        }
                     }
                 }
-                .disabled(isLoading)
+                .disabled(app.isLoading)
             }
 
             Spacer()
 
             ToolbarStatus(
-                itemCount: 0,
-                isLoading: isLoading,
-                lastUpdated: 4,
-                sectionCount: 23,
-                selectedCount: 0
+                lastUpdated:    app.lastUpdated,
+                section:        app.section,
+                sectionKey:     app.sectionKey,
+                itemCount:      app.numItems,
+                isLoading:      app.isLoading,
+                sectionCount:   app.numSections,
+                showingCount:   app.numShowing,
+                selectedCount:  app.numSelected
             )
 
             Spacer()
@@ -182,6 +186,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(app: AppState())
     }
 }

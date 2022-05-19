@@ -25,8 +25,8 @@ struct QuakeView: View {
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
 
-    @AppStorage("lastUpdatedQuakes")
-    private var lastUpdated = Date.distantFuture.timeIntervalSince1970
+    @State
+    private var lastUpdated = Date.now //.distantFuture.timeIntervalSince1970
 
     @State private var quakeSelection: Set<String> = []
 
@@ -163,7 +163,7 @@ struct QuakeView: View {
         isLoading = true
         do {
             try await quakesProvider.fetchQuakes()
-            lastUpdated = Date().timeIntervalSince1970
+            lastUpdated = Date.now
         } catch {
             self.error = error as? DscanError ?? .unexpectedError(error: error)
             self.hasError = true
@@ -231,10 +231,13 @@ struct QuakeView: View {
             Spacer()
 
             ToolbarStatus(
-                itemCount: quakes.joined().count,
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                sectionCount: quakes.count,
+                lastUpdated:   Date.distantPast,
+                section:       MediaSection.default,
+                sectionKey:    "Hallo",
+                itemCount:     quakes.joined().count,
+                isLoading:     isLoading,
+                sectionCount:  quakes.count,
+                showingCount:  0,
                 selectedCount: 0
             )
 

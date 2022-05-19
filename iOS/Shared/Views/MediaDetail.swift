@@ -29,7 +29,7 @@ struct GrowingButton: ButtonStyle {
 struct MediaDetail: View {
     @ObservedObject var media: Media
 
-    @EnvironmentObject var mp: MediaProcessor
+    @EnvironmentObject var mp: AppState
     
 
     var mediaProvider:      MediaProvider   = .shared

@@ -11,7 +11,7 @@ import SwiftUI
 struct EarthquakesApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(app: AppState())
         }
     }
 }

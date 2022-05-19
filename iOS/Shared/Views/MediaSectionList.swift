@@ -14,7 +14,8 @@ struct MediaSectionList: View {
     var section:  MediaSection    = .default
 
     let mediaProvider:      MediaProvider   = .shared
-    
+    @EnvironmentObject var mp: AppState
+
     @SectionedFetchRequest (
         sectionIdentifier:  MediaSection.default.section,
         sortDescriptors:    MediaSection.default.descriptors,
@@ -23,8 +24,14 @@ struct MediaSectionList: View {
     )
     private var media: SectionedFetchResults<String, Media>
 
-
-//    @State private var selectedMediaSort:  MediaSection    = .default
+    @FetchRequest(
+        entity: Media.entity(),
+        sortDescriptors:    [NSSortDescriptor(key: "id", ascending: false)],
+        predicate:          NSPredicate(format: "imageData != nil")
+     ) var newMedia: FetchedResults<Media>
+    
+    
+    //    @State private var selectedMediaSort:  MediaSection    = .default
 
     @State private var mediaSelection: Set<String> = []
 
@@ -32,8 +39,8 @@ struct MediaSectionList: View {
     @State private var hasError = false
     
 //    @State private var selectedMediaSort: MediaSection = MediaSection.default
-    @AppStorage("searchTerm")
-    private var mediaSearchTerm = ""
+//    @AppStorage("searchTerm")
+    @State private var mediaSearchTerm = ""
     @State private var isLoading = false
     @State private var lastSortChange: Date = Date()
     
@@ -48,8 +55,9 @@ struct MediaSectionList: View {
     @AppStorage("lastSelectedSection")
     private var lastSelectedSection = ""
 
-    @AppStorage("lastUpdatedMedia")
-    private var lastUpdated = Date.distantFuture.timeIntervalSince1970
+//    @AppStorage("lastUpdatedMedia")
+    @State
+    private var lastUpdated: Date = Date.now
     
 
     var body: some View {
@@ -71,8 +79,13 @@ struct MediaSectionList: View {
 
         return VStack {
 
-            AnalyzeButtonAuto()
-
+            if newMedia.count > 0 {
+                AnalyzeButton(count: newMedia.count) {
+                    mp.processAllImages(completion: {} )
+                }
+                .listRowBackground(Color.clear)
+            }
+            
             List() {
                 ForEach(media) { mediaSection in
                     
@@ -92,7 +105,7 @@ struct MediaSectionList: View {
             } // List
         }
         .listStyle(PlainListStyle())
-        .searchable(text: mediaSearchQuery)
+//        .searchable(text: mediaSearchQuery)
 
         #if os(iOS)
         .refreshable { await fetchMedia(complete: true) }
@@ -106,7 +119,7 @@ struct MediaSectionList: View {
                 endPoint: .bottomTrailing
             )
         )
-
+        .onAppear() { publishInfo() }
         .navigationTitle (title)
         .navigationBarTitleDisplayMode(.automatic)
         .alert(isPresented: $hasError, error: error) { }
@@ -118,6 +131,21 @@ struct MediaSectionList: View {
         return section.name
     }
 
+    /*
+    ** ********************************************************************************************
+    */
+    func publishInfo() {
+        let _ = mp.publishInfo (
+            sections:   media.count,
+            items:      media.joined().count,
+            selected:   mediaSelection.count,
+            loading:    isLoading
+        )
+    }
+
+    /*
+    ** ********************************************************************************************
+    */
     var mediaSearchQuery: Binding<String> {
       Binding {
         mediaSearchTerm
@@ -155,122 +183,12 @@ struct MediaSectionList: View {
         isLoading = true
         do {
             try await mediaProvider.fetchMedia(pollingFor: 0, complete: complete)
-            lastUpdated = Date().timeIntervalSince1970
+            self.lastUpdated = Date.now
         } catch {
             self.error = error as? DscanError ?? .unexpectedError(error: error)
             self.hasError = true
         }
         isLoading = false
     }
-
-    
-    @ToolbarContentBuilder
-    private func toolbarContent() -> some ToolbarContent {
-        #if os(iOS)
-        toolbarContent_iOS()
-        #else
-        toolbarContent_macOS()
-        #endif
-    }
-
-    #if os(iOS)
-    @ToolbarContentBuilder
-    private func toolbarContent_iOS() -> some ToolbarContent {
-//        ToolbarItem(placement: .primaryAction) {
-//            MediaSortSelection (selectedSortItem: $selectedMediaSort, sorts: MediaSection.sorts)
-//            onChange(of: selectedMediaSort) { _ in
-//                // that let is there for a reason!
-//                // vvvvvvvv see https://www.raywenderlich.com/27201015-dynamic-core-data-with-swiftui-tutorial-for-ios
-//                let request = media
-//                request.sectionIdentifier = selectedMediaSort.section
-//                request.sortDescriptors   = selectedMediaSort.descriptors
-//                lastSelectedSort = selectedMediaSort.id
-//                lastSortChange = Date()
-//                print("sort \(selectedMediaSort.name) was selected")
-//            }
-//        }
-
-        ToolbarItemGroup(placement: .bottomBar) {
-            if (isLoading) {
-                ProgressView()
-            }
-            else {
-                RefreshButton {
-                    Task {
-                        await fetchMedia()
-                    }
-                }
-                .disabled(isLoading)
-            }
-
-            Spacer()
-
-            ToolbarStatus(
-                itemCount: media.joined().count,
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                sectionCount: media.count,
-                selectedCount: 0
-            )
-
-            Spacer()
-
-            Button(action: {
-                self.showScannerSheet = true
-            }, label: {
-                Image(systemName: "doc.text.viewfinder")
-            })
-
-        }
-    }
-    #else
-    @ToolbarContentBuilder
-    private func toolbarContent_macOS() -> some ToolbarContent {
-
-        ToolbarItemGroup(placement: .status) {
-            SortSelectionView (selectedSortItem: $selectedSort, sorts: MediaSort.sorts)
-
-            onChange(of: selectedSort) { _ in
-                //let config = media
-//                print (selectedSort.descriptors)
-//                print (selectedSort.section)
-                media.sortDescriptors = selectedSort.descriptors
-                media.sectionIdentifier = selectedSort.section
-            }
-
-            ToolbarStatus(
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
-                sectionCount: media.count,
-                itemCount: media.joined().count
-            )
-        }
-
-        ToolbarItemGroup(placement: .navigation) {
-            HStack {
-                ProgressView()
-
-                RefreshButton {
-                    Task {
-                        await fetchMedia()
-                    }
-                }
-                .hidden(isLoading)
-                
-                Spacer()
-                
-                DeleteButton {
-                    Task {
-                        await deleteMedia(for: selection)
-                    }
-                }
-                .disabled(isLoading || selection.isEmpty)
-                
-                Spacer()
-            }
-        }
-    }
-    #endif
-
 
 }

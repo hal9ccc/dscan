@@ -126,14 +126,10 @@ class MediaProvider {
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
         
-//        if complete { maxCID = -1 }
-        
         let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
                 + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
                 + (!complete         ? "&cid=\(maxCID)"         : "")
         )
-
-        logger.info("\(String(describing:url))")
 
         guard let (data, response) = try? await session.data(from: url!)
         else {
@@ -141,9 +137,10 @@ class MediaProvider {
             throw DscanError.missingData
         }
 
-        logger.debug("response: \(String(describing: response))")
-        logger.debug("data: \(String(describing: data))")
-
+        if let httpResponse = response as? HTTPURLResponse {
+            logger.debug("\(url?.query ?? ""): \(httpResponse.statusCode) \(String(describing: data))")
+        }
+        
         do {
             // Decode the JSON into a data model.
             let jsonDecoder = JSONDecoder()
@@ -209,7 +206,7 @@ class MediaProvider {
                     }
                     else {
                         self.logger.debug("Failed to execute batch insert request.")
-                        self.logger.critical("\(String(describing: batchInsertResult))")
+//                        self.logger.critical("\(String(describing: batchInsertResult))")
                     }
 //                    self.logger.critical("batchInsertResult: \(String(describing: batchInsertResult))")
                 }

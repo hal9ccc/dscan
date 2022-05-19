@@ -30,8 +30,8 @@
 		4E3BE65D280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E3BE65E280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E5B7D82281FAC0F00842FE2 /* NukeUI */; };
-		4E5B7D88282171B500842FE2 /* MediaProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* MediaProcessor.swift */; };
-		4E5B7D89282171B500842FE2 /* MediaProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* MediaProcessor.swift */; };
+		4E5B7D88282171B500842FE2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* AppState.swift */; };
+		4E5B7D89282171B500842FE2 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* AppState.swift */; };
 		4E7C1794282A5B3A001CB909 /* ZoomableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */; };
 		4E7C1795282A5B3A001CB909 /* ZoomableScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */; };
 		4E86000A281806E100F126D7 /* _nighttrain.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4E86FFE7281806DD00F126D7 /* _nighttrain.jpg */; };
@@ -178,7 +178,7 @@
 		4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4E24DA312815F16800A39C7D /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
 		4E3BE65C280552860049DD03 /* QuakeSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeSort.swift; sourceTree = "<group>"; };
-		4E5B7D87282171B400842FE2 /* MediaProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaProcessor.swift; sourceTree = "<group>"; };
+		4E5B7D87282171B400842FE2 /* AppState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
 		4E860000281806E000F126D7 /* panalpina.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = panalpina.jpg; sourceTree = "<group>"; };
 		4E860001281806E000F126D7 /* schaeflein.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = schaeflein.jpg; sourceTree = "<group>"; };
@@ -349,7 +349,7 @@
 				4EC3A0A3282809DE0085DD74 /* URLRequest+Init.swift */,
 				4EC3A0A628280B3E0085DD74 /* Data+MIMEType.swift */,
 				4EC3A0A0282809780085DD74 /* Uploader.swift */,
-				4E5B7D87282171B400842FE2 /* MediaProcessor.swift */,
+				4E5B7D87282171B400842FE2 /* AppState.swift */,
 				AD57B0F426561260005183D0 /* Toolbar Content */,
 				ADFCD5352630D167008A14D0 /* Models */,
 				ADFCD5362630DA13008A14D0 /* Views */,
@@ -684,7 +684,7 @@
 				4E9CF7DB2834E11F00DB2851 /* AnalyzeButtonAuto.swift in Sources */,
 				4E24DA2A2815EC1600A39C7D /* MediaThumbnail.swift in Sources */,
 				4EC3A0A5282809DE0085DD74 /* URLRequest+Init.swift in Sources */,
-				4E5B7D89282171B500842FE2 /* MediaProcessor.swift in Sources */,
+				4E5B7D89282171B500842FE2 /* AppState.swift in Sources */,
 				4E9CF7D828345A3600DB2851 /* SectionRow.swift in Sources */,
 				4E076CF0282520080049B9E8 /* SettingsView.swift in Sources */,
 				4E86FFDC281686A000F126D7 /* Test.swift in Sources */,
@@ -722,7 +722,7 @@
 				4E24DA2F2815EF5D00A39C7D /* View+Extensions.swift in Sources */,
 				4E24DA232815D57000A39C7D /* MediaSection.swift in Sources */,
 				AD57B1052656F405005183D0 /* SelectButton.swift in Sources */,
-				4E5B7D88282171B500842FE2 /* MediaProcessor.swift in Sources */,
+				4E5B7D88282171B500842FE2 /* AppState.swift in Sources */,
 				4E9CF7D728345A3600DB2851 /* SectionRow.swift in Sources */,
 				4E956211282AC560006F7D14 /* AnalyzeButton.swift in Sources */,
 				4E24DA20281522BE00A39C7D /* SectionHeader.swift in Sources */,

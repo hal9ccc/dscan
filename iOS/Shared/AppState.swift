@@ -16,7 +16,8 @@ import Vision
 import VisionKit
 
 
-class MediaProcessor: ObservableObject {
+@MainActor
+class AppState: ObservableObject {
     
     var mediaProvider: MediaProvider = .shared
 
@@ -29,11 +30,24 @@ class MediaProcessor: ObservableObject {
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var detectBarcodesRequest     = VNDetectBarcodesRequest()
 
-    @Published var isUploadingImage:        Bool        = false
-    @Published var isDetectingBarcodes:     Bool        = false
-    @Published var isRecognizingTexts:      Bool        = false
-    @Published var isUploadingData:         Bool        = false
+    @Published var isLoading:               Bool            = false
+    @Published var isSync:                  Bool            = false
+    @Published var isError:                 Bool            = false
+    @Published var isUploadingImage:        Bool            = false
+    @Published var isDetectingBarcodes:     Bool            = false
+    @Published var isRecognizingTexts:      Bool            = false
+    @Published var isUploadingData:         Bool            = false
 
+    @Published var lastUpdated:             Date            = Date.distantPast
+    @Published var section:                 MediaSection    = MediaSection.all
+    @Published var sectionKey:              String          = ""
+    
+    @Published var numSections:             Int             = 0
+    @Published var numItems:                Int             = 0
+    @Published var numShowing:              Int             = 0
+    @Published var numSelected:             Int             = 0
+
+   
     var metadata:                MMImage     = MMImage()
     var idx:                     Int         = 0
 
@@ -139,13 +153,13 @@ class MediaProcessor: ObservableObject {
             isUploadingImage = true
 
             // high-priority background threads
-            DispatchQueue.global(qos: .userInitiated).async {
+//            DispatchQueue.global(qos: .userInitiated).async {
 
                 media2Process.forEach {image in
                     self.refreshGroup.enter()
                     self.processImage(image, completion: { self.refreshGroup.leave() })
                 }
-            }
+//            }
 
             // signal we're done
             isUploadingImage = false
@@ -158,10 +172,6 @@ class MediaProcessor: ObservableObject {
     /*
     ** ***********************************************************************************************
     */
-//    init(completion: @escaping ([MediaProperties]?) -> Void) {
-//        self.completionHandler = completion
-//    }
-
     func processImage(_ media: Media, completion: @escaping () -> Void) {
         
         logger.info("analyzing \(media.filename)...")
@@ -202,12 +212,6 @@ class MediaProcessor: ObservableObject {
 
         // called when both uploads complete
         uploadGroup.notify (queue: DispatchQueue.global()) {
-            
-//            self.logger.debug("uploads for \(media.filename) completed, deleting original image...")
-//            media.imageData = nil
-////            MediaProvider.shared.container.viewContext.delete(media)
-//            try? MediaProvider.shared.container.viewContext.save()
-
             completion()
         }
         
@@ -219,7 +223,7 @@ class MediaProcessor: ObservableObject {
             idx:            Int(media.idx),
             timestamp:      media.time,
             completion:     {
-                self.logger.debug("json upped")
+                self.logger.debug("json \(media.filename) upped")
                 uploadGroup.leave()
             }
         )
@@ -232,7 +236,7 @@ class MediaProcessor: ObservableObject {
             idx:            Int(media.idx),
             timestamp:      media.time,
             completion:     {
-                self.logger.debug("json upped")
+                self.logger.debug("img \(media.filename) upped")
                 uploadGroup.leave()
             }
         )
@@ -242,8 +246,6 @@ class MediaProcessor: ObservableObject {
     ** ***********************************************************************************************
     */
     func uploadData (data: Data, filename: String, title: String, idx: Int, timestamp: Date, completion: @escaping () -> Void) {
-//
-//        self.isUploadingData = true
 
         let url = URL(string: "\(serverurl)/media/files/")!
         let headers: HTTPHeaders = [
@@ -264,11 +266,9 @@ class MediaProcessor: ObservableObject {
             
             switch result {
                 case .success(let value):
-//                    self.isUploadingData = false
                     assert(value.statusCode == 201)
 
                 case .failure(let error):
-//                    self.isUploadingData = false
                     print(error.localizedDescription)
             }
         }
@@ -279,8 +279,6 @@ class MediaProcessor: ObservableObject {
     ** ***********************************************************************************************
     */
     func uploadImage (image: UIImage, filename: String, title: String, idx: Int, timestamp: Date, completion: @escaping () -> Void) {
-//
-//        self.isUploadingImage = true
 
         let url = URL(string: "\(serverurl)/media/files/")!
         let headers: HTTPHeaders = [
@@ -303,11 +301,9 @@ class MediaProcessor: ObservableObject {
             
             switch result {
                 case .success(let value):
-//                    self.isUploadingImage = false
                     assert(value.statusCode == 201)
 
                 case .failure(let error):
-//                    self.isUploadingImage = false
                     print(error.localizedDescription)
             }
         }
@@ -319,6 +315,33 @@ class MediaProcessor: ObservableObject {
 
         ordsError               = nil
         error                   = nil
+    }
+    
+    func publishInfo (
+        ts:            Date?=nil,
+        sect:          MediaSection?=nil,
+        key:           String?=nil,
+        sections:      Int?=nil,
+        items:         Int?=nil,
+        showing:       Int?=nil,
+        selected:      Int?=nil,
+        loading:       Bool?=nil,
+        sync:          Bool?=nil,
+        error:         Bool?=nil
+    ) -> Bool {
+        lastUpdated  = ts       ?? lastUpdated
+        section      = sect     ?? section
+        sectionKey   = key      ?? sectionKey
+        numSections  = sections ?? numSections
+        numItems     = items    ?? numItems
+        numShowing   = showing  ?? numShowing
+        numSelected  = selected ?? numSelected
+        isLoading    = loading  == nil ? isLoading : loading ?? false
+        isSync       = sync     == nil ? isSync    : sync    ?? false
+        isError      = error    == nil ? isError   : error   ?? false
+        
+        //logger.debug("sect:\(self.numSections) items:\(self.numItems) shown:\(self.numShowing) selected:\(self.numSelected) loading:\(self.isLoading) syync:\(self.isSync) err: \(self.isError)")
+        return true
     }
 
 }
