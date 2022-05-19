@@ -91,6 +91,9 @@ struct MediaDetail: View {
                     .font(.title3)
                     .bold()
 
+                Text("\(media.location)")
+                    .foregroundStyle(Color.primary)
+
                 Text("\(media.day)")
                     .foregroundStyle(Color.primary)
 

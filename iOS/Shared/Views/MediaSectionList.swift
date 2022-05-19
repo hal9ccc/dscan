@@ -91,8 +91,8 @@ struct MediaSectionList: View {
                 }
             } // List
         }
-        .listStyle(SidebarListStyle())
-//        .searchable(text: mediaSearchQuery)
+        .listStyle(PlainListStyle())
+        .searchable(text: mediaSearchQuery)
 
         #if os(iOS)
         .refreshable { await fetchMedia(complete: true) }

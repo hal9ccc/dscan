@@ -76,7 +76,7 @@ struct MediaList: View {
         let request = media
         request.sectionIdentifier = section.section
         request.sortDescriptors   = section.descriptors
-        print("MediaList \(section.name) -> \(key)")
+//        print("MediaList \(section.name) -> \(key)")
 
         @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
         @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?

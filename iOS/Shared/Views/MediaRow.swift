@@ -19,13 +19,12 @@ struct MediaRow: View {
             MediaThumbnail(media: media)
             
             VStack (alignment: .leading) {
-                if media.code > "" && media.code != " - unbekannt -" {
-                    Label("\(media.code)", systemImage: "qrcode")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.headline)
-                        .foregroundStyle(.primary)
+                Label("\(media.code)", systemImage: "qrcode")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                    .if(media.code == "" || media.code == "␀") { view in view.hidden() }
 
-                }
 
                 Spacer()
                 
@@ -34,37 +33,48 @@ struct MediaRow: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 2)
 
+                Label("\(media.status)", systemImage: "checkmark.seal")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 2)
+                    .if(media.status == "" || media.status == "␀") { view in view.hidden() }
+
                 Spacer()
 
-                if media.person > "" && media.person != "␀"{
+                VStack (alignment: .leading) {
                     Label("\(media.person)", systemImage: "person.circle")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
-                }
+                        .if(media.person == "" || media.person == "␀") { view in view.hidden() }
 
-                if media.company > "" && media.company != "␀" {
                     Label("\(media.company)", systemImage: "person.2.crop.square.stack")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
-                }
+                        .if(media.company == "" || media.company == "␀") { view in view.hidden() }
+
+                    Label("\(media.location)", systemImage: "mappin.and.ellipse")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 2)
+                        .if(media.location == "" || media.location == "␀") { view in view.hidden() }
 
 
-                if media.carrier > "" && media.carrier != "␀" {
                     Label("\(media.carrier)", systemImage: "shippingbox")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal, 2)
+                        .if(media.carrier == "" || media.carrier == "␀") { view in view.hidden() }
                 }
 
                 Spacer()
                 Spacer()
 
             }
-            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .frame(height: 160)
         }
-        .frame(maxWidth: .infinity)
+        .frame(height: 160)
         .padding (.horizontal, 0)
 
     }

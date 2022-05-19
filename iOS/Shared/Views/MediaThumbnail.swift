@@ -20,13 +20,13 @@ struct MediaThumbnail: View {
         print("\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)")
         
         return RoundedRectangle(cornerRadius: 4)
-//            .fill(.thinMaterial)
-            .frame(width: 150, height: 250)
+            .fill(.thinMaterial)
+            .frame(width: 150, height: 150)
             .overlay {
 
                 ZStack {
                     LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)", resizingMode: .aspectFit)
-                        .frame(width: 150, height: 250)
+                        .frame(width: 150, height: 150)
                         .opacity(media.img == "␀" ? 0 : 1)
 
                     if media.imageData != nil {
@@ -36,7 +36,7 @@ struct MediaThumbnail: View {
                             .opacity(media.imageData == nil ? 0 : 1)
                     }
                 }
-                .frame(width: 150, height: 250)
+                .frame(width: 150, height: 150)
             }
     }
 }

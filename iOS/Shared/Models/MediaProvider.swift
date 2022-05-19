@@ -126,11 +126,11 @@ class MediaProvider {
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
         
-        if complete { maxCID = -1 }
+//        if complete { maxCID = -1 }
         
         let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
                 + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
-                + (maxCID       > -1 ? "&cid=\(maxCID)"         : "")
+                + (!complete         ? "&cid=\(maxCID)"         : "")
         )
 
         logger.info("\(String(describing:url))")
@@ -141,11 +141,8 @@ class MediaProvider {
             throw DscanError.missingData
         }
 
-
-        
-        
-        
-        
+        logger.debug("response: \(String(describing: response))")
+        logger.debug("data: \(String(describing: data))")
 
         do {
             // Decode the JSON into a data model.
@@ -182,7 +179,7 @@ class MediaProvider {
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
         
-        let maxCidFromData = propertiesList.map{ $0.cid }.max()
+        let maxCidFromData = propertiesList.map{$0.cid}.max()
         if maxCidFromData != nil && maxCidFromData! > maxCID {
             logger.info("maxCID: \(self.maxCID) -> \(String(describing:maxCidFromData))")
             maxCID = maxCidFromData!

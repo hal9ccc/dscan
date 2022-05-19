@@ -126,7 +126,7 @@ class MediaProcessor: ObservableObject {
         mediaFetch.sortDescriptors = [sort_time, sort_idx]
 
 
-        refreshGroup.notify (queue: .main) { 
+        refreshGroup.notify (queue: DispatchQueue.global()) { 
             completion()
         }
 
@@ -201,12 +201,12 @@ class MediaProcessor: ObservableObject {
         let uploadGroup = DispatchGroup()
 
         // called when both uploads complete
-        uploadGroup.notify (queue: .main) {
+        uploadGroup.notify (queue: DispatchQueue.global()) {
             
-            self.logger.debug("uploads for \(media.filename) completed, deleting original image...")
-            media.imageData = nil
-//            MediaProvider.shared.container.viewContext.delete(media)
-            try? MediaProvider.shared.container.viewContext.save()
+//            self.logger.debug("uploads for \(media.filename) completed, deleting original image...")
+//            media.imageData = nil
+////            MediaProvider.shared.container.viewContext.delete(media)
+//            try? MediaProvider.shared.container.viewContext.save()
 
             completion()
         }
@@ -218,7 +218,10 @@ class MediaProcessor: ObservableObject {
             title:          media.title,
             idx:            Int(media.idx),
             timestamp:      media.time,
-            completion:     { uploadGroup.leave() }
+            completion:     {
+                self.logger.debug("json upped")
+                uploadGroup.leave()
+            }
         )
 
         uploadGroup.enter()
@@ -228,7 +231,10 @@ class MediaProcessor: ObservableObject {
             title:          media.title,
             idx:            Int(media.idx),
             timestamp:      media.time,
-            completion:     { uploadGroup.leave() }
+            completion:     {
+                self.logger.debug("json upped")
+                uploadGroup.leave()
+            }
         )
     }
 
@@ -242,7 +248,7 @@ class MediaProcessor: ObservableObject {
         let url = URL(string: "\(serverurl)/media/files/")!
         let headers: HTTPHeaders = [
             "Content-Type"   : "text/json",
-            "filename"       : "\(filename).json",
+            "filename"       : filename,
             "type"           : "scan",
             "title"          : title,
             "idx"            : idx.formatted(),
@@ -253,6 +259,9 @@ class MediaProcessor: ObservableObject {
         let jsonRequest = Upload(data: data, to: url, with: headers, using:"POST")
 
         jsonRequest.upload { (result) in
+            
+            completion()
+            
             switch result {
                 case .success(let value):
 //                    self.isUploadingData = false
@@ -276,7 +285,7 @@ class MediaProcessor: ObservableObject {
         let url = URL(string: "\(serverurl)/media/files/")!
         let headers: HTTPHeaders = [
             "Content-Type"   : "image/jpg",
-            "filename"       : "\(filename).jpg",
+            "filename"       : "\(filename.replacingOccurrences(of: ".json", with: ".jpg"))",
             "type"           : "scan",
             "title"          : title,
             "idx"            : idx.formatted(),
@@ -289,6 +298,9 @@ class MediaProcessor: ObservableObject {
         let imgRequest = Upload(data: imgData, to: url, with: headers, using:"POST")
 
         imgRequest.upload { (result) in
+
+            completion()
+            
             switch result {
                 case .success(let value):
 //                    self.isUploadingImage = false

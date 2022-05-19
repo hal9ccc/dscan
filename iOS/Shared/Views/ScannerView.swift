@@ -84,7 +84,7 @@ struct ScannerView: UIViewControllerRepresentable {
                   info2:                  "",
                   info3:                  "",
                   info4:                  "",
-                  filename:               "\(df.string(from: d))_\(pageNumber + 1)",
+                  filename:               "\(df.string(from: d))_\(pageNumber + 1).json",
                   code:                   "␀",
                   person:                 "␀",
                   company:                "␀",
