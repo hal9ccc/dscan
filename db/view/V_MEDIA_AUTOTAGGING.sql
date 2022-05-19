@@ -25,7 +25,7 @@ create or replace view V_MEDIA_AUTOTAGGING as
         '',       -- matchcode2
         '',       -- matchcode3
         MAT.tag_name,
-        nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr, 1, 1, 'i'), MAT.re_result_substr) as tag_value,
+        nvl(REGEXP_SUBSTR(MRT.Text, nvl(MAT.re_result_substr, MAT.re_pattern1), 1, 1, 'i'), MAT.re_result_substr) as tag_value,
       --nvl(REGEXP_SUBSTR(MRT.Text, MAT.re_result_substr), MRT.Text) as tag_value,
         MAT.re_pattern1,
         MAT.re_pattern2,
@@ -56,9 +56,10 @@ UNION ALL
 select * from MEDIA_AUTOTAGGING order by 1;
 select * from V_MEDIA_AUTOTAGGING where id = 2132;
 
-
+alter table MEDIA_AUTOTAGGING modify RE_RESULT_SUBSTR NULL;
 
 select * from V_MEDIA_AUTOTAGGING where TAG_SOURCE_ID = 'Carrier_DHL_Text';
 select * from V_MEDIA_AUTOTAGGING where TAG_SOURCE_ID = 'Email_Text_001';
 
 
+DELETE FROM DSCAN.MEDIA_AUTOTAGGING WHERE ID LIKE 'URI#_Text#_001' ESCAPE '#' and rownum < 2;
