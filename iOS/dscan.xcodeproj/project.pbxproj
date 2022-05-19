@@ -345,11 +345,11 @@
 			children = (
 				AD43F1E526158A640068AABC /* EarthquakesApp.swift */,
 				AD57B10126561FE1005183D0 /* ContentView.swift */,
+				4E5B7D87282171B400842FE2 /* AppState.swift */,
 				4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */,
 				4EC3A0A3282809DE0085DD74 /* URLRequest+Init.swift */,
 				4EC3A0A628280B3E0085DD74 /* Data+MIMEType.swift */,
 				4EC3A0A0282809780085DD74 /* Uploader.swift */,
-				4E5B7D87282171B400842FE2 /* AppState.swift */,
 				AD57B0F426561260005183D0 /* Toolbar Content */,
 				ADFCD5352630D167008A14D0 /* Models */,
 				ADFCD5362630DA13008A14D0 /* Views */,

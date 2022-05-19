@@ -755,3 +755,31 @@ BEGIN
   COMMIT;
 END;
 /
+
+
+
+
+
+    static let aztec: VNBarcodeSymbology
+    A constant that indicates .
+    static let codabar: VNBarcodeSymbology
+    A constant that indicates .
+    static let code39: VNBarcodeSymbology
+    A constant that indicates .
+    static let code39Checksum: VNBarcodeSymbology
+    A constant that indicates .
+    static let code39FullASCII: VNBarcodeSymbology
+    A constant that indicates .
+    static let code39FullASCIIChecksum: VNBarcodeSymbology
+    A constant that indicates .
+    static let code93: VNBarcodeSymbology
+    A constant that indicates .
+    static let code93i: VNBarcodeSymbology
+    A constant that indicates .
+    static let code128: VNBarcodeSymbology
+    A constant that indicates .
+    static let dataMatrix: VNBarcodeSymbology
+    A constant that indicates .
+    static let ean8: VNBarcodeSymbology
+    A constant that indicates .
+    static let ean13: VNBarcodeSymbology

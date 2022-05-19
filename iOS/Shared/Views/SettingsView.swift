@@ -21,6 +21,9 @@ struct SettingsView: View {
     @State
     private var serverurlOrig = ""
     
+    @AppStorage("LongpollMode")
+    private var longpollMode: Bool = true
+
     @AppStorage("CacheSize")
     private var cachesize: Double = 100 * 1024 * 1024
     
@@ -35,6 +38,31 @@ struct SettingsView: View {
     
     @State
     private var syncRange_str = ""
+
+    @AppStorage ("BS_aztec")                   private var bs_aztec:                   Bool = true
+    @AppStorage ("BS_code39")                  private var bs_code39:                  Bool = true
+    @AppStorage ("BS_code39Checksum")          private var bs_code39Checksum:          Bool = true
+    @AppStorage ("BS_code39FullASCII")         private var bs_code39FullASCII:         Bool = true
+    @AppStorage ("BS_code39FullASCIIChecksum") private var bs_code39FullASCIIChecksum: Bool = true
+    @AppStorage ("BS_code93")                  private var bs_code93:                  Bool = true
+    @AppStorage ("BS_code93i")                 private var bs_code93i:                 Bool = true
+    @AppStorage ("BS_code128")                 private var bs_code128:                 Bool = true
+    @AppStorage ("BS_dataMatrix")              private var bs_dataMatrix:              Bool = true
+    @AppStorage ("BS_ean8")                    private var bs_ean8:                    Bool = true
+    @AppStorage ("BS_ean13")                   private var bs_ean13:                   Bool = true
+    @AppStorage ("BS_i2of5")                   private var bs_i2of5:                   Bool = true
+    @AppStorage ("BS_i2of5Checksum")           private var bs_i2of5Checksum:           Bool = true
+    @AppStorage ("BS_itf14")                   private var bs_itf14:                   Bool = true
+    @AppStorage ("BS_pdf417")                  private var bs_pdf417:                  Bool = true
+    @AppStorage ("BS_qr")                      private var bs_qr:                      Bool = true
+    @AppStorage ("BS_upce")                    private var bs_upce:                    Bool = true
+    @AppStorage ("BS_codabar")                 private var bs_codabar:                 Bool = true
+    @AppStorage ("BS_gs1DataBar")              private var bs_gs1DataBar:              Bool = true
+    @AppStorage ("BS_gs1DataBarExpanded")      private var bs_gs1DataBarExpanded:      Bool = true
+    @AppStorage ("BS_gs1DataBarLimited")       private var bs_gs1DataBarLimited:       Bool = true
+    @AppStorage ("BS_microPDF417")             private var bs_microPDF417:             Bool = true
+    @AppStorage ("BS_microQR")                 private var bs_microQR:                 Bool = true
+
     
     let currentDate = Date()
     
@@ -58,7 +86,52 @@ struct SettingsView: View {
                     .font(.subheadline)
                 
             }
+
+
+            Section (
+                header:Text("Long-Poll Mode"),
+                footer:Text("Enable real-time refresh")
+            ) {
+                Toggle("Long-Poll Mode", isOn: $longpollMode)
+                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+            }
             
+            Section (
+                header:Text("Barcode and 2D-Code types"),
+                footer:Text("Selecting only the types you need could improve accuracy and performance")
+            ) {
+                VStack {
+                    Toggle("Code 39",                                  isOn: $bs_code39                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 with a checksum",                  isOn: $bs_code39Checksum          ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Interleaved 2 of 5 (ITF)",                 isOn: $bs_i2of5                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Interleaved 2 of 5 (ITF) with a checksum", isOn: $bs_i2of5Checksum           ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 128",                                 isOn: $bs_code128                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Codabar",                                  isOn: $bs_codabar                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("EAN-8",                                    isOn: $bs_ean8                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("EAN-13",                                   isOn: $bs_ean13                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+                VStack {
+                    Toggle("UPC-E",                                    isOn: $bs_upce                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Aztec",                                    isOn: $bs_aztec                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("QR",                                       isOn: $bs_qr                      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("MicroQR",                                  isOn: $bs_microQR                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Data Matrix",                              isOn: $bs_dataMatrix              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("PDF417",                                   isOn: $bs_pdf417                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("MicroPDF417",                              isOn: $bs_microPDF417             ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+                VStack {
+                    Toggle("ITF-14",                                   isOn: $bs_itf14                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 Full ASCII",                       isOn: $bs_code39FullASCII         ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 Full ASCII with a checksum",       isOn: $bs_code39FullASCIIChecksum ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 93",                                  isOn: $bs_code93                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 93i",                                 isOn: $bs_code93i                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar",                              isOn: $bs_gs1DataBar              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar Expanded",                     isOn: $bs_gs1DataBarExpanded      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar Limited",                      isOn: $bs_gs1DataBarLimited       ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+            }
+
+
             Section (
                 header:Text("Data sync range"),
                 footer:Text("Period for which documents are loaded")

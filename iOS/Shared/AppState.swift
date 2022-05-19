@@ -16,9 +16,10 @@ import Vision
 import VisionKit
 
 
-@MainActor
+/// https://stackoverflow.com/a/70045158/701753
+//@MainActor
 class AppState: ObservableObject {
-    
+
     var mediaProvider: MediaProvider = .shared
 
     @AppStorage("ServerURL")
@@ -26,6 +27,31 @@ class AppState: ObservableObject {
 
     @AppStorage("CompressionQuality")
     private var compressionQuality = 1
+
+    @AppStorage ("BS_aztec")                   private var bs_aztec:                   Bool = true
+    @AppStorage ("BS_code39")                  private var bs_code39:                  Bool = true
+    @AppStorage ("BS_code39Checksum")          private var bs_code39Checksum:          Bool = true
+    @AppStorage ("BS_code39FullASCII")         private var bs_code39FullASCII:         Bool = true
+    @AppStorage ("BS_code39FullASCIIChecksum") private var bs_code39FullASCIIChecksum: Bool = true
+    @AppStorage ("BS_code93")                  private var bs_code93:                  Bool = true
+    @AppStorage ("BS_code93i")                 private var bs_code93i:                 Bool = true
+    @AppStorage ("BS_code128")                 private var bs_code128:                 Bool = true
+    @AppStorage ("BS_dataMatrix")              private var bs_dataMatrix:              Bool = true
+    @AppStorage ("BS_ean8")                    private var bs_ean8:                    Bool = true
+    @AppStorage ("BS_ean13")                   private var bs_ean13:                   Bool = true
+    @AppStorage ("BS_i2of5")                   private var bs_i2of5:                   Bool = true
+    @AppStorage ("BS_i2of5Checksum")           private var bs_i2of5Checksum:           Bool = true
+    @AppStorage ("BS_itf14")                   private var bs_itf14:                   Bool = true
+    @AppStorage ("BS_pdf417")                  private var bs_pdf417:                  Bool = true
+    @AppStorage ("BS_qr")                      private var bs_qr:                      Bool = true
+    @AppStorage ("BS_upce")                    private var bs_upce:                    Bool = true
+    @AppStorage ("BS_codabar")                 private var bs_codabar:                 Bool = true
+    @AppStorage ("BS_gs1DataBar")              private var bs_gs1DataBar:              Bool = true
+    @AppStorage ("BS_gs1DataBarExpanded")      private var bs_gs1DataBarExpanded:      Bool = true
+    @AppStorage ("BS_gs1DataBarLimited")       private var bs_gs1DataBarLimited:       Bool = true
+    @AppStorage ("BS_microPDF417")             private var bs_microPDF417:             Bool = true
+    @AppStorage ("BS_microQR")                 private var bs_microQR:                 Bool = true
+
 
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var detectBarcodesRequest     = VNDetectBarcodesRequest()
@@ -41,13 +67,13 @@ class AppState: ObservableObject {
     @Published var lastUpdated:             Date            = Date.distantPast
     @Published var section:                 MediaSection    = MediaSection.all
     @Published var sectionKey:              String          = ""
-    
+
     @Published var numSections:             Int             = 0
     @Published var numItems:                Int             = 0
     @Published var numShowing:              Int             = 0
     @Published var numSelected:             Int             = 0
 
-   
+
     var metadata:                MMImage     = MMImage()
     var idx:                     Int         = 0
 
@@ -60,13 +86,13 @@ class AppState: ObservableObject {
     // wait for two background requests to finish
     // see https://dev.to/nemecek_f/swift-easy-way-to-wait-for-multiple-background-tasks-to-finish-2jk1
     let refreshGroup            = DispatchGroup()
-    
+
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "processing")
 
     init () {
 
         textRecognitionRequest = VNRecognizeTextRequest ( completionHandler: { (request, error) in
-            
+
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNRecognizedTextObservation] {
                     let maximumCandidates = 1
@@ -98,8 +124,6 @@ class AppState: ObservableObject {
 
         detectBarcodesRequest = VNDetectBarcodesRequest(completionHandler: { (request, error) in
 
-//            let f = [MMDetectedBarcode]()
-            
             if let results = request.results, !results.isEmpty {
                 if let requestResults = request.results as? [VNBarcodeObservation] {
 
@@ -115,7 +139,7 @@ class AppState: ObservableObject {
             self.logger.debug ("got \(self.metadata.detectedBarcodes.count) codes")
         })
         detectBarcodesRequest.revision    = VNDetectBarcodesRequestRevision2
-        detectBarcodesRequest.symbologies = [.code128, .code39, .code39Checksum, .dataMatrix, .pdf417, .qr, .aztec, .ean13, .i2of5, .upce ]
+        detectBarcodesRequest.symbologies = getBarcodeSymbologies()
     }
 
     /*
@@ -129,18 +153,18 @@ class AppState: ObservableObject {
         // aktualisiert
         //
         logger.info("processing images")
-        
+
         var media2Process = [Media]()
-        
+
         let mediaFetch = Media.createFetchRequest()
         mediaFetch.predicate = NSPredicate(format: predicate)
-        
+
         let sort_time = NSSortDescriptor(key: "time", ascending: true)
         let sort_idx  = NSSortDescriptor(key: "idx",  ascending: true)
         mediaFetch.sortDescriptors = [sort_time, sort_idx]
 
 
-        refreshGroup.notify (queue: DispatchQueue.global()) { 
+        refreshGroup.notify (queue: DispatchQueue.global()) {
             completion()
         }
 
@@ -153,13 +177,20 @@ class AppState: ObservableObject {
             isUploadingImage = true
 
             // high-priority background threads
-//            DispatchQueue.global(qos: .userInitiated).async {
+            var A: [Media] = []
 
-                media2Process.forEach {image in
+            DispatchQueue.global(qos: .userInitiated).async {
+                media2Process.forEach { image in
                     self.refreshGroup.enter()
-                    self.processImage(image, completion: { self.refreshGroup.leave() })
+                    self.processImage(image, completion: {
+                        A.append(image)
+                        image.imageData = nil;
+                        try? MediaProvider.shared.container.viewContext.save()
+                        self.refreshGroup.leave()
+                    })
                 }
-//            }
+            }
+            
 
             // signal we're done
             isUploadingImage = false
@@ -168,12 +199,12 @@ class AppState: ObservableObject {
             logger.critical("Fetch failed")
         }
     }
-    
+
     /*
     ** ***********************************************************************************************
     */
     func processImage(_ media: Media, completion: @escaping () -> Void) {
-        
+
         logger.info("analyzing \(media.filename)...")
 
         var jsondata: Data = Data()
@@ -214,7 +245,7 @@ class AppState: ObservableObject {
         uploadGroup.notify (queue: DispatchQueue.global()) {
             completion()
         }
-        
+
         uploadGroup.enter()
         self.uploadData  (
             data:           jsondata,
@@ -261,9 +292,9 @@ class AppState: ObservableObject {
         let jsonRequest = Upload(data: data, to: url, with: headers, using:"POST")
 
         jsonRequest.upload { (result) in
-            
+
             completion()
-            
+
             switch result {
                 case .success(let value):
                     assert(value.statusCode == 201)
@@ -298,7 +329,7 @@ class AppState: ObservableObject {
         imgRequest.upload { (result) in
 
             completion()
-            
+
             switch result {
                 case .success(let value):
                     assert(value.statusCode == 201)
@@ -308,7 +339,7 @@ class AppState: ObservableObject {
             }
         }
     }
-    
+
 
     func reset () {
         metadata                = MMImage()
@@ -316,7 +347,7 @@ class AppState: ObservableObject {
         ordsError               = nil
         error                   = nil
     }
-    
+
     func publishInfo (
         ts:            Date?=nil,
         sect:          MediaSection?=nil,
@@ -339,12 +370,46 @@ class AppState: ObservableObject {
         isLoading    = loading  == nil ? isLoading : loading ?? false
         isSync       = sync     == nil ? isSync    : sync    ?? false
         isError      = error    == nil ? isError   : error   ?? false
-        
+
         //logger.debug("sect:\(self.numSections) items:\(self.numItems) shown:\(self.numShowing) selected:\(self.numSelected) loading:\(self.isLoading) syync:\(self.isSync) err: \(self.isError)")
         return true
     }
+    
 
+    /*
+    ** ***********************************************************************************************
+    */
+    func getBarcodeSymbologies () -> [VNBarcodeSymbology] {
+        var f: [VNBarcodeSymbology] = []
+        
+        if bs_aztec                    { f.append(.aztec)                   }
+        if bs_code39                   { f.append(.code39)                  }
+        if bs_code39Checksum           { f.append(.code39Checksum)          }
+        if bs_code39FullASCII          { f.append(.code39FullASCII)         }
+        if bs_code39FullASCIIChecksum  { f.append(.code39FullASCIIChecksum) }
+        if bs_code93                   { f.append(.code93)                  }
+        if bs_code93i                  { f.append(.code93i)                 }
+        if bs_code128                  { f.append(.code128)                 }
+        if bs_dataMatrix               { f.append(.dataMatrix)              }
+        if bs_ean8                     { f.append(.ean8)                    }
+        if bs_ean13                    { f.append(.ean13)                   }
+        if bs_i2of5                    { f.append(.i2of5)                   }
+        if bs_i2of5Checksum            { f.append(.i2of5Checksum)           }
+        if bs_itf14                    { f.append(.itf14)                   }
+        if bs_pdf417                   { f.append(.pdf417)                  }
+        if bs_qr                       { f.append(.qr)                      }
+        if bs_upce                     { f.append(.upce)                    }
+        if bs_codabar                  { f.append(.codabar)                 }
+        if bs_gs1DataBar               { f.append(.gs1DataBar)              }
+        if bs_gs1DataBarExpanded       { f.append(.gs1DataBarExpanded)      }
+        if bs_gs1DataBarLimited        { f.append(.gs1DataBarLimited)       }
+        if bs_microPDF417              { f.append(.microPDF417)             }
+        if bs_microQR                  { f.append(.microQR)                 }
+
+        return f;
+    }
 }
+
 
 
 struct ScanDataOrig:Identifiable {
