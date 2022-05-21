@@ -10,14 +10,13 @@ import SwiftUI
 
 
 struct MediaList: View {
-//    let sortId:  Int
 
     let section:         MediaSection
     let startWithKey:    String
 
     @State private var key: String = ""
 
-    @EnvironmentObject var app: AppState
+    @EnvironmentObject var app: DScanApp
 
     var mediaProvider:      MediaProvider   = .shared
 
@@ -51,13 +50,7 @@ struct MediaList: View {
     @State private var isLoading       = false
     @State private var lastSortChange: Date = Date()
 
-    let polltimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State private var longPollMode   = false
-    @State private var maxCid         = -1   // last known Change-ID
-    @State private var pollSec        = 10
-    @State private var isPolling      = false
-    @State private var nextPollIn     = 10
-    @State private var pollFailure    = false
+
 
     @State private var showScannerSheet = false
     @State private var texts:[ScanDataOrig] = []
@@ -114,13 +107,8 @@ struct MediaList: View {
 
         List(selection: $mediaSelection) {
             
-            if newMedia.count > 0 {
-                AnalyzeButton(count: newMedia.count) {
-                    app.processAllImages(completion: {} )
-                }
-                .listRowBackground(Color.clear)
-            }
-            
+            AnalyzeButtonAuto()
+
             ForEach(media) { sect in
 
                 if sect.id == key || section == MediaSection.all {
@@ -155,7 +143,7 @@ struct MediaList: View {
 
 #if os(iOS)
         .environment(\.editMode, $editMode)
-        .refreshable { await fetchMedia(complete: true) }
+        .refreshable { app.fetchMedia(complete: true) }
 #else
         .frame(minWidth: 320)
 #endif
@@ -171,15 +159,13 @@ struct MediaList: View {
                 key = media.count > 0 ? media[0].id : ""
             }
 
-            if idiom == .pad {
-                publishInfo()
-            }
+//            if idiom == .pad {
+//                publishInfo()
+//            }
         }
-        .onReceive(polltimer) { input in
-            if idiom == .pad {
-                publishInfo()
-            }
-        }
+//        .onReceive(polltimer) { input in
+//            publishInfo()
+//        }
 
     }
 
@@ -205,12 +191,7 @@ struct MediaList: View {
     */
     var title: String {
         #if os(iOS)
-//            publishInfo()
-//        if selectMode.isActive || mediaSelection.isEmpty {
-            return "\(key != "␀" ? key : " unbekannt")"
-//        } else {
-//            return "\(mediaSelection.count) Selected"
-//        }
+        return "\(key != "␀" ? "\(key)" : " unbekannt") \(app.lastUpdated.formatted())"
         #else
         return "\(section != "␀" ? section : " unbekannt")"
         #endif
@@ -225,15 +206,6 @@ struct MediaList: View {
             mediaSearchTerm
         } set: { newValue in
             mediaSearchTerm = newValue
-
-//            print ("key:\(key)")
-//            if key == "" { key = startWithKey }
-//            let n = media.first(where: { $0.id == key })?.count ?? 0
-//            print ("n:\(n)")
-//            if n == 0 {
-//                key = media.count > 0 ? media[0].id : ""
-//            }
-//            print ("media.count:\(media.count)")
             
             guard !newValue.isEmpty else {
                 media.nsPredicate = nil
@@ -295,58 +267,7 @@ struct MediaList: View {
         #endif
     }
 
-    /*
-    ** ********************************************************************************************
-    */
-    private func fetchMedia(complete: Bool = false) async {
-        isLoading = true
-        do {
-            try await mediaProvider.fetchMedia(pollingFor: 0, complete: complete)
-//            lastUpdatedMedia = Date().timeIntervalSince1970
-        } catch {
-            self.error = error as? DscanError ?? .unexpectedError(error: error)
-            self.hasError = true
-        }
-        isLoading = false
-    }
 
-    /*
-    ** ********************************************************************************************
-    */
-    private func pollMedia() async {
-        isPolling = true
-        let p = mediaProvider.suggestPoll()
-        do {
-            try await mediaProvider.fetchMedia(pollingFor: p)
-//            lastUpdatedMedia = Date().timeIntervalSince1970
-        } catch {
-            self.error = error as? DscanError ?? .unexpectedError(error: error)
-            self.hasError = true
-        }
-        isPolling = false
-    }
-
-
-    /*
-    ** ********************************************************************************************
-    */
-    private func processAllMedia()  {
-        app.processAllImages( completion: { fetchMediaTask() } )
-    }
-    
-
-    /*
-    ** ********************************************************************************************
-    */
-    private func fetchMediaTask()  {
-        Task {
-            print("FÄTSCHING!!!!!!!!!!!!!!!!!!!!!!!!")
-            await fetchMedia()
-        }
-    }
-    
-
-    
     /*
     ** ********************************************************************************************
     */
@@ -377,15 +298,17 @@ struct MediaList: View {
         }
 
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-            SelectButton(mode: $selectMode) {
-                let A = media.first(where: { $0.id == key })
-                if selectMode.isActive && A != nil {
-                    mediaSelection = Set(A!.map { $0.filename })
-                } else {
-                    mediaSelection = []
+            if editMode == .active {
+                SelectButton(mode: $selectMode) {
+                    let A = media.first(where: { $0.id == key })
+                    if selectMode.isActive && A != nil {
+                        mediaSelection = Set(A!.map { $0.filename })
+                    } else {
+                        mediaSelection = []
+                    }
                 }
             }
-            .if(editMode != .active) { v in v.hidden() }
+//            . { v in v.hidden() }
 
             EditButton(editMode: $editMode) {
                 mediaSelection.removeAll()
@@ -422,16 +345,6 @@ struct MediaList: View {
 
         ToolbarItemGroup(placement: .navigation) {
             HStack {
-                ProgressView()
-
-                RefreshButton {
-                    Task {
-                        await fetchMedia()
-                    }
-                }
-                .hidden(isLoading)
-
-                Spacer()
 
                 DeleteButton {
                     Task {

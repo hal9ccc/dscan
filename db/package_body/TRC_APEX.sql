@@ -35,16 +35,22 @@ CREATE OR REPLACE PACKAGE BODY TRC_APEX AS
    ) is
   PRAGMA AUTONOMOUS_TRANSACTION;
     ts timestamp := SYSTIMESTAMP;
+    n number;
   begin
     begin
       dbms_output.put_line(substrb(ltrim(ts||' '||prefix||' ')||type||' '||msg,1,4000));
     exception when others then null;
     end;
 
+    select to_number(SYS_CONTEXT('USERENV','SID'))
+    into   n
+    from   dual
+    ;
+
     insert into trace
       (ts, nr, src, type, msg)
     values
-      (ts, nr, src, type, substrb(msg,1,4000))
+      (ts, n+(nr/10000), src, type, substrb(msg,1,4000))
     ;
 
     commit;

@@ -17,7 +17,7 @@ struct SectionList: View {
     @AppStorage("lastSelectedSection")
     private var lastSelectedSection = MediaSection.default.id
 
-    @EnvironmentObject var mp: AppState
+    @EnvironmentObject var mp: DScanApp
     @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
     @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
     
@@ -31,8 +31,14 @@ struct SectionList: View {
             AnalyzeButtonAuto()
 
             List() {
+
+                NavigationLink(destination: MediaList(section: MediaSection.all, startWithKey: "")) {
+                    SectionHeader(name: "\( MediaSection.all.name)", icon: MediaSection.all.icon)
+                }
+
+                Divider()
                 
-                ForEach(MediaSection.sorts) { sort in
+                ForEach(MediaSection.sorts.dropFirst()) { sort in
                     
                     VStack {
                         if idiom == .pad {
@@ -51,23 +57,16 @@ struct SectionList: View {
                             }
                         }
                         
-                        if sort == MediaSection.all {
-                            Spacer()
-                            Spacer()
-                        }
-
                     }
                    
                 }
 
-                VStack {
-                    Spacer()
-                    Spacer()
+                Divider()
 
-                    NavigationLink(destination: SettingsView()) {
-                        SectionHeader(name: "Settings", icon:"gear")
-                    }
+                NavigationLink(destination: SettingsView()) {
+                    SectionHeader(name: "Settings", icon:"gear")
                 }
+
             } // List
 
         }

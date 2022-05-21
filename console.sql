@@ -1,8 +1,12 @@
 select t.*, t.rowid from media t order by timestamp desc, content_type;
 
-select * from TRACE where ts > systimestamp - numtodsinterval(130, 'minute') order by ts, nr;
+select * from TRACE where ts > systimestamp - numtodsinterval(130, 'minute') order by ts desc, nr desc;
 
 truncate table trace;
+alter table trace modify nr number(10,4);
+
+
+select * from DSCAN_QTAB;
 
 update media set status = 'scanned', cid = 0;
 

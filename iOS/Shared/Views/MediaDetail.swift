@@ -29,7 +29,7 @@ struct GrowingButton: ButtonStyle {
 struct MediaDetail: View {
     @ObservedObject var media: Media
 
-    @EnvironmentObject var mp: AppState
+    @EnvironmentObject var mp: DScanApp
     
 
     var mediaProvider:      MediaProvider   = .shared
@@ -70,14 +70,7 @@ struct MediaDetail: View {
                 if media.imageData != nil {
                     Button(action: {
                         mp.processImage (media, completion: {
-                            Task {
-                                do {
-                                    try await mediaProvider.fetchMedia(pollingFor: 0)
-                                } catch {
-                                    print (error)
-                                }
                                 print ("Done.")
-                            }
                         })
                                 
                     }) {

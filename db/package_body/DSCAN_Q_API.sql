@@ -77,9 +77,6 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     p_cid            in  Number
   ) is
   begin
-    trc.msg('id:'||p_id||' cid:'||p_cid);
-    g_msg := DSCAN_Q_API.msg(p_id, p_cid);
-
     -- remove all older messages from queue
     g_dequeue_options.dequeue_mode := DBMS_AQ.REMOVE_NODATA;
     g_dequeue_options.wait := 0;
@@ -99,6 +96,9 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     exception when ex_timeout then
       null;
     end;
+
+    g_msg := DSCAN_Q_API.msg(p_id, p_cid);
+    trc.msg('id:'||g_msg.id||' cid:'||g_msg.cid);
 
     -- post our new message
     DBMS_AQ.enqueue (
@@ -154,6 +154,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
 
   begin
     g_dequeue_options.wait := p_wait_seconds;
+    g_dequeue_options.dequeue_mode := DBMS_AQ.BROWSE;
 
     DBMS_AQ.dequeue (
       queue_name          => c_Queue_Name,
@@ -173,7 +174,8 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     p_result_cursor   out sys_refcursor,
     p_hours           in number default 24,
     p_wait_seconds    in number default 15,
-    p_last_cid        in number default 0
+    p_last_cid        in number default 0,
+    p_device          in Varchar2 default null
   ) is
 
       n               number;
@@ -189,31 +191,36 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
     */
     --ROLLBACK;
     --SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
-    --trc.msg('query '||p_hours||' hours, last_cid='||p_last_cid||' p_wait_seconds:'||p_wait_seconds);
+    trc.msg(p_device || ' queries '||p_hours||' hours, last_cid='||p_last_cid||' p_wait_seconds:'||p_wait_seconds);
 
     if p_last_cid > 0 and p_wait_seconds > 0 then
-      -- look for newer rows
-      select count(*),
-             max(cid)
-      into   num_rows,
-             max_cid
-      from   V_MEDIA_DETAILS
-      where  timestamp  > systimestamp - numtodsinterval(p_hours, 'hour')
-        and  cid        > p_last_cid
-      ;
-
-      --trc.msg('num_rows:'||num_rows||' cid='||max_cid);
-
-      if num_rows = 0 then
+      ---- look for newer rows
+      --select count(*),
+      --       max(cid)
+      --into   num_rows,
+      --       max_cid
+      --from   V_MEDIA_DETAILS
+      --where  timestamp  > systimestamp - numtodsinterval(p_hours, 'hour')
+      --  and  cid        > p_last_cid
+      --;
+      --
+      ----trc.msg('num_rows:'||num_rows||' cid='||max_cid);
+      --
+      --if num_rows = 0 then
         -- no newer rows yet, wait on queue
-        trc.msg('waiting...');
         loop
           begin
+            g_dequeue_options.deq_condition := 'tab.user_data.cid > '||p_last_cid;
+            trc.msg(p_device || ' waiting for: '||substr(g_dequeue_options.deq_condition,15));
+
             dequeue(wait_seconds);
+
+            trc.msg(p_device || ' got a payload: '||g_msg.cid);
+            exit;
 
           exception when ex_timeout then
             -- timed out
-            trc.msg('timeout');
+            trc.msg(p_device || ' timed out waiting for '||substr(g_dequeue_options.deq_condition,15));
             exit;
           end;
 
@@ -226,7 +233,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
             null;
           end if;
         end loop;
-      end if;
+      --end if;
     end if;
 
     OPEN p_result_cursor FOR

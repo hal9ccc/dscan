@@ -13,8 +13,10 @@ struct MediaSectionList: View {
     
     var section:  MediaSection    = .default
 
+
+    @EnvironmentObject var app: DScanApp
+
     let mediaProvider:      MediaProvider   = .shared
-    @EnvironmentObject var mp: AppState
 
     @SectionedFetchRequest (
         sectionIdentifier:  MediaSection.default.section,
@@ -67,7 +69,7 @@ struct MediaSectionList: View {
         let request = media
         request.sectionIdentifier = MediaSection.sorts[section.id].section
         request.sortDescriptors   = MediaSection.sorts[section.id].descriptors
-        print("MediaSectionList \(MediaSection.sorts[section.id].name) -> \(lastSelectedSection)")
+//        print("MediaSectionList \(MediaSection.sorts[section.id].name) -> \(lastSelectedSection)")
 
         let dateParser = DateFormatter()
         dateParser.dateFormat = "yyyyMMdd"
@@ -79,12 +81,7 @@ struct MediaSectionList: View {
 
         return VStack {
 
-            if newMedia.count > 0 {
-                AnalyzeButton(count: newMedia.count) {
-                    mp.processAllImages(completion: {} )
-                }
-                .listRowBackground(Color.clear)
-            }
+            AnalyzeButtonAuto()
             
             List() {
                 ForEach(media) { mediaSection in
@@ -100,15 +97,15 @@ struct MediaSectionList: View {
                         else {
                             SectionHeader(name: "\(mediaSection.id != "␀" ? mediaSection.id : " unbekannt ")", pill:mediaSection.count)
                         }
-                    }
+                    }.listRowBackground(Color.clear)
                 }
             } // List
         }
         .listStyle(PlainListStyle())
-//        .searchable(text: mediaSearchQuery)
+        .searchable(text: mediaSearchQuery)
 
         #if os(iOS)
-        .refreshable { await fetchMedia(complete: true) }
+        .refreshable { app.fetchMedia(complete: true) }
         #else
         .frame(minWidth: 320)
         #endif
@@ -135,7 +132,7 @@ struct MediaSectionList: View {
     ** ********************************************************************************************
     */
     func publishInfo() {
-        let _ = mp.publishInfo (
+        let _ = app.publishInfo (
             sections:   media.count,
             items:      media.joined().count,
             selected:   mediaSelection.count,
@@ -178,17 +175,5 @@ struct MediaSectionList: View {
         })
     }
     
-
-    private func fetchMedia(complete: Bool = false) async {
-        isLoading = true
-        do {
-            try await mediaProvider.fetchMedia(pollingFor: 0, complete: complete)
-            self.lastUpdated = Date.now
-        } catch {
-            self.error = error as? DscanError ?? .unexpectedError(error: error)
-            self.hasError = true
-        }
-        isLoading = false
-    }
 
 }

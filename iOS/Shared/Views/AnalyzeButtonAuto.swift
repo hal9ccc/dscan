@@ -10,7 +10,8 @@ import SwiftUI
 
 struct AnalyzeButtonAuto: View {
     
-    @EnvironmentObject var mp: AppState
+    @EnvironmentObject var app: DScanApp
+//    @Namespace private var animation
     
     @FetchRequest(
         entity: Media.entity(),
@@ -21,11 +22,16 @@ struct AnalyzeButtonAuto: View {
     @State private var mediaSelection: Set<String> = []
 
     var body: some View {
-        AnalyzeButton(count: newMedia.count) {
-            mp.processAllImages(completion: {} )
+        if(newMedia.count > 0) {
+            HStack (alignment: .center) {
+                Spacer()
+                AnalyzeButton(count: newMedia.count) {
+                    app.processAllImages(completion: { app.fetchMedia(pollingFor: 10) } )
+                }
+                Spacer()
+            }
+            .listRowBackground(Color.clear)
         }
-        .listRowBackground(Color.clear)
-        .if(newMedia.count == 0) { v in v.hidden() }
     }
 
 }

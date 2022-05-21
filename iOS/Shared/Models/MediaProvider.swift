@@ -120,15 +120,17 @@ class MediaProvider {
     }
 
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
-    func fetchMedia(pollingFor pollSeconds: Int, complete: Bool = false) async throws {
+    func fetchMedia(pollingFor pollSeconds: Int, complete: Bool = false)  async throws -> Int {
         let session = URLSession.shared
         
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
+        let dn = await UIDevice.current.name
         
         let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
                 + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
                 + (!complete         ? "&cid=\(maxCID)"         : "")
+                + "&dn=\(dn.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? "")"
         )
 
         guard let (data, response) = try? await session.data(from: url!)
@@ -138,7 +140,7 @@ class MediaProvider {
         }
 
         if let httpResponse = response as? HTTPURLResponse {
-            logger.debug("\(url?.query ?? ""): \(httpResponse.statusCode) \(String(describing: data))")
+            logger.debug("\(url?.path ?? "")?\(url?.query ?? ""): \(httpResponse.statusCode) \(String(describing: data))")
         }
         
         do {
@@ -158,9 +160,7 @@ class MediaProvider {
 
                 logger.debug("Finished importing data.")
             }
-            else {
-                
-            }
+            return mediaPropertiesList.count
 
         } catch {
             throw DscanError.wrongDataFormat(error: error)
@@ -212,12 +212,9 @@ class MediaProvider {
                 }
 //                self.logger.critical("fetchResult: \(String(describing: fetchResult))")
             }
-//            self.logger.critical("batchInsertRequest: \(String(describing: batchInsertRequest))")
             self.logger.critical("Failed to execute batch insert request (2).")
             throw DscanError.batchInsertError
         }
-
-        logger.debug("Successfully inserted data 2.")
     }
 
     private func newBatchInsertRequest(with propertyList: [MediaProperties]) -> NSBatchInsertRequest {

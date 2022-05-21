@@ -32,7 +32,8 @@ CREATE OR REPLACE PACKAGE DSCAN_Q_API AS
     p_result_cursor   out sys_refcursor,
     p_hours           in number default 24,
     p_wait_seconds    in number default 15,
-    p_last_cid        in number default 0
+    p_last_cid        in number default 0,
+    p_device          in Varchar2 default null
   );
 
   --function process_tasks

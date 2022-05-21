@@ -18,7 +18,7 @@ import VisionKit
 
 /// https://stackoverflow.com/a/70045158/701753
 //@MainActor
-class AppState: ObservableObject {
+class DScanApp: ObservableObject {
 
     var mediaProvider: MediaProvider = .shared
 
@@ -68,6 +68,7 @@ class AppState: ObservableObject {
     @Published var section:                 MediaSection    = MediaSection.all
     @Published var sectionKey:              String          = ""
 
+    @Published var numCid:                  Int             = 0
     @Published var numSections:             Int             = 0
     @Published var numItems:                Int             = 0
     @Published var numShowing:              Int             = 0
@@ -143,6 +144,47 @@ class AppState: ObservableObject {
     }
 
     /*
+    ** ********************************************************************************************
+    */
+    func fetchMedia(pollingFor pollSeconds: Int = -1, complete: Bool = false, _force: Bool = false) {
+
+        if isLoading && !_force { return }
+        if isSync    && !_force { return }
+
+        Task {
+            do {
+                
+                let _ = self.publishInfo(
+                    loading: pollSeconds < 1 ? true : false,
+                    sync:    pollSeconds > 0 ? true : false
+                )
+
+                /// REST query
+                let n = try await mediaProvider.fetchMedia(pollingFor: pollSeconds, complete: complete)
+
+                let _ = publishInfo(ts:Date.now, loading: false, sync: false)
+                
+                // n becomes the number of rows fetched
+                if n > 0 {
+                    // schedule an immediate long-poll when we got rows
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        Task { self.fetchMedia(pollingFor: 30, _force: true) }
+                    }
+                }
+                else {
+                    // schedule a fetch in a few seconds
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                        Task { self.fetchMedia(pollingFor: 0, _force: true) }
+                    }
+                }
+                
+            } catch {
+                print("fetch failed")
+            }
+        }
+    }
+
+    /*
     ** ***********************************************************************************************
     */
     func processAllImages(predicate: String = "imageData != nil", completion: @escaping () -> Void) {
@@ -173,29 +215,17 @@ class AppState: ObservableObject {
             media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
             logger.debug("Got \(media2Process.count) documents")
 
-            // signal we're busy
-            isUploadingImage = true
-
-            // high-priority background threads
-            var A: [Media] = []
-
-            DispatchQueue.global(qos: .userInitiated).async {
+            // high-priority background thread
+            DispatchQueue.global(qos: .userInteractive).async {
                 media2Process.forEach { image in
                     self.refreshGroup.enter()
                     self.processImage(image, completion: {
-                        A.append(image)
-                        image.imageData = nil;
-                        try? MediaProvider.shared.container.viewContext.save()
                         self.refreshGroup.leave()
                     })
                 }
             }
-            
-
-            // signal we're done
-            isUploadingImage = false
-
-        } catch {
+        }
+        catch {
             logger.critical("Fetch failed")
         }
     }
@@ -350,6 +380,7 @@ class AppState: ObservableObject {
 
     func publishInfo (
         ts:            Date?=nil,
+        cid:           Int?=nil,
         sect:          MediaSection?=nil,
         key:           String?=nil,
         sections:      Int?=nil,
@@ -358,22 +389,64 @@ class AppState: ObservableObject {
         selected:      Int?=nil,
         loading:       Bool?=nil,
         sync:          Bool?=nil,
-        error:         Bool?=nil
+        error:         Bool?=nil,
+        _canPush:      Bool?=true
     ) -> Bool {
-        lastUpdated  = ts       ?? lastUpdated
-        section      = sect     ?? section
-        sectionKey   = key      ?? sectionKey
-        numSections  = sections ?? numSections
-        numItems     = items    ?? numItems
-        numShowing   = showing  ?? numShowing
-        numSelected  = selected ?? numSelected
-        isLoading    = loading  == nil ? isLoading : loading ?? false
-        isSync       = sync     == nil ? isSync    : sync    ?? false
-        isError      = error    == nil ? isError   : error   ?? false
 
-        //logger.debug("sect:\(self.numSections) items:\(self.numItems) shown:\(self.numShowing) selected:\(self.numSelected) loading:\(self.isLoading) syync:\(self.isSync) err: \(self.isError)")
+//        print("publishInfo: isMainThread=\(Thread.current.isMainThread)")
+
+        if Thread.current.isMainThread {
+            print("TRUE MAIN..")
+
+            if loading  != nil {  print("loading:\(   String(describing: loading    ))") }
+            if ts       != nil {  print("ts:\(        String(describing: ts         ))") }
+            if key      != nil {  print("key:\(       String(describing: key        ))") }
+            if cid      != nil {  print("cid:\(       String(describing: cid        ))") }
+            if sect     != nil {  print("sect:\(      String(describing: sect       ))") }
+            if items    != nil {  print("items:\(     String(describing: items      ))") }
+            if sections != nil {  print("sections:\(  String(describing: sections   ))") }
+            if selected != nil {  print("selected:\(  String(describing: selected   ))") }
+
+            self.lastUpdated  = ts       ?? self.lastUpdated      //?? Date.now
+            self.section      = sect     ?? self.section          //?? MediaSection.default
+            self.sectionKey   = key      ?? self.sectionKey       //?? ""
+            self.numCid       = cid      ?? self.numCid           //?? 0
+            self.numSections  = sections ?? self.numSections      //?? 0
+            self.numItems     = items    ?? self.numItems         //?? 0
+            self.numShowing   = showing  ?? self.numShowing       //?? 0
+            self.numSelected  = selected ?? self.numSelected      //?? 0
+            self.isLoading    = loading  == nil ? self.isLoading : loading!
+            self.isSync       = sync     == nil ? self.isSync    : sync!
+            self.isError      = error    == nil ? self.isError   : error!
+
+        }
+        else if _canPush ?? false  {
+            print("PUSHING CHANGES TO MAIN THREAD...")
+            DispatchQueue.main.async {
+                let _ = self.publishInfo (
+                    ts:            ts,
+                    cid:           cid,
+                    sect:          sect,
+                    key:           key,
+                    sections:      sections,
+                    items:         items,
+                    showing:       showing,
+                    selected:      selected,
+                    loading:       loading,
+                    sync:          sync,
+                    error:         error,
+                    _canPush:      false
+                )
+            }
+        }
+
         return true
+        //            logger.debug(s)
+
     }
+        
+
+
     
 
     /*

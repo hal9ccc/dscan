@@ -14,12 +14,14 @@ struct SectionHeader: View {
     var pill: Int = 0
 
     var body: some View {
-        HStack {
-            if icon > "" {
-                Label("\(name)", systemImage: icon).labelStyle(.automatic)
-            } else {
-                Label("\(name)", systemImage: icon).labelStyle(.titleOnly)
+        return HStack {
+            VStack (alignment: .leading) {
+                ForEach(name.split(separator: "⸱"), id: \.self) { str in
+                    Label(str, systemImage: icon)
+                        .if (icon == "") { v in v.labelStyle(.titleOnly)}
+                }
             }
+            
             Spacer()
             Text("\(pill)")
                 .font(.caption)
