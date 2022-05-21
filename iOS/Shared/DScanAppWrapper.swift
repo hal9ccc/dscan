@@ -8,7 +8,7 @@ The app and main window group scene.
 import SwiftUI
 
 @main
-struct EarthquakesApp: App {
+struct DScanAppWrapper: App {
     var body: some Scene {
         WindowGroup {
             ContentView(app: DScanApp())
