@@ -24,8 +24,8 @@ struct ToolbarStatus: View {
 
     var body: some View {
         VStack {
-            Text("Updated \(lastChange.formatted(.relative(presentation: .named)))")
-                .if (lastChange == Date.distantFuture) { v in v.hidden() }
+//            Text("Updated \(lastChange.formatted(.relative(presentation: .named)))")
+//                .if (lastChange == Date.distantFuture) { v in v.hidden() }
             
             HStack {
                 Spacer()

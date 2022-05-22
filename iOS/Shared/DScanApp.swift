@@ -171,6 +171,9 @@ class DScanApp: ObservableObject {
     ** ********************************************************************************************
     */
     func onSyncTimer () {
+        
+//        print (Locale.current)
+        
         if isLoading {
 //            logger.debug("isLoading")
             return

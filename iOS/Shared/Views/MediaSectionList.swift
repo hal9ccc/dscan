@@ -77,7 +77,7 @@ struct MediaSectionList: View {
         let dayFormatter = DateFormatter()
         dayFormatter.dateStyle = .full
         dayFormatter.timeStyle = .none
-        dayFormatter.locale = Locale.current
+        dayFormatter.locale = .init(identifier: "de_DE")
 
         return VStack {
 

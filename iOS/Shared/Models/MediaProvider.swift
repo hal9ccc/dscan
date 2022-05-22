@@ -195,8 +195,8 @@ class MediaProvider {
                         if success {
                             self.logger.info("Successfully inserted data.")
 
-                            let objectIDArray = batchInsertResult.result as? [NSManagedObjectID]
-                            let changes = [NSUpdatedObjectsKey : objectIDArray]
+//                            let objectIDArray = batchInsertResult.result as? [NSManagedObjectID]
+//                            let changes = [NSUpdatedObjectsKey : objectIDArray]
 //                            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [taskContext])
                             
                             return

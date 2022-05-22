@@ -20,7 +20,7 @@ struct LastUpdatedView: View {
             HStack (alignment: .center) {
                 Spacer()
 
-                Text("Last Updated \(app.lastChange.formatted(.relative(presentation: .named)))")
+                Text("Letzte Änderung \(app.lastChange.formatted(.relative(presentation: .named)))")
                     .foregroundColor(.secondary)
                     .font(.footnote)
                     .padding()
