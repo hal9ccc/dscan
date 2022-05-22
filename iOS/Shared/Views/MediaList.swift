@@ -79,7 +79,7 @@ struct MediaList: View {
         
         if idiom == .pad && section != MediaSection.all {
                         
-            ScrollView {
+            List {
                             
                 ForEach(media) { mediaSection in
                     VStack {
@@ -99,15 +99,20 @@ struct MediaList: View {
                             .buttonStyle( .bordered)
                         }
                     }
+                    .listRowBackground(Color.clear)
                 }
             } // List
             .padding()
             .frame(width: 320)
         }
 
+
+
         List(selection: $mediaSelection) {
             
             AnalyzeButtonAuto()
+
+            LastUpdatedView()
 
             ForEach(media) { sect in
 
@@ -125,21 +130,25 @@ struct MediaList: View {
                     }
                 }
             }
-            }
         }
-        .background(
-            LinearGradient(
-                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0), SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+    }
+    .background(
+        LinearGradient(
+            stops: [
+                SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),
+                SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
         )
-        .searchable(text: mediaSearchQuery)
-        .listStyle(PlainListStyle())
-        .navigationTitle (title)
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(!mediaSelection.isEmpty)
-        .toolbar (content: toolbarContent)
+    )
+    .searchable(text: mediaSearchQuery)
+    .disableAutocorrection(true)
+    .listStyle(PlainListStyle())
+    .navigationTitle (title)
+    .navigationBarTitleDisplayMode(.inline)
+    .navigationBarBackButtonHidden(!mediaSelection.isEmpty)
+    .toolbar (content: toolbarContent)
 
 #if os(iOS)
         .environment(\.editMode, $editMode)
@@ -153,6 +162,13 @@ struct MediaList: View {
             self.makeScannerView()
         })
         .onAppear() {
+
+            let request = media
+            request.sectionIdentifier = section.section
+            request.sortDescriptors   = section.descriptors
+            
+            
+
             if key == "" { key = startWithKey }
             let n = media.first(where: { $0.id == key })?.count ?? 0
             if n == 0 {
@@ -160,10 +176,10 @@ struct MediaList: View {
             }
 
 //            if idiom == .pad {
-//                publishInfo()
+                publishInfo()
 //            }
         }
-//        .onReceive(polltimer) { input in
+//        .onReceive(polltimer) { inpu  t in
 //            publishInfo()
 //        }
 
@@ -173,8 +189,8 @@ struct MediaList: View {
     ** ********************************************************************************************
     */
     func publishInfo() {
-//        print(media.first(where: { $0.id == key })?.count ?? 0)
-        let _ = app.publishInfo (
+        //print(media.first(where: { $0.id == key })?.count ?? 0)
+        app.publishInfo (
             ts:         lastUpdatedMedia,
             sect:       section,
             key:        key,
@@ -191,7 +207,7 @@ struct MediaList: View {
     */
     var title: String {
         #if os(iOS)
-        return "\(key != "␀" ? "\(key)" : " unbekannt") \(app.lastUpdated.formatted())"
+        return "\(key != "␀" ? "\(key)" : " unbekannt")"
         #else
         return "\(section != "␀" ? section : " unbekannt")"
         #endif

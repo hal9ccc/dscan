@@ -215,7 +215,7 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
 
             dequeue(wait_seconds);
 
-            trc.msg(p_device || ' got a payload: '||g_msg.cid);
+            trc.msg(p_device || ' will be notified for cid '||g_msg.cid);
             exit;
 
           exception when ex_timeout then

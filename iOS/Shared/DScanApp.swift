@@ -64,6 +64,7 @@ class DScanApp: ObservableObject {
     @Published var isRecognizingTexts:      Bool            = false
     @Published var isUploadingData:         Bool            = false
 
+    @Published var currentTime:             Date            = Date.now
     @Published var lastUpdated:             Date            = Date.distantPast
     @Published var section:                 MediaSection    = MediaSection.all
     @Published var sectionKey:              String          = ""
@@ -73,6 +74,11 @@ class DScanApp: ObservableObject {
     @Published var numItems:                Int             = 0
     @Published var numShowing:              Int             = 0
     @Published var numSelected:             Int             = 0
+
+    @Published var webviewUrl:              URL             = URL(string: "about://")!
+    @Published var webviewOn:               Bool            = false
+
+    
 
 
     var metadata:                MMImage     = MMImage()
@@ -88,7 +94,7 @@ class DScanApp: ObservableObject {
     // see https://dev.to/nemecek_f/swift-easy-way-to-wait-for-multiple-background-tasks-to-finish-2jk1
     let refreshGroup            = DispatchGroup()
 
-    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "processing")
+    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "DScanApp")
 
     init () {
 
@@ -154,7 +160,7 @@ class DScanApp: ObservableObject {
         Task {
             do {
                 
-                let _ = self.publishInfo(
+                self.publishInfo(
                     loading: pollSeconds < 1 ? true : false,
                     sync:    pollSeconds > 0 ? true : false
                 )
@@ -162,10 +168,16 @@ class DScanApp: ObservableObject {
                 /// REST query
                 let n = try await mediaProvider.fetchMedia(pollingFor: pollSeconds, complete: complete)
 
-                let _ = publishInfo(ts:Date.now, loading: false, sync: false)
+                publishInfo(ts:Date.now, loading: false, sync: false)
                 
                 // n becomes the number of rows fetched
                 if n > 0 {
+                    
+                    let generator = await UIImpactFeedbackGenerator(style: .rigid)
+                    await generator.impactOccurred()
+                    
+                    self.forceRedraw()
+                    
                     // schedule an immediate long-poll when we got rows
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         Task { self.fetchMedia(pollingFor: 30, _force: true) }
@@ -173,13 +185,13 @@ class DScanApp: ObservableObject {
                 }
                 else {
                     // schedule a fetch in a few seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
                         Task { self.fetchMedia(pollingFor: 0, _force: true) }
                     }
                 }
                 
             } catch {
-                print("fetch failed")
+                logger.debug("fetch failed")
             }
         }
     }
@@ -220,6 +232,7 @@ class DScanApp: ObservableObject {
                 media2Process.forEach { image in
                     self.refreshGroup.enter()
                     self.processImage(image, completion: {
+                        self.forceRedraw()
                         self.refreshGroup.leave()
                     })
                 }
@@ -247,7 +260,7 @@ class DScanApp: ObservableObject {
         }
 
         guard let cgImage = uiImage!.cgImage else {
-            print("Failed to get cgimage from input image")
+            logger.debug("Failed to get cgimage from input image")
             return// media
         }
 
@@ -298,6 +311,7 @@ class DScanApp: ObservableObject {
             timestamp:      media.time,
             completion:     {
                 self.logger.debug("img \(media.filename) upped")
+                self.publishInfo(ts: .now)
                 uploadGroup.leave()
             }
         )
@@ -330,7 +344,7 @@ class DScanApp: ObservableObject {
                     assert(value.statusCode == 201)
 
                 case .failure(let error):
-                    print(error.localizedDescription)
+                    self.logger.debug("\(error.localizedDescription)")
             }
         }
     }
@@ -365,7 +379,7 @@ class DScanApp: ObservableObject {
                     assert(value.statusCode == 201)
 
                 case .failure(let error):
-                    print(error.localizedDescription)
+                self.logger.debug("\(error.localizedDescription)")
             }
         }
     }
@@ -378,7 +392,21 @@ class DScanApp: ObservableObject {
         error                   = nil
     }
 
+    /*
+    ** ***********************************************************************************************
+    */
+    func forceRedraw () {
+        // changes app.currentTime, which is part of appState and must be included
+        // in all Components that need a forced redraw
+        self.publishInfo(now: Date.now)
+    }
+
+
+    /*
+    ** ***********************************************************************************************
+    */
     func publishInfo (
+        now:           Date?=nil,
         ts:            Date?=nil,
         cid:           Int?=nil,
         sect:          MediaSection?=nil,
@@ -390,23 +418,29 @@ class DScanApp: ObservableObject {
         loading:       Bool?=nil,
         sync:          Bool?=nil,
         error:         Bool?=nil,
-        _canPush:      Bool?=true
-    ) -> Bool {
+        url:           URL?=nil,
+        webview:       Bool?=nil,
 
-//        print("publishInfo: isMainThread=\(Thread.current.isMainThread)")
+        _canPush:      Bool?=true
+    ) {
+
+        //logger.debug("publishInfo: isMainThread=\(Thread.current.isMainThread)")
 
         if Thread.current.isMainThread {
-            print("TRUE MAIN..")
+            logger.debug("= = = = = MAIN THREAD = = = = =")
 
-            if loading  != nil {  print("loading:\(   String(describing: loading    ))") }
-            if ts       != nil {  print("ts:\(        String(describing: ts         ))") }
-            if key      != nil {  print("key:\(       String(describing: key        ))") }
-            if cid      != nil {  print("cid:\(       String(describing: cid        ))") }
-            if sect     != nil {  print("sect:\(      String(describing: sect       ))") }
-            if items    != nil {  print("items:\(     String(describing: items      ))") }
-            if sections != nil {  print("sections:\(  String(describing: sections   ))") }
-            if selected != nil {  print("selected:\(  String(describing: selected   ))") }
+            if loading  != nil {  logger.debug("loading:\(   String(describing: loading    ))") }
+            if ts       != nil {  logger.debug("ts:\(        String(describing: ts         ))") }
+            if key      != nil {  logger.debug("key:\(       String(describing: key        ))") }
+            if cid      != nil {  logger.debug("cid:\(       String(describing: cid        ))") }
+            if sect     != nil {  logger.debug("sect:\(      String(describing: sect       ))") }
+            if items    != nil {  logger.debug("items:\(     String(describing: items      ))") }
+            if sections != nil {  logger.debug("sections:\(  String(describing: sections   ))") }
+            if selected != nil {  logger.debug("selected:\(  String(describing: selected   ))") }
+            if url      != nil {  logger.debug("url:\(       String(describing: url        ))") }
+            if webview  != nil {  logger.debug("webview:\(   String(describing: webview    ))") }
 
+            self.currentTime  = now      ?? self.currentTime      //?? Date.now
             self.lastUpdated  = ts       ?? self.lastUpdated      //?? Date.now
             self.section      = sect     ?? self.section          //?? MediaSection.default
             self.sectionKey   = key      ?? self.sectionKey       //?? ""
@@ -419,11 +453,14 @@ class DScanApp: ObservableObject {
             self.isSync       = sync     == nil ? self.isSync    : sync!
             self.isError      = error    == nil ? self.isError   : error!
 
+            self.webviewUrl   = url      == nil ? self.webviewUrl: url!
+            self.webviewOn    = webview  == nil ? self.webviewOn : webview!
+            
         }
         else if _canPush ?? false  {
-            print("PUSHING CHANGES TO MAIN THREAD...")
+            logger.debug("PUSHING CHANGES TO MAIN THREAD...")
             DispatchQueue.main.async {
-                let _ = self.publishInfo (
+                self.publishInfo (
                     ts:            ts,
                     cid:           cid,
                     sect:          sect,
@@ -439,10 +476,6 @@ class DScanApp: ObservableObject {
                 )
             }
         }
-
-        return true
-        //            logger.debug(s)
-
     }
         
 

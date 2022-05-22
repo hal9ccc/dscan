@@ -44,17 +44,24 @@ struct ContentView: View {
     @AppStorage("CacheSize")
     private var cachesize: Double = 50
     
-    @State private var primaryViewSelection: String? = nil
-    @State private var showScannerSheet = false
+    @State private var primaryViewSelection: String?    = nil
+    @State private var showScannerSheet                 = false
+    @State private var showWebView                      = false
     
     private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+    
+    let appTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
 
 //    @State private var isLoading = false
 
     var body: some View {
 
         NavigationView {
-            VStack {
+            ZStack {
+                Color.green
+                    .opacity(0.1)
+                    .ignoresSafeArea()
+            
                 SectionList()
 //                    .environment(\.managedObjectContext, MediaProvider.shared.container.viewContext)
             }
@@ -91,10 +98,17 @@ struct ContentView: View {
             }
             ImagePipeline.shared = pipeline
         }
-        .sheet(isPresented: $showScannerSheet, content: {
+        // makes the UI update once per second
+//        .onReceive(appTimer) { input in
+//            app.publishInfo(now: Date.now)
+//        }
+        .sheet(isPresented: $showScannerSheet) {
             self.makeScannerView()
-        })
-
+        }
+        
+        .sheet(isPresented: $app.webviewOn) {
+            WebView(url: app.webviewUrl)
+        }
    }
 
    private func makeScannerView()-> some View {
@@ -120,18 +134,13 @@ struct ContentView: View {
 
         ToolbarItemGroup(placement: .bottomBar) {
             ZStack {
-                ActivityIndicator(isAnimating: app.isLoading)
-                    .configure { $0.color = UIColor.yellow } // Optional configurations (🎁 bouns)
-                    .background(Color.blue)
-                    .if(!app.isLoading && !app.isSync) { v in v.hidden() }
-
-//                ProgressView()
-//                    .opacity(app.isLoading ? 1 : 0)
+                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
+                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
 
                 RefreshButton {
                     app.fetchMedia(pollingFor: 0)
                 }
-                .opacity(app.isLoading ? 0 : 1)
+                .opacity(app.isLoading || app.isSync ? 0 : 1)
                 .disabled(app.isLoading)
             }
 

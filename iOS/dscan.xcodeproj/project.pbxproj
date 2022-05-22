@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		4E076CEF282520080049B9E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E076CEE282520080049B9E8 /* SettingsView.swift */; };
 		4E076CF0282520080049B9E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E076CEE282520080049B9E8 /* SettingsView.swift */; };
+		4E1A87DD28399E2500F9958B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1A87DC28399E2500F9958B /* WebView.swift */; };
+		4E1A87DE28399E2500F9958B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1A87DC28399E2500F9958B /* WebView.swift */; };
 		4E24DA0E2814AAB300A39C7D /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA0D2814AAB300A39C7D /* Media.swift */; };
 		4E24DA0F2814AAB300A39C7D /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA0D2814AAB300A39C7D /* Media.swift */; };
 		4E24DA162814BB4600A39C7D /* Earthquakes.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA142814BB4600A39C7D /* Earthquakes.xcdatamodeld */; };
@@ -29,6 +31,8 @@
 		4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA312815F16800A39C7D /* MediaDetail.swift */; };
 		4E3BE65D280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E3BE65E280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
+		4E425E0C2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
+		4E425E0D2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
 		4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E5B7D82281FAC0F00842FE2 /* NukeUI */; };
 		4E5B7D88282171B500842FE2 /* DScanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* DScanApp.swift */; };
 		4E5B7D89282171B500842FE2 /* DScanApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E5B7D87282171B400842FE2 /* DScanApp.swift */; };
@@ -168,6 +172,7 @@
 		20E8E62C4A6D78D282B06BA8 /* ACKNOWLEDGEMENTS.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = ACKNOWLEDGEMENTS.txt; sourceTree = "<group>"; };
 		26EEA7CAFEEF3C5809214465 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4E076CEE282520080049B9E8 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		4E1A87DC28399E2500F9958B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		4E24DA0D2814AAB300A39C7D /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		4E24DA152814BB4600A39C7D /* Earthquakes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Earthquakes.xcdatamodel; sourceTree = "<group>"; };
 		4E24DA1C2814BFFA00A39C7D /* MediaProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaProvider.swift; sourceTree = "<group>"; };
@@ -178,6 +183,7 @@
 		4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4E24DA312815F16800A39C7D /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
 		4E3BE65C280552860049DD03 /* QuakeSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeSort.swift; sourceTree = "<group>"; };
+		4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdatedView.swift; sourceTree = "<group>"; };
 		4E5B7D87282171B400842FE2 /* DScanApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DScanApp.swift; sourceTree = "<group>"; };
 		4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
 		4E860000281806E000F126D7 /* panalpina.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = panalpina.jpg; sourceTree = "<group>"; };
@@ -466,6 +472,8 @@
 				4E860052281820D200F126D7 /* ScanView.swift */,
 				4E8600582818218300F126D7 /* ScannerView.swift */,
 				4E9CF7D92834E11E00DB2851 /* AnalyzeButtonAuto.swift */,
+				4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */,
+				4E1A87DC28399E2500F9958B /* WebView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -681,6 +689,8 @@
 				AD2FC4CB2654EF7C00E135D2 /* Quake.swift in Sources */,
 				4E24DA272815EABD00A39C7D /* MediaRow.swift in Sources */,
 				AD57B0FA26561484005183D0 /* DeleteButton.swift in Sources */,
+				4E1A87DE28399E2500F9958B /* WebView.swift in Sources */,
+				4E425E0D2839428F00D37CA0 /* LastUpdatedView.swift in Sources */,
 				4E9CF7DB2834E11F00DB2851 /* AnalyzeButtonAuto.swift in Sources */,
 				4E24DA2A2815EC1600A39C7D /* MediaThumbnail.swift in Sources */,
 				4EC3A0A5282809DE0085DD74 /* URLRequest+Init.swift in Sources */,
@@ -703,6 +713,7 @@
 			files = (
 				4E7C1794282A5B3A001CB909 /* ZoomableScrollView.swift in Sources */,
 				ADDDB1812625242200241A73 /* QuakeRow.swift in Sources */,
+				4E425E0C2839428F00D37CA0 /* LastUpdatedView.swift in Sources */,
 				AD43F1FF26158DAF0068AABC /* QuakesProvider.swift in Sources */,
 				4E9CF7DA2834E11E00DB2851 /* AnalyzeButtonAuto.swift in Sources */,
 				4E24DA322815F16800A39C7D /* MediaDetail.swift in Sources */,
@@ -721,6 +732,7 @@
 				4E24DA262815EABD00A39C7D /* MediaRow.swift in Sources */,
 				4E24DA2F2815EF5D00A39C7D /* View+Extensions.swift in Sources */,
 				4E24DA232815D57000A39C7D /* MediaSection.swift in Sources */,
+				4E1A87DD28399E2500F9958B /* WebView.swift in Sources */,
 				AD57B1052656F405005183D0 /* SelectButton.swift in Sources */,
 				4E5B7D88282171B500842FE2 /* DScanApp.swift in Sources */,
 				4E9CF7D728345A3600DB2851 /* SectionRow.swift in Sources */,

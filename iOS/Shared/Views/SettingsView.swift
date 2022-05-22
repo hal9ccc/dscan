@@ -15,15 +15,27 @@ struct SettingsView: View {
             UITableView.appearance().backgroundColor = .clear
     }
     
+    @EnvironmentObject var app: DScanApp
+    
     @AppStorage("ServerURL")
     private var serverurl = "http://localhost"
     
     @State
     private var serverurlOrig = ""
     
+    @AppStorage("AutoUpdate")
+    private var autoUpdate: Bool = true
+    
+    @AppStorage("AutoUpdateSeconds")
+    private var autoUpdateSeconds: Double = 10
+    
     @AppStorage("LongpollMode")
     private var longpollMode: Bool = true
-
+    
+    @AppStorage("LongpollSeconds")
+    private var longpollSeconds: Double = 60
+    
+    
     @AppStorage("CacheSize")
     private var cachesize: Double = 100 * 1024 * 1024
     
@@ -71,83 +83,102 @@ struct SettingsView: View {
         Form {
             
             Section (
-                header:Text("Server address"),
-                footer:Text("Änderung wird erst durch Neustart der App wirksam!")
+                header:Text("Server und Synchronisation"),
+                footer:Text("Auto-Update und Echtzeit-Synchronisation wirken sich auf den Energiebedarf aus")
                     .font(.caption)
-                    .foregroundColor(Color.red)
-                    .opacity(serverurlOrig == serverurl ? 0 : 1)
             ) {
                 
-                Text("Server URL")
-                    .font(.headline)
-
-                TextField ( "http://server.domain/ords/dscan", text: $serverurl )
-                    .disableAutocorrection(true)
-                    .font(.subheadline)
                 
-            }
+
+                VStack {
+                    Spacer()
+                    Spacer()
+
+                    TextField ( "http://server.domain/ords/dscan", text: $serverurl )
+                        .disableAutocorrection(true)
+                        .font(.subheadline)
+                    
+                    Spacer()
+                    Spacer()
+
+                    Button ( action: {
+                        app.publishInfo(
+                            url: URL(string:serverurl),
+                            webview:  true
+                        ) }
+                    ) {
+                        Label("Test", systemImage: "safari")
+                            
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled (URL(string:serverurl) == nil)
+                        
 
 
-            Section (
-                header:Text("Long-Poll Mode"),
-                footer:Text("Enable real-time refresh")
-            ) {
-                Toggle("Long-Poll Mode", isOn: $longpollMode)
-                    .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Spacer()
+                    Spacer()
+
+                }
+
+                VStack {
+                    Slider (
+                        value: $syncRange,
+                        in: 1...26280,
+                        step: 1,
+                        label: { Text("Stunden") }
+                    )
+                    let futureDate = Calendar.current.date(byAdding: DateComponents(hour:Int(syncRange * -1)), to: currentDate) ?? .now
+                    
+                    Text("Übernehme Daten seit \(futureDate.formatted(.relative(presentation: .named)))")
+                        .font(.subheadline)
+
+                }
+
+
+                VStack {
+                    Spacer()
+                    Spacer()
+
+                    Toggle("Auto-Update", isOn: $autoUpdate)
+                        .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Spacer()
+
+
+                        Slider (
+                            value: $autoUpdateSeconds,
+                            in: 10...300,
+                            step: 1,
+                            label: { Text("Time") }
+                        )
+                        .disabled(!autoUpdate)
+                        
+                        Spacer()
+                  
+
+                        Toggle("Echtzeit-Synchronisation", isOn: $longpollMode)
+                            .toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                            .disabled(!autoUpdate)
+                    
+                        Slider (
+                            value: $longpollSeconds,
+                            in: 10...900,
+                            step: 1,
+                            label: { Text("Sekunden") }
+                        )
+                        .disabled(!autoUpdate)
+                        .disabled(!longpollMode)
+                    
+                        Text((autoUpdate == false ? "Manuelle Aktualisierung" :
+                             (longpollMode ? "Echtzeit-Synchronisierung für  \(longpollSeconds.formatted()) Sekunden nach jedem Änderungs-Ereignis, danach " : "")
+                                + "Auto-Update alle \(autoUpdateSeconds.formatted()) Sekunden"
+                         ))
+                        .frame(height: 100)
+                        .multilineTextAlignment(.leading)
+                        .font(.footnote)
+                }
+
             }
             
-            Section (
-                header:Text("Barcode and 2D-Code types"),
-                footer:Text("Selecting only the types you need could improve accuracy and performance")
-            ) {
-                VStack {
-                    Toggle("Code 39",                                  isOn: $bs_code39                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 39 with a checksum",                  isOn: $bs_code39Checksum          ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Interleaved 2 of 5 (ITF)",                 isOn: $bs_i2of5                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Interleaved 2 of 5 (ITF) with a checksum", isOn: $bs_i2of5Checksum           ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 128",                                 isOn: $bs_code128                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Codabar",                                  isOn: $bs_codabar                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("EAN-8",                                    isOn: $bs_ean8                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("EAN-13",                                   isOn: $bs_ean13                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                }
-                VStack {
-                    Toggle("UPC-E",                                    isOn: $bs_upce                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Aztec",                                    isOn: $bs_aztec                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("QR",                                       isOn: $bs_qr                      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("MicroQR",                                  isOn: $bs_microQR                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Data Matrix",                              isOn: $bs_dataMatrix              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("PDF417",                                   isOn: $bs_pdf417                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("MicroPDF417",                              isOn: $bs_microPDF417             ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                }
-                VStack {
-                    Toggle("ITF-14",                                   isOn: $bs_itf14                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 39 Full ASCII",                       isOn: $bs_code39FullASCII         ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 39 Full ASCII with a checksum",       isOn: $bs_code39FullASCIIChecksum ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 93",                                  isOn: $bs_code93                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("Code 93i",                                 isOn: $bs_code93i                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("GS1 DataBar",                              isOn: $bs_gs1DataBar              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("GS1 DataBar Expanded",                     isOn: $bs_gs1DataBarExpanded      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                    Toggle("GS1 DataBar Limited",                      isOn: $bs_gs1DataBarLimited       ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
-                }
-            }
-
-
-            Section (
-                header:Text("Data sync range"),
-                footer:Text("Period for which documents are loaded")
-            ) {
-                Slider (
-                    value: $syncRange,
-                    in: 1...26280,
-                    step: 1,
-                    label: { Text("Time") }
-                )
-                let futureDate = Calendar.current.date(byAdding: DateComponents(hour:Int(syncRange * -1)), to: currentDate) ?? .now
-                
-                Text("\(futureDate.formatted(.relative(presentation: .named)))")
-                    .font(.subheadline)
-            }
-
             Section (
                 header:Text("Image cache"),
                 footer:Text("Änderung wird erst durch Neustart der App wirksam!")
@@ -185,8 +216,47 @@ struct SettingsView: View {
                 footer:Text("Actual number may vary, based on color or size of the Image")
             ) {
                 Text("\(Int((cachesize/1024)/(comprQual * 1024)))")
-
             }
+
+
+            Section (
+                header:Text("Barcode and 2D-Code types"),
+                footer:Text("Selecting only the types you need could improve accuracy and performance")
+            ) {
+                VStack {
+                    Toggle("Code 39",                                  isOn: $bs_code39                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 with a checksum",                  isOn: $bs_code39Checksum          ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Interleaved 2 of 5 (ITF)",                 isOn: $bs_i2of5                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Interleaved 2 of 5 (ITF) with a checksum", isOn: $bs_i2of5Checksum           ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 128",                                 isOn: $bs_code128                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Codabar",                                  isOn: $bs_codabar                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("EAN-8",                                    isOn: $bs_ean8                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("EAN-13",                                   isOn: $bs_ean13                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+                VStack {
+                    Toggle("UPC-E",                                    isOn: $bs_upce                    ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Aztec",                                    isOn: $bs_aztec                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("QR",                                       isOn: $bs_qr                      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("MicroQR",                                  isOn: $bs_microQR                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Data Matrix",                              isOn: $bs_dataMatrix              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("PDF417",                                   isOn: $bs_pdf417                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("MicroPDF417",                              isOn: $bs_microPDF417             ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+                VStack {
+                    Toggle("ITF-14",                                   isOn: $bs_itf14                   ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 Full ASCII",                       isOn: $bs_code39FullASCII         ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 39 Full ASCII with a checksum",       isOn: $bs_code39FullASCIIChecksum ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 93",                                  isOn: $bs_code93                  ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("Code 93i",                                 isOn: $bs_code93i                 ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar",                              isOn: $bs_gs1DataBar              ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar Expanded",                     isOn: $bs_gs1DataBarExpanded      ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                    Toggle("GS1 DataBar Limited",                      isOn: $bs_gs1DataBarLimited       ).toggleStyle(SwitchToggleStyle(tint: .accentColor))
+                }
+            }
+
+
+
+
         }
         .onAppear {
             cachesizeOrig = cachesize

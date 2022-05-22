@@ -11,7 +11,7 @@ import SwiftUI
 
 class MediaProvider {
 
-//    var url: URL
+    @EnvironmentObject var app: DScanApp
 
     // MARK: Logging
     let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "persistence")
@@ -125,7 +125,7 @@ class MediaProvider {
         
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
-        let dn = await UIDevice.current.name
+        let dn = UIDevice.current.name
         
         let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
                 + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
@@ -154,10 +154,6 @@ class MediaProvider {
                 lastMediaChange = Date().timeIntervalSince1970
                 logger.debug("Importing \(mediaPropertiesList.count) records...")
                 try await importMedia(from: mediaPropertiesList)
-                
-                let generator = await UIImpactFeedbackGenerator(style: .rigid)
-                await generator.impactOccurred()
-
                 logger.debug("Finished importing data.")
             }
             return mediaPropertiesList.count

@@ -99,10 +99,14 @@ struct MediaSectionList: View {
                         }
                     }.listRowBackground(Color.clear)
                 }
+                
+                
+                LastUpdatedView()
             } // List
         }
         .listStyle(PlainListStyle())
         .searchable(text: mediaSearchQuery)
+        .disableAutocorrection(true)
 
         #if os(iOS)
         .refreshable { app.fetchMedia(complete: true) }
@@ -132,7 +136,7 @@ struct MediaSectionList: View {
     ** ********************************************************************************************
     */
     func publishInfo() {
-        let _ = app.publishInfo (
+        app.publishInfo (
             sections:   media.count,
             items:      media.joined().count,
             selected:   mediaSelection.count,

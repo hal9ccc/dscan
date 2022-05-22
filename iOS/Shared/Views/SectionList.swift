@@ -66,6 +66,10 @@ struct SectionList: View {
                 NavigationLink(destination: SettingsView()) {
                     SectionHeader(name: "Settings", icon:"gear")
                 }
+                
+                Spacer()
+                
+                LastUpdatedView()
 
             } // List
 
@@ -75,7 +79,10 @@ struct SectionList: View {
         .listStyle(SidebarListStyle())
         .background(
             LinearGradient(
-                stops: [SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),        SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)],
+                stops: [
+                    SwiftUI.Gradient.Stop(color: Color("Color"), location: 0.0),
+                    SwiftUI.Gradient.Stop(color: Color("Color-1"), location: 1.0)
+                ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
