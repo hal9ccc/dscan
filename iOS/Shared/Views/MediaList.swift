@@ -191,14 +191,12 @@ struct MediaList: View {
     func publishInfo() {
         //print(media.first(where: { $0.id == key })?.count ?? 0)
         app.publishInfo (
-            ts:         lastUpdatedMedia,
             sect:       section,
             key:        key,
             sections:   media.count,
             items:      media.joined().count,
             showing:    media.first(where: { $0.id == key })?.count ?? 0,
-            selected:   mediaSelection.count,
-            loading:    isLoading
+            selected:   mediaSelection.count
         )
     }
 
@@ -308,9 +306,9 @@ struct MediaList: View {
                     selectMode = .inactive
                 }
             }
-            .disabled(isLoading || mediaSelection.isEmpty)
+            .disabled(mediaSelection.isEmpty)
             .opacity (mediaSelection.isEmpty ? 0 : 1)
-            .if (isLoading || mediaSelection.isEmpty) { v in v.hidden() }
+            .if (mediaSelection.isEmpty) { v in v.hidden() }
         }
 
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -352,8 +350,8 @@ struct MediaList: View {
             }
 
             ToolbarStatus(
-                isLoading: isLoading,
-                lastUpdated: lastUpdated,
+                isLoading: app.isLoading,
+                lastUpdated: app.lastChange,
                 sectionCount: 0,
                 itemCount: n
             )

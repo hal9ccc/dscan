@@ -9,7 +9,10 @@
 import SwiftUI
 
 struct MediaRow: View {
-    @ObservedObject var media: Media
+    @ObservedObject     var media:  Media
+    @EnvironmentObject  var app:    DScanApp
+    
+
 
     var body: some View {
 //        print("MediaRow file: \(media.filename) carrier: \(media.carrier)")
@@ -38,6 +41,10 @@ struct MediaRow: View {
                     .foregroundStyle(.secondary)
                     .padding(.horizontal, 2)
                     .if(media.status == "" || media.status == "␀") { view in view.hidden() }
+//
+//                Text("Last Redraw \(app.lastRedraw.formatted())")
+//                    .foregroundColor(.secondary)
+//                    .padding()
 
                 Spacer()
 

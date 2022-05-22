@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ToolbarStatus: View {
-    var lastUpdated:   Date
+    var lastChange:    Date
     var section:       MediaSection
     var sectionKey:    String
     var itemCount:     Int
@@ -24,8 +24,8 @@ struct ToolbarStatus: View {
 
     var body: some View {
         VStack {
-            Text("Updated \(lastUpdated.formatted(.relative(presentation: .named)))")
-                .if (lastUpdated == Date.distantFuture) { v in v.hidden() }
+            Text("Updated \(lastChange.formatted(.relative(presentation: .named)))")
+                .if (lastChange == Date.distantFuture) { v in v.hidden() }
             
             HStack {
                 Spacer()
@@ -55,7 +55,7 @@ struct ToolbarStatus: View {
 struct ToolbarStatus_Previews: PreviewProvider {
     static var previews: some View {
         ToolbarStatus (
-            lastUpdated:   Date.distantPast,
+            lastChange:    Date.distantPast,
             section:       MediaSection.default,
             sectionKey:    "Hallo",
             itemCount:     234,

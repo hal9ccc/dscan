@@ -11,20 +11,29 @@ import SwiftUI
 struct LastUpdatedView: View {
     
     @EnvironmentObject var app: DScanApp
+    let updateTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
+    @State private var i = 0
     
     var body: some View {
-        HStack (alignment: .center) {
-            Spacer()
+        ZStack {
+            HStack (alignment: .center) {
+                Spacer()
 
-            Text("Last Updated \(app.lastUpdated.formatted(.relative(presentation: .named)))")
-//            Text("\(app.lastUpdated.formatted()) - \(app.currentTime.formatted())")
-                .foregroundColor(.secondary)
-                .padding()
-                
-            Spacer()
+                Text("Last Updated \(app.lastChange.formatted(.relative(presentation: .named)))")
+                    .foregroundColor(.secondary)
+                    .font(.footnote)
+                    .padding()
+                    
+                Spacer()
+            }
+            Text("\(i)")
+                .opacity(0)
         }
         .listRowBackground(Color.clear)
+        .onReceive(updateTimer) { input in
+            i = i + 1
+        }
     }
 }
 

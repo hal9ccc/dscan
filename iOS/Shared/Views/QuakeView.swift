@@ -231,7 +231,7 @@ struct QuakeView: View {
             Spacer()
 
             ToolbarStatus(
-                lastUpdated:   Date.distantPast,
+                lastChange:   Date.distantPast,
                 section:       MediaSection.default,
                 sectionKey:    "Hallo",
                 itemCount:     quakes.joined().count,

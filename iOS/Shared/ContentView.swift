@@ -50,7 +50,7 @@ struct ContentView: View {
     
     private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
     
-    let appTimer = Timer.publish(every: 10, on: .main, in: .common).autoconnect()
+    let syncTimer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
 //    @State private var isLoading = false
 
@@ -98,10 +98,11 @@ struct ContentView: View {
             }
             ImagePipeline.shared = pipeline
         }
+
         // makes the UI update once per second
-//        .onReceive(appTimer) { input in
-//            app.publishInfo(now: Date.now)
-//        }
+        .onReceive(syncTimer) { input in
+            app.onSyncTimer()
+        }
         .sheet(isPresented: $showScannerSheet) {
             self.makeScannerView()
         }
@@ -135,8 +136,12 @@ struct ContentView: View {
         ToolbarItemGroup(placement: .bottomBar) {
             ZStack {
                 Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
+                    .foregroundStyle(Color.secondary)
                     .opacity(!app.isSync || app.isLoading ? 0 : 1)
 
+//                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
+//                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
+//
                 RefreshButton {
                     app.fetchMedia(pollingFor: 0)
                 }
@@ -147,7 +152,7 @@ struct ContentView: View {
             Spacer()
 
             ToolbarStatus(
-                lastUpdated:    app.lastUpdated,
+                lastChange:     app.lastChange,
                 section:        app.section,
                 sectionKey:     app.sectionKey,
                 itemCount:      app.numItems,

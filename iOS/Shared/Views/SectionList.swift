@@ -68,8 +68,7 @@ struct SectionList: View {
                 }
                 
                 Spacer()
-                
-                LastUpdatedView()
+
 
             } // List
 

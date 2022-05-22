@@ -16,8 +16,6 @@ import Vision
 import VisionKit
 
 
-/// https://stackoverflow.com/a/70045158/701753
-//@MainActor
 class DScanApp: ObservableObject {
 
     var mediaProvider: MediaProvider = .shared
@@ -56,31 +54,31 @@ class DScanApp: ObservableObject {
     var textRecognitionRequest    = VNRecognizeTextRequest()
     var detectBarcodesRequest     = VNDetectBarcodesRequest()
 
-    @Published var isLoading:               Bool            = false
-    @Published var isSync:                  Bool            = false
-    @Published var isError:                 Bool            = false
-    @Published var isUploadingImage:        Bool            = false
-    @Published var isDetectingBarcodes:     Bool            = false
-    @Published var isRecognizingTexts:      Bool            = false
-    @Published var isUploadingData:         Bool            = false
+    @Published var isLoading              = false
+    @Published var isSync                 = false
+    @Published var isError                = false
+    @Published var isUploadingImage       = false
+    @Published var isDetectingBarcodes    = false
+    @Published var isRecognizingTexts     = false
+    @Published var isUploadingData        = false
 
-    @Published var currentTime:             Date            = Date.now
-    @Published var lastUpdated:             Date            = Date.distantPast
-    @Published var section:                 MediaSection    = MediaSection.all
-    @Published var sectionKey:              String          = ""
+    @Published var lastRedraw            = Date.now
+    @Published var lastSync               = Date.now
+    @Published var lastChange             = Date.now
 
-    @Published var numCid:                  Int             = 0
-    @Published var numSections:             Int             = 0
-    @Published var numItems:                Int             = 0
-    @Published var numShowing:              Int             = 0
-    @Published var numSelected:             Int             = 0
+    @Published var section                = MediaSection.all
+    @Published var sectionKey             = ""
+
+    @Published var numCid                 = 0
+    @Published var numSections            = 0
+    @Published var numItems               = 0
+    @Published var numShowing             = 0
+    @Published var numSelected            = 0
 
     @Published var webviewUrl:              URL             = URL(string: "about://")!
     @Published var webviewOn:               Bool            = false
 
     
-
-
     var metadata:                MMImage     = MMImage()
     var idx:                     Int         = 0
 
@@ -89,12 +87,32 @@ class DScanApp: ObservableObject {
 
     var ordsError:               OrdsError?  = nil
     var error:                   Error?      = nil
+    
+    var autoSyncLocked                    = false
+
+
+    @AppStorage("LastChange")
+    private var lastChangeStr:              String = ""
+
+    @AppStorage("AutoUpdate")
+    private var autoUpdate:                 Bool = true
+    
+    @AppStorage("AutoUpdateSeconds")
+    private var autoUpdateSeconds:          Double = 10
+    
+    @AppStorage("LongpollMode")
+    private var longpollMode:               Bool = true
+    
+    @AppStorage("LongpollSeconds")
+    private var longpollSeconds:            Double = 60
+    
 
     // wait for two background requests to finish
     // see https://dev.to/nemecek_f/swift-easy-way-to-wait-for-multiple-background-tasks-to-finish-2jk1
     let refreshGroup            = DispatchGroup()
 
-    let logger = Logger(subsystem: "de.hal9ccc.dscan", category: "DScanApp")
+    let logger                  = Logger(subsystem: "de.hal9ccc.dscan", category: "DScanApp")
+    let updateFeedback          = UIImpactFeedbackGenerator(style: .rigid)
 
     init () {
 
@@ -152,6 +170,73 @@ class DScanApp: ObservableObject {
     /*
     ** ********************************************************************************************
     */
+    func onSyncTimer () {
+        if isLoading {
+//            logger.debug("isLoading")
+            return
+        }
+        if isSync    {
+//            logger.debug("isSync")
+            return
+        }
+
+        if autoSyncLocked    {
+            logger.debug("autoSyncLocked")
+            return
+        }
+       
+        
+        
+//        private var autoUpdate:                 Bool = true
+//        private var autoUpdateSeconds:          Double = 10
+//        private var longpollMode:               Bool = true
+//        private var longpollSeconds:            Double = 60
+        
+        
+        if autoUpdate {
+            let secondsSincelastSync    = Date.now.timeIntervalSinceReferenceDate - lastSync.timeIntervalSinceReferenceDate
+            let secondsSincelastChange  = Date.now.timeIntervalSinceReferenceDate - lastChange.timeIntervalSinceReferenceDate
+//            logger.debug("secondsSincelastChange: \(secondsSincelastChange)")
+//            logger.debug("secondsSincelastSync: \(secondsSincelastSync)")
+
+            autoSyncLocked = true
+            
+            if longpollMode && secondsSincelastChange < longpollSeconds {
+                // schedule the next long-poll request
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    Task { self.fetchMedia(pollingFor: 10, _force: true) }
+                }
+
+            }
+            else {
+                if secondsSincelastSync > autoUpdateSeconds {
+                    // schedule the poll request
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        Task { self.fetchMedia(_force: true) }
+                    }
+                }
+            }
+        }
+    }
+
+
+    /*
+    ** ********************************************************************************************
+    */
+    func changeOccured () {
+        logger.info("changeOccured")
+
+        updateFeedback.impactOccurred()
+
+        publishInfo(tsChange:Date.now)
+        forceRedraw()
+    }
+
+    
+        
+    /*
+    ** ********************************************************************************************
+    */
     func fetchMedia(pollingFor pollSeconds: Int = -1, complete: Bool = false, _force: Bool = false) {
 
         if isLoading && !_force { return }
@@ -168,27 +253,27 @@ class DScanApp: ObservableObject {
                 /// REST query
                 let n = try await mediaProvider.fetchMedia(pollingFor: pollSeconds, complete: complete)
 
-                publishInfo(ts:Date.now, loading: false, sync: false)
+                publishInfo(tsSync:Date.now, loading: false, sync: false)
                 
                 // n becomes the number of rows fetched
                 if n > 0 {
                     
-                    let generator = await UIImpactFeedbackGenerator(style: .rigid)
-                    await generator.impactOccurred()
+                    self.changeOccured()
                     
-                    self.forceRedraw()
-                    
-                    // schedule an immediate long-poll when we got rows
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        Task { self.fetchMedia(pollingFor: 30, _force: true) }
-                    }
+//
+//                    // schedule an immediate long-poll when we got rows
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                        Task { self.fetchMedia(pollingFor: 30, _force: true) }
+//                    }
                 }
                 else {
-                    // schedule a fetch in a few seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
-                        Task { self.fetchMedia(pollingFor: 0, _force: true) }
-                    }
+//                    // schedule a fetch in a few seconds
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+//                        Task { self.fetchMedia(pollingFor: 0, _force: true) }
+//                    }
                 }
+                
+                autoSyncLocked = false
                 
             } catch {
                 logger.debug("fetch failed")
@@ -311,7 +396,6 @@ class DScanApp: ObservableObject {
             timestamp:      media.time,
             completion:     {
                 self.logger.debug("img \(media.filename) upped")
-                self.publishInfo(ts: .now)
                 uploadGroup.leave()
             }
         )
@@ -407,7 +491,8 @@ class DScanApp: ObservableObject {
     */
     func publishInfo (
         now:           Date?=nil,
-        ts:            Date?=nil,
+        tsSync:        Date?=nil,
+        tsChange:      Date?=nil,
         cid:           Int?=nil,
         sect:          MediaSection?=nil,
         key:           String?=nil,
@@ -430,7 +515,8 @@ class DScanApp: ObservableObject {
             logger.debug("= = = = = MAIN THREAD = = = = =")
 
             if loading  != nil {  logger.debug("loading:\(   String(describing: loading    ))") }
-            if ts       != nil {  logger.debug("ts:\(        String(describing: ts         ))") }
+            if tsSync   != nil {  logger.debug("tsSync:\(    String(describing: tsSync     ))") }
+            if tsChange != nil {  logger.debug("tsChange:\(  String(describing: tsChange   ))") }
             if key      != nil {  logger.debug("key:\(       String(describing: key        ))") }
             if cid      != nil {  logger.debug("cid:\(       String(describing: cid        ))") }
             if sect     != nil {  logger.debug("sect:\(      String(describing: sect       ))") }
@@ -440,8 +526,9 @@ class DScanApp: ObservableObject {
             if url      != nil {  logger.debug("url:\(       String(describing: url        ))") }
             if webview  != nil {  logger.debug("webview:\(   String(describing: webview    ))") }
 
-            self.currentTime  = now      ?? self.currentTime      //?? Date.now
-            self.lastUpdated  = ts       ?? self.lastUpdated      //?? Date.now
+            self.lastRedraw  = now      ?? self.lastRedraw      //?? Date.now
+            self.lastSync     = tsSync   ?? self.lastSync         //?? Date.now
+            self.lastChange   = tsChange ?? self.lastChange      //?? Date.now
             self.section      = sect     ?? self.section          //?? MediaSection.default
             self.sectionKey   = key      ?? self.sectionKey       //?? ""
             self.numCid       = cid      ?? self.numCid           //?? 0
@@ -456,12 +543,17 @@ class DScanApp: ObservableObject {
             self.webviewUrl   = url      == nil ? self.webviewUrl: url!
             self.webviewOn    = webview  == nil ? self.webviewOn : webview!
             
+            
+            if tsSync != nil { onSyncTimer() } // HACK
+            
         }
         else if _canPush ?? false  {
             logger.debug("PUSHING CHANGES TO MAIN THREAD...")
             DispatchQueue.main.async {
                 self.publishInfo (
-                    ts:            ts,
+                    now:           now,
+                    tsSync:        tsSync,
+                    tsChange:      tsChange,
                     cid:           cid,
                     sect:          sect,
                     key:           key,

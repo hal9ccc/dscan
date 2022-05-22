@@ -43,11 +43,8 @@ class MediaProvider {
 
 
     private init(inMemory: Bool = false) {
-//        @AppStorage("ServerURL")
-//        var serverurl = "http://localhost"
 
         self.inMemory = inMemory
-//        self.url = URL(string: "\(serverurl)/media/list")!
 
         // Observe Core Data remote change notifications on the queue where the changes were made.
         notificationToken = NotificationCenter.default.addObserver(forName: .NSPersistentStoreRemoteChange, object: nil, queue: nil) { note in
@@ -197,6 +194,11 @@ class MediaProvider {
                     if let success          = batchInsertResult.result as? Bool {
                         if success {
                             self.logger.info("Successfully inserted data.")
+
+                            let objectIDArray = batchInsertResult.result as? [NSManagedObjectID]
+                            let changes = [NSUpdatedObjectsKey : objectIDArray]
+//                            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [taskContext])
+                            
                             return
                         }
                     }
@@ -311,7 +313,7 @@ class MediaProvider {
         let viewContext = container.viewContext
         viewContext.perform {
             for transaction in history {
-//                self.logger.debug("Merge...")
+                self.logger.debug("Merge...")
                 viewContext.mergeChanges(fromContextDidSave: transaction.objectIDNotification())
                 self.lastToken = transaction.token
             }
