@@ -88,7 +88,7 @@ class DScanApp: ObservableObject {
     var ordsError:               OrdsError?  = nil
     var error:                   Error?      = nil
     
-    var autoSyncLocked                    = false
+    var autoSyncLocked                       = false
 
 
     @AppStorage("LastChange")
@@ -202,11 +202,11 @@ class DScanApp: ObservableObject {
 //            logger.debug("secondsSincelastChange: \(secondsSincelastChange)")
 //            logger.debug("secondsSincelastSync: \(secondsSincelastSync)")
 
-            autoSyncLocked = true
             
             if longpollMode && secondsSincelastChange < longpollSeconds {
                 // schedule the next long-poll request
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                autoSyncLocked = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     Task { self.fetchMedia(pollingFor: 10, _force: true) }
                 }
 
@@ -214,7 +214,8 @@ class DScanApp: ObservableObject {
             else {
                 if secondsSincelastSync > autoUpdateSeconds {
                     // schedule the poll request
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    autoSyncLocked = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         Task { self.fetchMedia(_force: true) }
                     }
                 }
@@ -515,9 +516,9 @@ class DScanApp: ObservableObject {
         //logger.debug("publishInfo: isMainThread=\(Thread.current.isMainThread)")
 
         if Thread.current.isMainThread {
-            logger.debug("= = = = = MAIN THREAD = = = = =")
+//            logger.debug("= = = = = MAIN THREAD = = = = =")
 
-            if loading  != nil {  logger.debug("loading:\(   String(describing: loading    ))") }
+//            if loading  != nil {  logger.debug("loading:\(   String(describing: loading    ))") }
             if tsSync   != nil {  logger.debug("tsSync:\(    String(describing: tsSync     ))") }
             if tsChange != nil {  logger.debug("tsChange:\(  String(describing: tsChange   ))") }
             if key      != nil {  logger.debug("key:\(       String(describing: key        ))") }
@@ -551,7 +552,7 @@ class DScanApp: ObservableObject {
             
         }
         else if _canPush ?? false  {
-            logger.debug("PUSHING CHANGES TO MAIN THREAD...")
+//            logger.debug("PUSHING CHANGES TO MAIN THREAD...")
             DispatchQueue.main.async {
                 self.publishInfo (
                     now:           now,

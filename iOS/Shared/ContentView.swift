@@ -10,7 +10,6 @@ import SwiftUI
 import CoreData
 import OSLog
 import Nuke
-//import NukeUI
 
 
 struct ActivityIndicator: UIViewRepresentable {
@@ -138,8 +137,11 @@ struct ContentView: View {
                 Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
                     .foregroundStyle(Color.secondary)
                     .opacity(!app.isSync || app.isLoading ? 0 : 1)
+                
+                ProgressView()
+                    .opacity(app.isLoading ? 1 : 0)
 
-//                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
+                //                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
 //                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
 //
                 RefreshButton {

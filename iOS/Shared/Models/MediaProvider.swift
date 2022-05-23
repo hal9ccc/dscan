@@ -31,13 +31,13 @@ class MediaProvider {
 
     private let inMemory: Bool
     private var notificationToken: NSObjectProtocol?
-    
+
     @AppStorage("DataSyncHours")
     private var syncRange: Int = 48
-    
+
     @AppStorage("MaxCID")
     private var maxCID: Int = -1
-    
+
     @AppStorage("lastMediaChange")
     private var lastMediaChange = Date.distantFuture.timeIntervalSince1970
 
@@ -119,11 +119,11 @@ class MediaProvider {
     /// Fetches the earthquake feed from the remote server, and imports it into Core Data.
     func fetchMedia(pollingFor pollSeconds: Int, complete: Bool = false)  async throws -> Int {
         let session = URLSession.shared
-        
+
         @AppStorage("ServerURL")
         var serverurl = "http://localhost"
         let dn = UIDevice.current.name
-        
+
         let url = URL(string: "\(serverurl)/media/sync?hours=\(syncRange)"
                 + (pollSeconds  > -1 ? "&wait=\(pollSeconds)"   : "")
                 + (!complete         ? "&cid=\(maxCID)"         : "")
@@ -139,7 +139,7 @@ class MediaProvider {
         if let httpResponse = response as? HTTPURLResponse {
             logger.debug("\(url?.path ?? "")?\(url?.query ?? ""): \(httpResponse.statusCode) \(String(describing: data))")
         }
-        
+
         do {
             // Decode the JSON into a data model.
             let jsonDecoder = JSONDecoder()
@@ -168,13 +168,13 @@ class MediaProvider {
         // Add name and author to identify source of persistent history changes.
         taskContext.name = "importContext"
         taskContext.transactionAuthor = "importMedia"
-        
+
         let maxCidFromData = propertiesList.map{$0.cid}.max()
         if maxCidFromData != nil && maxCidFromData! > maxCID {
             logger.info("maxCID: \(self.maxCID) -> \(String(describing:maxCidFromData))")
             maxCID = maxCidFromData!
         }
-        
+
         /// - Tag: performAndWait
         try await taskContext.perform {
             // Execute the batch insert.
@@ -198,7 +198,7 @@ class MediaProvider {
 //                            let objectIDArray = batchInsertResult.result as? [NSManagedObjectID]
 //                            let changes = [NSUpdatedObjectsKey : objectIDArray]
 //                            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [taskContext])
-                            
+
                             return
                         }
                     }
@@ -227,13 +227,6 @@ class MediaProvider {
             return false
         })
         return batchInsertRequest
-    }
-
-    /// Synchronously deletes given records in the Core Data store with the specified object IDs.
-    func suggestPoll() -> Int {
-        let f = Date().timeIntervalSince1970 - lastMediaChange
-//        logger.debug("f:\(f)")
-        return f > 60 ? 0 : 10
     }
 
     /// Synchronously deletes given records in the Core Data store with the specified object IDs.

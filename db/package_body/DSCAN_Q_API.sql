@@ -261,7 +261,11 @@ CREATE OR REPLACE PACKAGE BODY DSCAN_Q_API AS
               PERSON,
               TIMESTAMP_STR as TIMESTAMP,
               TITLE,
-              TRACKINGNR
+              TRACKINGNR,
+              INFO1,
+              INFO2,
+              INFO3,
+              INFO4
       from    V_MEDIA_DETAILS
  		  WHERE    timestamp  > systimestamp - numtodsinterval(p_hours, 'hour')
  		    and    cid > nvl(p_last_cid, -1)
