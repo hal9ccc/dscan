@@ -46,7 +46,7 @@ struct MediaList: View {
 
 //    @AppStorage("searchTerm")
     @State private var mediaSearchTerm = ""
-    
+
     @State private var isLoading       = false
     @State private var lastSortChange: Date = Date()
 
@@ -57,7 +57,7 @@ struct MediaList: View {
 
     @State
     private var lastUpdatedMedia: Date = .now
-    
+
     private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
 
@@ -70,20 +70,20 @@ struct MediaList: View {
         request.sectionIdentifier = section.section
         request.sortDescriptors   = section.descriptors
 //        print("MediaList \(section.name) -> \(key)")
-        
+
         @Environment(\.verticalSizeClass) var verticalSizeClass: UserInterfaceSizeClass?
         @Environment(\.horizontalSizeClass) var horizontalSizeClass: UserInterfaceSizeClass?
-        
-     
+
+
     return HStack {
-        
+
         if idiom == .pad && section != MediaSection.all {
-                        
+
             List {
-                            
+
                 ForEach(media) { mediaSection in
                     VStack {
-                        
+
                         if self.key == mediaSection.id {
                             Button(action: { self.key = mediaSection.id } )
                             {
@@ -109,7 +109,7 @@ struct MediaList: View {
 
 
         List(selection: $mediaSelection) {
-            
+
             AnalyzeButtonAuto()
 
             LastUpdatedView()
@@ -152,7 +152,7 @@ struct MediaList: View {
 
 #if os(iOS)
         .environment(\.editMode, $editMode)
-        .refreshable { app.fetchMedia(complete: true) }
+        .refreshable { app.fetchMedia(complete: true, _force: true) }
 #else
         .frame(minWidth: 320)
 #endif
@@ -166,8 +166,8 @@ struct MediaList: View {
             let request = media
             request.sectionIdentifier = section.section
             request.sortDescriptors   = section.descriptors
-            
-            
+
+
 
             if key == "" { key = startWithKey }
             let n = media.first(where: { $0.id == key })?.count ?? 0
@@ -220,7 +220,7 @@ struct MediaList: View {
             mediaSearchTerm
         } set: { newValue in
             mediaSearchTerm = newValue
-            
+
             guard !newValue.isEmpty else {
                 media.nsPredicate = nil
                 return
@@ -299,7 +299,7 @@ struct MediaList: View {
     private func toolbarContent_iOS() -> some ToolbarContent {
 
         ToolbarItemGroup(placement: .navigationBarLeading) {
-            
+
             DeleteButton {
                 Task {
                     await deleteMedia(for: mediaSelection)
@@ -329,9 +329,9 @@ struct MediaList: View {
                 editMode = .inactive
                 selectMode = .inactive
             }
-            
+
         }
-        
+
     }
 
     #else
