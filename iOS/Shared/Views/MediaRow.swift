@@ -92,11 +92,17 @@ struct MediaRow: View {
                 }
                 
                 if idiom == .pad {
-                    InfoBox (info: media.info1)
+                    VStack {
+                        InfoBox (info: media.info1)
+                            .frame(width: 300)
+
+                    }
                 }
             }
             .frame(height: 160)
 //            .padding (.horizontal, 0)
+
+            JSONUI (input: media.info4)
 
             if idiom == .phone {
                 InfoBox (info: media.info1)

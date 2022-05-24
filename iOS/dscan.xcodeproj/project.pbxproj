@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		4E076CEF282520080049B9E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E076CEE282520080049B9E8 /* SettingsView.swift */; };
 		4E076CF0282520080049B9E8 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E076CEE282520080049B9E8 /* SettingsView.swift */; };
+		4E191882283D5B34007E9B47 /* JSONUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E191881283D5B34007E9B47 /* JSONUI.swift */; };
+		4E191883283D5B34007E9B47 /* JSONUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E191881283D5B34007E9B47 /* JSONUI.swift */; };
+		4E191886283D5DA0007E9B47 /* JSONDrivenUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E191885283D5DA0007E9B47 /* JSONDrivenUI */; };
 		4E1A87DD28399E2500F9958B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1A87DC28399E2500F9958B /* WebView.swift */; };
 		4E1A87DE28399E2500F9958B /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E1A87DC28399E2500F9958B /* WebView.swift */; };
 		4E24DA0E2814AAB300A39C7D /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA0D2814AAB300A39C7D /* Media.swift */; };
@@ -31,6 +34,8 @@
 		4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E24DA312815F16800A39C7D /* MediaDetail.swift */; };
 		4E3BE65D280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E3BE65E280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
+		4E3EDFF8283D7772005F44CD /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFF7283D7772005F44CD /* ChatBubble.swift */; };
+		4E3EDFF9283D7772005F44CD /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFF7283D7772005F44CD /* ChatBubble.swift */; };
 		4E425E0C2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
 		4E425E0D2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
 		4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E5B7D82281FAC0F00842FE2 /* NukeUI */; };
@@ -174,6 +179,8 @@
 		20E8E62C4A6D78D282B06BA8 /* ACKNOWLEDGEMENTS.txt */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = ACKNOWLEDGEMENTS.txt; sourceTree = "<group>"; };
 		26EEA7CAFEEF3C5809214465 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		4E076CEE282520080049B9E8 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		4E191880283D55F4007E9B47 /* JSONDrivenUI */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = JSONDrivenUI; path = ../../iOS/JSONDrivenUI; sourceTree = "<group>"; };
+		4E191881283D5B34007E9B47 /* JSONUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONUI.swift; sourceTree = "<group>"; };
 		4E1A87DC28399E2500F9958B /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
 		4E24DA0D2814AAB300A39C7D /* Media.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 		4E24DA152814BB4600A39C7D /* Earthquakes.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Earthquakes.xcdatamodel; sourceTree = "<group>"; };
@@ -185,6 +192,7 @@
 		4E24DA2E2815EF5D00A39C7D /* View+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		4E24DA312815F16800A39C7D /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
 		4E3BE65C280552860049DD03 /* QuakeSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeSort.swift; sourceTree = "<group>"; };
+		4E3EDFF7283D7772005F44CD /* ChatBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubble.swift; sourceTree = "<group>"; };
 		4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdatedView.swift; sourceTree = "<group>"; };
 		4E5B7D87282171B400842FE2 /* DScanApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DScanApp.swift; sourceTree = "<group>"; };
 		4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
@@ -275,6 +283,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4E191886283D5DA0007E9B47 /* JSONDrivenUI in Frameworks */,
 				4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,6 +291,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E19187F283D55F4007E9B47 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				4E191880283D55F4007E9B47 /* JSONDrivenUI */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		4E191884283D5DA0007E9B47 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4E860050281806ED00F126D7 /* img */ = {
 			isa = PBXGroup;
 			children = (
@@ -382,6 +406,7 @@
 		AD43F1D926158A630068AABC = {
 			isa = PBXGroup;
 			children = (
+				4E19187F283D55F4007E9B47 /* Packages */,
 				26EEA7CAFEEF3C5809214465 /* README.md */,
 				AD2FC4C72654EEFF00E135D2 /* Shared */,
 				AD43F1E426158A640068AABC /* dscan-iOS */,
@@ -389,6 +414,7 @@
 				AD43F1E326158A640068AABC /* Products */,
 				F38659F177DF4910BA5B5E33 /* Configuration */,
 				4FABF2CAC461AE822830A879 /* LICENSE */,
+				4E191884283D5DA0007E9B47 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -478,6 +504,8 @@
 				4E1A87DC28399E2500F9958B /* WebView.swift */,
 				4EF2BB4D283AF38100D8C5E9 /* StatusLabel.swift */,
 				4EF2BB50283AFBCF00D8C5E9 /* InfoBox.swift */,
+				4E191881283D5B34007E9B47 /* JSONUI.swift */,
+				4E3EDFF7283D7772005F44CD /* ChatBubble.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -525,6 +553,7 @@
 			name = "dscan-iOS";
 			packageProductDependencies = (
 				4E5B7D82281FAC0F00842FE2 /* NukeUI */,
+				4E191885283D5DA0007E9B47 /* JSONDrivenUI */,
 			);
 			productName = Earthquakes;
 			productReference = AD43F1E226158A640068AABC /* dscan.app */;
@@ -556,6 +585,7 @@
 			knownRegions = (
 				en,
 				de,
+				Base,
 			);
 			mainGroup = AD43F1D926158A630068AABC;
 			packageReferences = (
@@ -676,10 +706,12 @@
 				4EF06DDB2832FBA10048C198 /* SectionList.swift in Sources */,
 				4E24DA0F2814AAB300A39C7D /* Media.swift in Sources */,
 				4EA9F352281B31A600AED467 /* MediaList.swift in Sources */,
+				4E191883283D5B34007E9B47 /* JSONUI.swift in Sources */,
 				4E860054281820D200F126D7 /* ScanView.swift in Sources */,
 				4E24DA242815D57000A39C7D /* MediaSection.swift in Sources */,
 				4E24DA332815F16800A39C7D /* MediaDetail.swift in Sources */,
 				4E86005A2818218300F126D7 /* ScannerView.swift in Sources */,
+				4E3EDFF9283D7772005F44CD /* ChatBubble.swift in Sources */,
 				AD57B0F326561178005183D0 /* ToolbarStatus.swift in Sources */,
 				4E86FFDF2816926900F126D7 /* MediaSortSelection.swift in Sources */,
 				4E24DA302815EF5D00A39C7D /* View+Extensions.swift in Sources */,
@@ -729,6 +761,7 @@
 				AD57B0F226561178005183D0 /* ToolbarStatus.swift in Sources */,
 				4E860053281820D200F126D7 /* ScanView.swift in Sources */,
 				AD57B0FC26561547005183D0 /* EditButton.swift in Sources */,
+				4E3EDFF8283D7772005F44CD /* ChatBubble.swift in Sources */,
 				4E8600592818218300F126D7 /* ScannerView.swift in Sources */,
 				ADDDB17F2625235600241A73 /* QuakeMagnitude.swift in Sources */,
 				AD43F1E626158A640068AABC /* DScanAppWrapper.swift in Sources */,
@@ -736,6 +769,7 @@
 				AD57B0F926561484005183D0 /* DeleteButton.swift in Sources */,
 				4E24DA262815EABD00A39C7D /* MediaRow.swift in Sources */,
 				4E24DA2F2815EF5D00A39C7D /* View+Extensions.swift in Sources */,
+				4E191882283D5B34007E9B47 /* JSONUI.swift in Sources */,
 				4E24DA232815D57000A39C7D /* MediaSection.swift in Sources */,
 				4E1A87DD28399E2500F9958B /* WebView.swift in Sources */,
 				AD57B1052656F405005183D0 /* SelectButton.swift in Sources */,
@@ -840,6 +874,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -901,6 +936,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1070,6 +1106,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		4E191885283D5DA0007E9B47 /* JSONDrivenUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = JSONDrivenUI;
+		};
 		4E5B7D82281FAC0F00842FE2 /* NukeUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 4E5B7D81281FAC0F00842FE2 /* XCRemoteSwiftPackageReference "NukeUI" */;
