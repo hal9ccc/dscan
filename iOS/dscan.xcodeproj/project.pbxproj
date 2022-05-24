@@ -36,6 +36,8 @@
 		4E3BE65E280552860049DD03 /* QuakeSort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3BE65C280552860049DD03 /* QuakeSort.swift */; };
 		4E3EDFF8283D7772005F44CD /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFF7283D7772005F44CD /* ChatBubble.swift */; };
 		4E3EDFF9283D7772005F44CD /* ChatBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFF7283D7772005F44CD /* ChatBubble.swift */; };
+		4E3EDFFB283D8830005F44CD /* ToolbarRefreshStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFFA283D8830005F44CD /* ToolbarRefreshStatus.swift */; };
+		4E3EDFFC283D8830005F44CD /* ToolbarRefreshStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E3EDFFA283D8830005F44CD /* ToolbarRefreshStatus.swift */; };
 		4E425E0C2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
 		4E425E0D2839428F00D37CA0 /* LastUpdatedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */; };
 		4E5B7D83281FAC0F00842FE2 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = 4E5B7D82281FAC0F00842FE2 /* NukeUI */; };
@@ -193,6 +195,7 @@
 		4E24DA312815F16800A39C7D /* MediaDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetail.swift; sourceTree = "<group>"; };
 		4E3BE65C280552860049DD03 /* QuakeSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuakeSort.swift; sourceTree = "<group>"; };
 		4E3EDFF7283D7772005F44CD /* ChatBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatBubble.swift; sourceTree = "<group>"; };
+		4E3EDFFA283D8830005F44CD /* ToolbarRefreshStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolbarRefreshStatus.swift; sourceTree = "<group>"; };
 		4E425E0B2839428E00D37CA0 /* LastUpdatedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastUpdatedView.swift; sourceTree = "<group>"; };
 		4E5B7D87282171B400842FE2 /* DScanApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DScanApp.swift; sourceTree = "<group>"; };
 		4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoomableScrollView.swift; sourceTree = "<group>"; };
@@ -506,6 +509,7 @@
 				4EF2BB50283AFBCF00D8C5E9 /* InfoBox.swift */,
 				4E191881283D5B34007E9B47 /* JSONUI.swift */,
 				4E3EDFF7283D7772005F44CD /* ChatBubble.swift */,
+				4E3EDFFA283D8830005F44CD /* ToolbarRefreshStatus.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -726,6 +730,7 @@
 				4E24DA272815EABD00A39C7D /* MediaRow.swift in Sources */,
 				AD57B0FA26561484005183D0 /* DeleteButton.swift in Sources */,
 				4E1A87DE28399E2500F9958B /* WebView.swift in Sources */,
+				4E3EDFFC283D8830005F44CD /* ToolbarRefreshStatus.swift in Sources */,
 				4E425E0D2839428F00D37CA0 /* LastUpdatedView.swift in Sources */,
 				4E9CF7DB2834E11F00DB2851 /* AnalyzeButtonAuto.swift in Sources */,
 				4E24DA2A2815EC1600A39C7D /* MediaThumbnail.swift in Sources */,
@@ -790,6 +795,7 @@
 				4E86FFE128169EBF00F126D7 /* QuakeSortSelection.swift in Sources */,
 				4E24DA1D2814BFFA00A39C7D /* MediaProvider.swift in Sources */,
 				AD43F1FD26158D5A0068AABC /* DscanError.swift in Sources */,
+				4E3EDFFB283D8830005F44CD /* ToolbarRefreshStatus.swift in Sources */,
 				4E24DA292815EC1600A39C7D /* MediaThumbnail.swift in Sources */,
 				ADDDB1832625249600241A73 /* QuakeDetail.swift in Sources */,
 				4EF06DDA2832FBA10048C198 /* SectionList.swift in Sources */,

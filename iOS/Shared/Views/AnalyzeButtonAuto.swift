@@ -23,14 +23,18 @@ struct AnalyzeButtonAuto: View {
 
     var body: some View {
         if(newMedia.count > 0) {
-            HStack (alignment: .center) {
-                Spacer()
-                AnalyzeButton(count: newMedia.count) {
-                    app.processAllImages(completion: { app.fetchMedia(pollingFor: 10) } )
+            ZStack(alignment: .topLeading) { // HACK
+                Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+
+                HStack (alignment: .center) {
+                    Spacer()
+                    AnalyzeButton(count: newMedia.count) {
+                        app.processAllImages(completion: { app.fetchMedia(pollingFor: 10) } )
+                    }
+                    Spacer()
                 }
-                Spacer()
+                .listRowBackground(Color.clear)
             }
-            .listRowBackground(Color.clear)
         }
     }
 

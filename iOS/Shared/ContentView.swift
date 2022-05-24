@@ -133,24 +133,8 @@ struct ContentView: View {
     private func toolbarContent_iOS() -> some ToolbarContent {
 
         ToolbarItemGroup(placement: .bottomBar) {
-            ZStack {
-                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
-                    .foregroundStyle(Color.secondary)
-                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
-                
-                ProgressView()
-                    .opacity(app.isLoading ? 1 : 0)
-
-                //                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
-//                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
-//
-                RefreshButton {
-                    app.fetchMedia(pollingFor: 0)
-                }
-                .opacity(app.isLoading || app.isSync ? 0 : 1)
-                .disabled(app.isLoading)
-            }
-
+            ToolbarRefreshStatus()
+            
             Spacer()
 
             ToolbarStatus(

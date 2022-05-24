@@ -147,7 +147,7 @@ struct SettingsView: View {
                         Slider (
                             value: $autoUpdateSeconds,
                             in: 10...300,
-                            step: 1,
+                            step: 10,
                             label: { Text("Time") }
                         )
                         .disabled(!autoUpdate)
@@ -162,7 +162,7 @@ struct SettingsView: View {
                         Slider (
                             value: $longpollSeconds,
                             in: 10...900,
-                            step: 1,
+                            step: 10,
                             label: { Text("Sekunden") }
                         )
                         .disabled(!autoUpdate)
