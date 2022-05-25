@@ -1,7 +1,17 @@
 create or replace view V_MEDIA_TAGS as
 select    Q.ID,
           Q.file_name,
-          Substr(LISTAGG(chr(10) || decode(Q.type, 'code', '🔒', 'text', '🏷', 'dict', '👤', '📎') || ' ' || Q.tag_name || ' ➜ <b>' || Q.tag_value || '</b>'),2) as TagList,
+          Substr(LISTAGG(chr(10) || decode(Q.tag_name,
+            'code', '🔒',
+            'person', '👤',
+            'location', '📍',
+            'company', '🏬',
+            'carrier', '🚛',
+            'trackingnr', '#️⃣',
+            'uri', '🔗',
+            'person', '👤',
+            '🏷')
+            || /* ' ' || Q.tag_name || ' ➜'||*/ ' <b>' || Q.tag_value || '</b>'),2) as TagList,
           LISTAGG(Q.Type,       '⸱')  as Type,
           LISTAGG(Q.Code,       '⸱')  as Code,
           LISTAGG(Q.Carrier,    '⸱')  as Carrier,
@@ -17,3 +27,4 @@ group by  Q.ID,
 /
 
 select * from v_media_tags where id = '1442';
+
