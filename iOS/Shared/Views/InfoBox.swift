@@ -24,8 +24,9 @@ struct InfoBox: View {
                         Text("\(info)")
 //                        Label("\(info)", systemImage: s.icon)
                             .font(.callout)
-                            .padding(.all, 20)
-//                            .foregroundColor(s.color)
+                            .padding([.top, .bottom], 8)
+                            .padding([.leading, .trailing], 12)
+                        //                            .foregroundColor(s.color)
                             .foregroundColor(Color.white)
                             .background(Color.blue)
 

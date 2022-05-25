@@ -14,6 +14,10 @@ commit;
 
 drop package body DSCAN_TASK_API;
 
+select * from media_Details where hidden is null;
+update media_Details set hidden = 0 where hidden is null;
+alter table media_Details modify hidden not null;
+
 select * from media where id > 2245 order by file_name desc;
 select * from media_details order by file_name desc;
 

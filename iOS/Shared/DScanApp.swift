@@ -57,11 +57,8 @@ class DScanApp: ObservableObject {
     @Published var isLoading              = false
     @Published var isSync                 = false
     @Published var isError                = false
-    @Published var isUploadingImage       = false
-    @Published var isDetectingBarcodes    = false
-    @Published var isRecognizingTexts     = false
-    @Published var isUploadingData        = false
-
+    @Published var isUploading            = false
+    
     @Published var lastRedraw            = Date.now
     @Published var lastSync               = Date.now
     @Published var lastChange             = Date.now
@@ -74,6 +71,7 @@ class DScanApp: ObservableObject {
     @Published var numItems               = 0
     @Published var numShowing             = 0
     @Published var numSelected            = 0
+    @Published var numNew                 = 0
 
     @Published var webviewUrl:              URL             = URL(string: "about://")!
     @Published var webviewOn:               Bool            = false
@@ -311,24 +309,31 @@ class DScanApp: ObservableObject {
             completion()
         }
 
-
         do {
             media2Process = try MediaProvider.shared.container.viewContext.fetch(mediaFetch)
             logger.debug("Got \(media2Process.count) documents")
 
+            self.publishInfo(new:media2Process.count, uploading:true)
+            let m2p = media2Process.count
+            var i = 0
+
             // high-priority background thread
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 media2Process.forEach { image in
                     self.refreshGroup.enter()
+                    i += 1
                     self.processImage(image, completion: {
+                        self.publishInfo(new:(m2p - i))
                         self.forceRedraw()
                         self.refreshGroup.leave()
                     })
                 }
+                self.publishInfo(new:0, uploading:false)
             }
         }
         catch {
             logger.critical("Fetch failed")
+            publishInfo(uploading:false)
         }
     }
 
@@ -504,6 +509,8 @@ class DScanApp: ObservableObject {
         items:         Int?=nil,
         showing:       Int?=nil,
         selected:      Int?=nil,
+        new:           Int?=nil,
+        uploading:     Bool?=nil,
         loading:       Bool?=nil,
         sync:          Bool?=nil,
         error:         Bool?=nil,
@@ -519,30 +526,34 @@ class DScanApp: ObservableObject {
 //            logger.debug("= = = = = MAIN THREAD = = = = =")
 
 //            if loading  != nil {  logger.debug("loading:\(   String(describing: loading    ))") }
-            if tsSync   != nil {  logger.debug("tsSync:\(    String(describing: tsSync     ))") }
-            if tsChange != nil {  logger.debug("tsChange:\(  String(describing: tsChange   ))") }
-            if key      != nil {  logger.debug("key:\(       String(describing: key        ))") }
-            if cid      != nil {  logger.debug("cid:\(       String(describing: cid        ))") }
-            if sect     != nil {  logger.debug("sect:\(      String(describing: sect       ))") }
-            if items    != nil {  logger.debug("items:\(     String(describing: items      ))") }
-            if sections != nil {  logger.debug("sections:\(  String(describing: sections   ))") }
-            if selected != nil {  logger.debug("selected:\(  String(describing: selected   ))") }
-            if url      != nil {  logger.debug("url:\(       String(describing: url        ))") }
-            if webview  != nil {  logger.debug("webview:\(   String(describing: webview    ))") }
+            if uploading  != nil {  logger.debug("uploading:\( String(describing: uploading  ))") }
+            if tsSync     != nil {  logger.debug("tsSync:\(    String(describing: tsSync     ))") }
+            if tsChange   != nil {  logger.debug("tsChange:\(  String(describing: tsChange   ))") }
+            if key        != nil {  logger.debug("key:\(       String(describing: key        ))") }
+            if cid        != nil {  logger.debug("cid:\(       String(describing: cid        ))") }
+            if sect       != nil {  logger.debug("sect:\(      String(describing: sect       ))") }
+            if items      != nil {  logger.debug("items:\(     String(describing: items      ))") }
+            if sections   != nil {  logger.debug("sections:\(  String(describing: sections   ))") }
+            if selected   != nil {  logger.debug("selected:\(  String(describing: selected   ))") }
+            if new        != nil {  logger.debug("new:\(       String(describing: new        ))") }
+            if url        != nil {  logger.debug("url:\(       String(describing: url        ))") }
+            if webview    != nil {  logger.debug("webview:\(   String(describing: webview    ))") }
 
-            self.lastRedraw  = now      ?? self.lastRedraw      //?? Date.now
-            self.lastSync     = tsSync   ?? self.lastSync         //?? Date.now
-            self.lastChange   = tsChange ?? self.lastChange      //?? Date.now
-            self.section      = sect     ?? self.section          //?? MediaSection.default
-            self.sectionKey   = key      ?? self.sectionKey       //?? ""
-            self.numCid       = cid      ?? self.numCid           //?? 0
-            self.numSections  = sections ?? self.numSections      //?? 0
-            self.numItems     = items    ?? self.numItems         //?? 0
-            self.numShowing   = showing  ?? self.numShowing       //?? 0
-            self.numSelected  = selected ?? self.numSelected      //?? 0
-            self.isLoading    = loading  == nil ? self.isLoading : loading!
-            self.isSync       = sync     == nil ? self.isSync    : sync!
-            self.isError      = error    == nil ? self.isError   : error!
+            self.lastRedraw   = now       ?? self.lastRedraw      //?? Date.now
+            self.lastSync     = tsSync    ?? self.lastSync         //?? Date.now
+            self.lastChange   = tsChange  ?? self.lastChange      //?? Date.now
+            self.section      = sect      ?? self.section          //?? MediaSection.default
+            self.sectionKey   = key       ?? self.sectionKey       //?? ""
+            self.numCid       = cid       ?? self.numCid           //?? 0
+            self.numSections  = sections  ?? self.numSections      //?? 0
+            self.numItems     = items     ?? self.numItems         //?? 0
+            self.numShowing   = showing   ?? self.numShowing       //?? 0
+            self.numSelected  = selected  ?? self.numSelected      //?? 0
+            self.numNew       = new       ?? self.numNew           //?? 0
+            self.isUploading  = uploading == nil ? self.isUploading : uploading!
+            self.isLoading    = loading   == nil ? self.isLoading : loading!
+            self.isSync       = sync      == nil ? self.isSync    : sync!
+            self.isError      = error     == nil ? self.isError   : error!
 
             self.webviewUrl   = url      == nil ? self.webviewUrl: url!
             self.webviewOn    = webview  == nil ? self.webviewOn : webview!
@@ -565,6 +576,8 @@ class DScanApp: ObservableObject {
                     items:         items,
                     showing:       showing,
                     selected:      selected,
+                    new:           new,
+                    uploading:     uploading,
                     loading:       loading,
                     sync:          sync,
                     error:         error,

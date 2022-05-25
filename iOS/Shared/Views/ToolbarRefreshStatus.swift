@@ -25,7 +25,9 @@ struct ToolbarRefreshStatus: View {
         let lpm = secondsSincelastChange < longpollSeconds ? longpollMode : false
 
         ZStack {
-            Label("Sync", systemImage: autoUpdate && lpm ? "arrow.left.arrow.right.circle.fill" : "arrow.clockwise")
+            Label("Sync", systemImage: autoUpdate && lpm
+                  ? "arrow.left.arrow.right.circle.fill"
+                  : (autoUpdate ? "arrow.clockwise.circle.fill" : "arrow.clockwise"))
                 .foregroundStyle(!autoUpdate || !lpm ? Color.accentColor : Color.primary)
                 .opacity(app.isLoading ? 0 : 1)
                 .onTapGesture {
@@ -46,10 +48,10 @@ struct ToolbarRefreshStatus: View {
             //                Label("Sync", systemImage: "arrow.left.arrow.right.circle.fill")
 //                    .opacity(!app.isSync || app.isLoading ? 0 : 1)
 //
-            Text("A")
-                .font(.system(size: 6))
-                .foregroundStyle(Color.secondary)
-                .opacity(autoUpdate && !app.isSync && !app.isLoading && !longpollMode ? 1 : 0)
+//            Text("▶︎")
+//                .font(.system(size: 12))
+//                .foregroundStyle(Color.secondary)
+//                .opacity(autoUpdate && !app.isSync && !app.isLoading && !longpollMode ? 1 : 0)
 
 //            RefreshButton {
 //                app.fetchMedia(pollingFor: 0)
