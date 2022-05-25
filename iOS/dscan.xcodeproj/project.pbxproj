@@ -294,6 +294,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E072FD4283ECA570055CCCB /* Media */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Media;
+			sourceTree = "<group>";
+		};
 		4E19187F283D55F4007E9B47 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -484,6 +491,13 @@
 		ADFCD5362630DA13008A14D0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4EA9F34D281B303900AED467 /* MediaSectionList.swift */,
+				4EA9F350281B31A600AED467 /* MediaList.swift */,
+				4E24DA252815EABD00A39C7D /* MediaRow.swift */,
+				4E24DA312815F16800A39C7D /* MediaDetail.swift */,
+				4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */,
+				4E86FFDD2816926900F126D7 /* MediaSortSelection.swift */,
+				4E072FD4283ECA570055CCCB /* Media */,
 				4E7C1793282A5B3A001CB909 /* ZoomableScrollView.swift */,
 				4E076CEE282520080049B9E8 /* SettingsView.swift */,
 				4E24DA1F281522BE00A39C7D /* SectionHeader.swift */,
@@ -494,12 +508,6 @@
 				4E86FFE028169EBF00F126D7 /* QuakeSortSelection.swift */,
 				4EF06DD92832FBA10048C198 /* SectionList.swift */,
 				4E9CF7D628345A3600DB2851 /* SectionRow.swift */,
-				4EA9F34D281B303900AED467 /* MediaSectionList.swift */,
-				4EA9F350281B31A600AED467 /* MediaList.swift */,
-				4E24DA252815EABD00A39C7D /* MediaRow.swift */,
-				4E24DA312815F16800A39C7D /* MediaDetail.swift */,
-				4E24DA282815EC1600A39C7D /* MediaThumbnail.swift */,
-				4E86FFDD2816926900F126D7 /* MediaSortSelection.swift */,
 				4E860052281820D200F126D7 /* ScanView.swift */,
 				4E8600582818218300F126D7 /* ScannerView.swift */,
 				4E9CF7D92834E11E00DB2851 /* AnalyzeButtonAuto.swift */,
