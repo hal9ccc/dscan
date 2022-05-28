@@ -15,18 +15,22 @@ struct MediaThumbnail: View {
     @AppStorage("ServerURL")
     var serverurl = "http://localhost"
     
+    @AppStorage("ImageThumbnailSize")
+    private var imageThumbnailSize: Double = 150
+
+    
     var body: some View {
 //        print("\(serverurl)/media/files/\(media.img)")
 //        print("\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)")
         
         RoundedRectangle(cornerRadius: 4)
             .fill(.thinMaterial)
-            .frame(width: 150, height: 150)
+            .frame(width: imageThumbnailSize, height: imageThumbnailSize)
             .overlay {
 
                 ZStack {
                     LazyImage(source: "\(serverurl)/media/files/\(media.img.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? media.img)", resizingMode: .aspectFit)
-                        .frame(width: 150, height: 150)
+                        .frame(width: imageThumbnailSize, height: imageThumbnailSize)
                         .opacity(media.img == "␀" ? 0 : 1)
 
                     if media.imageData != nil {
@@ -36,7 +40,7 @@ struct MediaThumbnail: View {
                             .opacity(media.imageData == nil ? 0 : 1)
                     }
                 }
-                .frame(width: 150, height: 150)
+                .frame(width: imageThumbnailSize, height: imageThumbnailSize)
             }
     }
 }

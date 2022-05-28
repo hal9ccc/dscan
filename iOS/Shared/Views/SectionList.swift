@@ -32,33 +32,28 @@ struct SectionList: View {
 
             List() {
 
-                NavigationLink(destination: MediaList(section: MediaSection.all, startWithKey: "")) {
-                    SectionHeader(name: "\( MediaSection.all.name)", icon: MediaSection.all.icon)
+                NavigationLink(destination: MediaList(section: MediaSection.all, startWithKey: "", showSections: false)) {
+                    SectionHeader(name: "Alle", icon: MediaSection.all.icon)
                 }
 
                 Divider()
                 
                 ForEach(MediaSection.sorts.dropFirst()) { sort in
-                    
-                    VStack {
+//                ForEach(MediaSection.sorts) { sort in
+
+//                    VStack {
                         if idiom == .pad {
-                            NavigationLink(destination: MediaList(section: sort, startWithKey: "")) {
+                            NavigationLink(destination: MediaList(section: sort, startWithKey: "", showSections: true)) {
                                 SectionHeader(name: "\(sort.name)", icon:sort.icon)
                             }
-                        }
-                        else if sort == MediaSection.all {
-                            NavigationLink(destination: MediaList(section: sort, startWithKey: "")) {
-                                SectionHeader(name: "\(sort.name)", icon:sort.icon)
-                            }
+
                         }
                         else {
                             NavigationLink(destination: MediaSectionList(section: sort)) {
                                 SectionHeader(name: "\(sort.name)", icon:sort.icon)
                             }
                         }
-                        
-                    }
-                   
+//                    }
                 }
 
                 Divider()

@@ -29,22 +29,23 @@ struct MediaStatus: Hashable, Identifiable, Equatable {
 
 struct StatusLabel: View {
     let media: Media
-    @EnvironmentObject  var app:    DScanApp
+        @EnvironmentObject  var app:    DScanApp
 
     var body: some View {
         let s = MediaStatus.list.first(where: { $0.id == media.status }) ?? MediaStatus.defo
         
-        ZStack(alignment: .topLeading) { // HACK
-            Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+//        ZStack(alignment: .topLeading) { // HACK
+//            Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
 
+//        if media.status > "" {
             Label("\(media.status)", systemImage: s.icon)
                 .font(.caption)
                 .foregroundColor(s.color)
                 .padding(.horizontal, 2)
-               .if(media.status == "" || media.status == "␀") { view in view.hidden() }
-        }
+//               .if(media.status == "" || media.status == "␀") { view in view.hidden() }
+//            }
+//        }
     }
-   
 }
 
 struct StatusLabel_Previews: PreviewProvider {

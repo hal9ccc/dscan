@@ -13,6 +13,7 @@ struct MediaList: View {
 
     let section:         MediaSection
     let startWithKey:    String
+    let showSections:    Bool
 
     @State private var key: String = ""
 
@@ -77,27 +78,42 @@ struct MediaList: View {
 
     return HStack {
 
-        if idiom == .pad && section != MediaSection.all {
+        if showSections {
 
             List {
 
                 ForEach(media) { mediaSection in
                     VStack {
 
-                        if self.key == mediaSection.id {
-                            Button(action: { self.key = mediaSection.id } )
-                            {
-                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
-                            }
-                            .buttonStyle( .borderedProminent)
+                        Button(action: {
+                            self.key = mediaSection.id
+                            self.publishInfo()
+                        } )
+                        {
+                            SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
                         }
-                        else {
-                            Button(action: { self.key = mediaSection.id } )
-                            {
-                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
-                            }
-                            .buttonStyle( .bordered)
-                        }
+                        .if (self.key == mediaSection.id) { v in v.buttonStyle( .borderedProminent)}
+                        .if (self.key != mediaSection.id) { v in v.buttonStyle( .bordered)}
+//
+//
+//
+//                        if self.key == mediaSection.id {
+//                            Button(action: {
+//                                self.key = mediaSection.id
+//                                self.publishInfo()
+//                            } )
+//                            {
+//                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
+//                            }
+//                            .buttonStyle( .borderedProminent)
+//                        }
+//                        else {
+//                            Button(action: { self.key = mediaSection.id } )
+//                            {
+//                                SectionRow(section:section, id: mediaSection.id, count: mediaSection.count)
+//                            }
+//                            .buttonStyle( .bordered)
+//                        }
                     }
                     .listRowBackground(Color.clear)
                 }
@@ -110,26 +126,33 @@ struct MediaList: View {
 
         List(selection: $mediaSelection) {
 
-            AnalyzeButtonAuto()
+            if idiom != .pad  {
+                AnalyzeButtonAuto()
+            }
 
             LastUpdatedView()
+//            
+//            Text("\(app.lastChange.formatted())").font(.caption)
+            
+            let M = media.filter { $0.id == key || section == MediaSection.all }
 
-            ForEach(media) { sect in
+            ForEach(M) { sect in
 
-                if sect.id == key || section == MediaSection.all {
+//                if sect.id == key || section == MediaSection.all {
 
                     ForEach(sect, id: \.filename) { media in
-                        if media.filename > "" {
+//                        if media.filename > "" {
                             NavigationLink(destination: MediaDetail(media: media)) {
                                 MediaRow(media: media)
                             }.listRowBackground(Color.clear)
-                        }
+//                        }
                     }
                     .onDelete { indexSet in
                         withAnimation { deleteMediaByOffsets (from: sect, at: indexSet) }
                     }
-                }
+//                }
             }
+//            Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
         }
     }
     .background(
@@ -180,7 +203,7 @@ struct MediaList: View {
 //            }
         }
 //        .onReceive(polltimer) { inpu  t in
-//            publishInfo()
+            publishInfo()
 //        }
 
     }

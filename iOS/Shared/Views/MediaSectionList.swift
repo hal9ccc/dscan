@@ -61,7 +61,9 @@ struct MediaSectionList: View {
     @State
     private var lastUpdated: Date = Date.now
     
+    private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
 
+    
     var body: some View {
 
         //lastSelectedSort = section.id
@@ -81,12 +83,14 @@ struct MediaSectionList: View {
 
         return VStack {
 
-            AnalyzeButtonAuto()
+            if idiom != .pad  {
+                AnalyzeButtonAuto()
+            }
             
             List() {
                 ForEach(media) { mediaSection in
                     
-                    NavigationLink(destination: MediaList(section: section, startWithKey:mediaSection.id)) {
+                    NavigationLink(destination: MediaList(section: section, startWithKey:mediaSection.id, showSections: false)) {
                         if section == MediaSection.day {
                             SectionHeader (
                                 name: dayFormatter.string(from: dateParser.date(from:mediaSection.id) ?? Date.now),

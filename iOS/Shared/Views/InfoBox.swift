@@ -12,13 +12,13 @@ import SwiftUI
 struct InfoBox: View {
     let info: String
     
-    @EnvironmentObject var app: DScanApp
+//    @EnvironmentObject var app: DScanApp
         
     var body: some View {
-        ZStack {
+//        ZStack {
             if info > "" {
-                ZStack { // HACK
-                    Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+//                ZStack { // HACK
+//                    Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
 
                     ChatBubble(direction: .right) {
                         Text("\(info)")
@@ -31,10 +31,10 @@ struct InfoBox: View {
                             .background(Color.blue)
 
                     }
-                    .if(info == "") { view in view.hidden() }
+//                    .if(info == "") { view in view.hidden() }
                 }
-            }
-        }
+//            }
+//        }
     }
 }
 

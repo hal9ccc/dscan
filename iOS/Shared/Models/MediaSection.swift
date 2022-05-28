@@ -21,11 +21,11 @@ struct MediaSection: Hashable, Identifiable, Equatable {
             name:       "Alle",
             icon:       "asterisk.circle",
             descriptors:[
-                SortDescriptor (\Media.type),
+                SortDescriptor (\Media.set, order: .reverse),
                 SortDescriptor (\Media.time, order: .reverse),
                 SortDescriptor (\Media.idx)
             ],
-            section:    \Media.type
+            section:    \Media.set
         ),
         MediaSection (
             id:         1,
@@ -129,7 +129,7 @@ struct MediaSection: Hashable, Identifiable, Equatable {
     ]
 
     static var `default`    : MediaSection { sorts[0] }
-    static var `all`        : MediaSection { sorts[0] }
+    static var `all`        : MediaSection { sorts[6] }
     static var `day`        : MediaSection { sorts[1] }
     static var `status`     : MediaSection { sorts[2] }
 }

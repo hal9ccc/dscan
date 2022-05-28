@@ -45,6 +45,9 @@ struct SettingsView: View {
     @AppStorage("CompressionQuality")
     private var comprQual: Double = 0.5
     
+    @AppStorage("ImageThumbnailSize")
+    private var imageThumbnailSize: Double = 150
+
     @AppStorage("DataSyncHours")
     private var syncRange: Double = 48
     
@@ -216,6 +219,21 @@ struct SettingsView: View {
                 footer:Text("Actual number may vary, based on color or size of the Image")
             ) {
                 Text("\(Int((cachesize/1024)/(comprQual * 1024)))")
+            }
+
+
+            Section (
+                header:Text("Thumbnail size"),
+                footer:Text("Experimental, for iPad")
+            ) {
+                Slider(value: $imageThumbnailSize,
+                     in: 100...320,
+                     step: 10,
+//                     minimumValueLabel: Text("low"),
+//                     maximumValueLabel: Text("high"),
+                     label: { Text("Thumbnail size") }
+                )
+                
             }
 
 

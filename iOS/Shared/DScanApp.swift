@@ -59,7 +59,7 @@ class DScanApp: ObservableObject {
     @Published var isError                = false
     @Published var isUploading            = false
     
-    @Published var lastRedraw            = Date.now
+//    @Published var lastRedraw             = Date.now
     @Published var lastSync               = Date.now
     @Published var lastChange             = Date.now
 
@@ -76,6 +76,16 @@ class DScanApp: ObservableObject {
     @Published var webviewUrl:              URL             = URL(string: "about://")!
     @Published var webviewOn:               Bool            = false
 
+    
+    var lastRedraw             = Date.now
+//    {
+//        willSet {
+//            print("objectWillChange.send()")
+//            objectWillChange.send()
+//        }
+//    }
+    
+    
     
     var metadata:                MMImage     = MMImage()
     var idx:                     Int         = 0
@@ -491,7 +501,7 @@ class DScanApp: ObservableObject {
     func forceRedraw () {
         // changes app.currentTime, which is part of appState and must be included
         // in all Components that need a forced redraw
-        self.publishInfo(now: Date.now)
+//        self.publishInfo(now: Date.now)
     }
 
 

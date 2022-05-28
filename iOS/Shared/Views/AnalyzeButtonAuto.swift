@@ -16,7 +16,7 @@ struct AnalyzeButtonAuto: View {
     var body: some View {
         if app.isUploading {
             ZStack(alignment: .top) { // HACK
-                Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+//                Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
                 
                 HStack {
                     Spacer()
@@ -55,7 +55,7 @@ struct AnalyzeButtonAutoView: View {
     var body: some View {
         if newMedia.count > 0 {
             ZStack(alignment: .topLeading) { // HACK
-                Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+//                Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
 
                 HStack (alignment: .center) {
                     Spacer()

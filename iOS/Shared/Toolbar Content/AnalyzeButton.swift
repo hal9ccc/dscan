@@ -18,7 +18,7 @@ struct AnalyzeButton: View {
     
     var body: some View {
         ZStack(alignment: .topLeading) { // HACK
-            Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
+//            Text("\(app.lastChange.formatted())").font(.caption).opacity(0)
 
             Button(action: action) {
                 Label("Analyze \(count) new scans", systemImage: "wand.and.stars")
